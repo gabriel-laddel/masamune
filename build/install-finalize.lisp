@@ -52,10 +52,10 @@
 	 (temp-pathname (merge-pathnames #P"/tmp/" (filename sbcl-sources))))
     (cl-fad:copy-file sbcl-sources temp-pathname)
     (rp (format nil "cd /tmp/ && bunzip2 -f -c * | tar xvf ~A" (filename temp-pathname)))
-    (cl-fad:copy-file (find-if (lambda (p) (and (scan "sbcl" (namestring p))
-					   (not (scan ".tar.bz2" (namestring p)))))
-			       (cl-fad:list-directory "/tmp/"))
-		      "/usr/lib64/sbcl/")))
+    (rp (format nil "mv ~A /usr/lib64/sbcl/" 
+		(find-if (lambda (p) (and (scan "sbcl" (namestring p))
+				     (not (scan ".tar.bz2" (namestring p)))))
+			 (cl-fad:list-directory "/tmp/"))))))
 
 (move-sbcl-sources)
 (write-dotfiles)
