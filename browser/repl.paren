@@ -1,0 +1,723 @@
+(defvar -cc (@ -components classes)) 
+(defvar -ci (@ -components interfaces)) 
+(defvar loader (chain (aref -cc "@mozilla.org/moz/jssubscript-loader;1")
+		      (get-service (@ -ci moz-i-j-s-sub-script-loader)))) 
+(defvar util (create)) 
+((@ loader load-sub-script) "file:///root/quicklisp/local-projects/masamune/browser/util.js" util)  
+
+(defun on-output ()
+  (dump "onOutput callback must be assigned."))
+
+(defun on-quit ()
+  (throw (new (-error "onQuit callback must be assigned.")))) 
+
+(defun init (context)
+  (let* ((_this this))
+    (setf (@ this _name) (choose-name "repl" context)
+	  (@ this _creation-context) context
+	  (@ this _host-context) context
+	  (@ this _work-context) context
+	  (aref (@ this _creation-context) (@ this _name)) this
+	  (@ this _context-history) (list)
+	  (@ this _input-buffer) ""
+	  (@ this _emergency-exit)
+	  (lambda (event) 
+	    ((@ _this print) "Host context unloading! Going back to creation context.") ((@ _this home))))
+    
+    ((@ this __define-getter__) "repl" (lambda () (return this)))
+    (setf (@ this _env) (create)
+	  (@ this _saved-env) (create))
+    ((@ this setenv) "printPrompt" t)
+    ((@ this setenv) "inputMode" "syntax")
+    (setf (@ this _interactor-classes) (create)
+	  (@ this _interactor-stack) (list))
+    ((@ this define-interactor) "javascript" javascript-interactor)
+    (let* ((default-interactor-class (aref (@ this _interactor-classes) "javascript"))
+	   (default-interactor (new (default-interactor-class this)))) 
+      (setf (@ this _interactor-stack) (list default-interactor))
+      ((@ default-interactor on-start) this)))) 
+
+(defun setenv (name value)
+  ;;   "Takes a name and a value and stores them so that they can be later retrieved
+  ;; via setenv(). Some, such as printPrompt boolean, affect there way the REPL
+  ;; works."
+  (setf (aref (@ this _env) name) value)
+  value) 
+
+(defun getenv (name)
+  ;; "Given a name, returns a value previously stored via setenv()."
+  (aref (@ this _env) name)) 
+
+(defun pushenv ()
+  ;; "Takes one or more names of values previously stored via setenv(), and stores
+  ;; them so that they can be later restored via popenv()."
+  (defvar name nil)
+  (for ((i 0) (l (@ arguments length)))
+       ((< i l)) ((incf i)) 
+       (setf name (aref arguments i))
+       (setf (aref (@ this _saved-env) name) (aref (@ this _env) name))))
+
+(defun popenv ()
+  ;;   "Takes one or more names of values previously pushed via `popenv' and restores
+  ;; them, overwriting the current ones"
+  (loop with name = name
+	for i from 0 below (length arguments)
+	for name = (aref arguments i)
+	do (when (in name (@ this _saved-env))
+	     (setf (aref (@ this _env) name) (aref (@ this _saved-env) name))
+	     (delete (aref (@ this _saved-env) name)))))
+
+(ps::inline-js "
+function represent(thing) {
+    var represent = arguments.callee;
+    var s;
+    switch(typeof(thing)) {
+    case 'string':
+        s = ' ' + thing + ' ';
+        break;
+    case 'number':
+        s = thing;
+        break;
+    case 'object':
+        var names = [];
+        for(var name in thing)
+            names.push(name);
+
+        s = thing;
+        if(names.length > 0) {
+            s += ' - {';
+            s += names.slice(0, 7).map(function(n) {
+                var repr = n + ': ';
+                try {
+                    if(thing[n] === null)
+                        repr += 'null';
+                    else if(typeof(thing[n]) == 'object')
+                        repr += '{...}';
+                    else
+                        repr += represent(thing[n]);
+                } catch(e) {
+                    repr += '[Exception!]'
+                }
+                return repr;
+            }).join(', ');
+            if(names.length > 7)
+                s += ', ...'
+            s += '}';
+        }
+        break;
+    case 'function':
+        s = 'function() {...}';
+        break;
+    default:
+        s = thing;
+    }
+    return s;
+}
+
+")
+
+;; (defun represent (thing)
+;;   (let* ((represent (@ arguments callee)) (s))
+;;     (switch (typeof thing)
+;;       ("string" (+ "\"" thing "\""))
+;;       ("number" (setf s thing))
+;;       ("object" (let* ((names (array)))
+;; 		  (loop for name in thing
+;; 			do (push name names))
+;; 		  (setf s thing)
+;; 		  (when (> (length names) 0)
+;; 		    (incf s (chain (+ " - {" 
+;; 				      (chain ((@ names slice) 0 7) 
+;; 					     (map (lambda (n) (+ n ": " (try (cond ((null (aref thing n)) "null")
+;; 									      ((equal "object" (type-of (aref thing n))) "{...}")
+;; 									      (t (represent (aref thing n))))
+;; 									(:catch (e)  "[Exception!]")))))))
+;; 				   (join ", ")))
+;; 		    (when (> (length names) 7)
+;; 		      (incf s ", ..."))
+;; 		    (incf s "}"))))
+;;       ("function" (setf s "function() {...}"))
+;;       (t (setf s thing)))
+;;     s))
+
+(defun print (data append-newline)
+  ;;   "Converts an object to a string and prints the string. Appends a newline
+  ;; unless false is given as second parameter."
+  ((@ this on-output) (if (equal data undefined) #\Newline 
+			  (+ data (if (equal append-newline f) "" #\Newline)))))
+
+(defun load (url arbitrary-context)
+  ;;   "Loads a chrome:// or file:// script into the current context, or optionally
+  ;; into an arbitrary context passed as a second parameter."
+  (try (return ((@ loader load-sub-script) url (or arbitrary-context (@ this _work-context))))
+       (:catch nil)))
+
+(defun enter (context wrapped)
+  ;;   "Makes a new context the current one.  After this, new definitions (variables,
+  ;; functions etc.) will be members of the new context. Remembers the previous
+  ;; context, so that you can get back to it with leave()."
+  (when (and (!= wrapped t) (!= (@ context wrapped-j-s-object) undefined))
+    (setf context (@ context wrapped-j-s-object)))
+  ((@ this _context-history push) (@ this _work-context))
+  (when (is-top-level context)
+    ((@ this _migrate-top-level) context))
+  (setf (@ this _work-context) context)
+  (@ this _work-context))
+
+(defun back ()
+  "Returns to the previous context."
+  (when (setf context ((@ this _context-history pop)))
+    (when (is-top-level context)
+      ((@ this _migrate-top-level) context))
+    (setf (@ this _work-context) context)
+    (@ this _work-context)))
+
+(defun home ()
+  "Returns to the context where the REPL was created."
+  ((@ this enter) (@ this _creation-context))) 
+
+(defun quit ()
+  "Ends the session."
+  (and (chain ((@ this current-interactor)) on-stop) 
+       (chain ((@ this current-interactor)) (on-stop this)))
+  (delete (aref (@ this _host-context) (@ this _name)))
+  (delete (aref (@ this _creation-context) (@ this _name)))
+  ((@ this on-quit)))
+
+(defun rename (name)
+  ;; "renames the ession"
+  (cond ((in name (@ this _host-context))
+	 (print "sorry, name already exists in the context repl is hosted in."))
+	((in name (@ this _creation-context))
+	 (print "Sorry name already exists in the context was created"))
+	(t (delete (aref (@ this _creation-context) (@ this _name)))
+	   (delete (aref (@ this _host-context) (@ this _name)))
+	   (setf (@ this _name) name
+		 (aref (@ this _creation-context) (@ this _name)) this
+		 (aref (@ this _host-context) (@ this _name)) this))))
+
+(defun inspect (object max-depth name current-depth)
+  ;;   "adapted from ddumpObject() at
+  ;; http://lxr.mozilla.org/mozilla/source/extensions/sroaming/resources/content/transfer/utility.js"
+  (labels ((crop (string max)
+	     (let* ((string (chain string (aref (match (regex "/^(.+?)(\\n|$)/m")) 1)))
+		    (max (or max 70)))
+	       (if (> (length string) (- max 3))
+		   "..." string))))
+    (cond ((equal name undefined) (setf name (+ "<" (type-of object) ">")))
+	  ((equal max-depth undefined) (setf max-depth 0))
+	  ((equal current-depth undefined) (setf current-depth 0))
+	  ((and max-depth (> current-depth max-depth)) (return)))
+    (loop with i = 0
+	  for prop in object
+	  do (progn (when (and (instance-of object (@ -ci ns-i-d-o-m-window))
+			       (member prop '("java" "sun" "Packages") :test 'string=))
+		      (print (+ name "." prop "=[not inspecting, either java, sun or Packages]"))
+		      continue)
+		    (try (progn (incf i)
+				(cond ((null (aref object prop)) (print (+ name "." prop "=null")))
+				      ((equal (typeof (aref object prop)) "object")
+				       (if (length object)
+					   (print 
+					    (+ name "." prop "=[probably array, length " (length object) "]"))
+					   (print (+ name "." prop "=[" (type-of (aref object prop)) "]")))
+				       ((@ this inspect) (aref object prop) max-depth
+					(+ name "." prop (1+ current-depth))))
+				      ((equal "function" (type-of (aref object prop)))
+				       (print (+ name "." prop "=[function]")))
+				      ((equal "xml" (type-of (aref object prop)))
+				       (let* ((s (chain ((aref object prop))
+							(to-x-m-l-string)
+							(replace (regex "/>\\n\\s*/g") " "))))
+					 (print (+ name "." prop "=" (if (> (length s) 100)
+									 (+ (chain s (slice 0 97)) "...")
+									 s)))))
+				      (t (print (+ name "." prop "=" (aref object prop)))
+					 (when (and (aref object prop) 
+						    (aref object prop doc)
+						    (stringp (aref object prop doc)))
+					   (print (+ "   " (crop (aref object prop))))))))
+			 (:catch (e) (print (+ name "." prop " - exception while inspecting."))))))
+    (unless i (print (+ name "  is empty")))))
+
+(defun look ()
+  ;; "Lists objects in the current context."
+  ((@ this inspect) (@ this _work-context) 0 "this"))
+
+(defun highlight (context time)
+  ;; "highlights the passed context (or current if none given) if it is a XUL ment"
+  (let* ((context (or context (@ this _work-context)))
+	 (time (or time 1000)))
+    (unless (@ context -query-interface) (return))
+    (ps::inline-js "NS_NOINTERFACE = 0x80004002;")
+    (try (progn ((@ context -query-interface) (@ -ci ns-i-d-o-m-x-u-l-element))
+		(let* ((saved-border "thick dotted red"))
+		  (chain (aref -cc "@mozilla.org/timer;1")
+			 (create-instance (@ -ci ns-i-timer))
+			 (init-with-callback 
+			  (create :notify (lambda () (setf (@ context style border)
+						      saved-border)))
+			  time
+			  (@ -ci ns-i-timer -t-y-p-e_-o-n-e_-s-h-o-t)))))
+	 (:catch (e)
+	   (lg "hit catch block of the highlight function")))))
+
+(defun where-am-i ()
+  ;; "Returns a string representation of the current context."
+  (defvar context (@ this _work-context))
+  (defvar  desc "")
+  (incf desc context)
+  (when (and (@ context document) (@ context document title))
+    (incf desc (+ " - Document title: \"" (@ context document title) "\"")))
+  (when (@ context node-name)
+    (incf desc (+ " - " (@ context node-name))))
+  (print desc)) 
+
+(defun search (criteria context)
+  ;; "Searches for a member in the current context, or optionally in an arbitrary given as a second parameter."
+  (defvar context (or context (@ this _work-context)))
+  (defvar matcher)
+  (if (equal (typeof criteria) "function")
+      (setf matcher criteria)
+      (setf matcher (if (equal (typeof (@ criteria test)) "function")
+			(lambda (name) (return ((@ criteria test) name)))
+			(lambda (name) (return (equal name criteria))))))
+  (for-in (name context) 
+	  (when (matcher name) (print name))))
+
+(defun doc (thing)
+  ;; "Looks up documentation for a given object, either in the doc string (if present) or on XULPlanet.com."
+  (print ((@ util doc-for) thing))
+  (setf url ((@ util help-url-for) thing))
+  (when url
+    (print "Online help found, displaying...")
+    (chain (aref -cc "@mozilla.org/embedcomp/window-watcher;1") 
+	   (get-service (@ -ci ns-i-window-watcher))
+	   (open-window nil url "help" (+ "width=640,height=600,scrollbars=yes,menubars=no,"
+					  "toolbar=no,location=no,status=no,resizable=yes") nil)))) 
+
+(defun reload-chrome ()
+  ;; "Reload all chrome packages"
+  (try (chain (aref -cc "@mozilla.org/chrome/chrome-registry;1") 
+	      (get-service (@ -ci ns-i-x-u-l-chrome-registry)) (reload-chrome)) (:catch nil)))
+
+(defun define-interactor (name proto)
+  ;; "Defines a new interactor."
+  (setf (aref (@ this _interactor-classes) name) (lambda () nil)
+	(chain (aref (@ this _interactor-classes) name) prototype) proto)) 
+
+(defun current-interactor ()
+  (aref (@ this _interactor-stack)
+	(- (@ this _interactor-stack length) 1))) 
+
+(defun pop-interactor ()
+  (when (equal (@ this _interactor-stack length) 1)
+    (throw (new (-error "Cannot leave last interactor."))))
+  (and (chain ((@ this current-interactor)) on-stop)
+       (chain ((@ this current-interactor)) (on-stop this)))
+  ((@ this _interactor-stack pop))
+  (and (chain ((@ this current-interactor)) on-resume) 
+       (chain ((@ this current-interactor)) (on-resume this)))) 
+
+(defun push-interactor (interactor-name)
+  (defvar interactor-class (aref (@ this _interactor-classes) interactor-name))
+  (if (equal (typeof interactor-class) "undefined")
+      (throw (new (-error (+ (+ "Interactor <" interactor-name) "> not defined."))))
+      (progn
+	(and (chain ((@ this current-interactor)) on-suspend) (chain ((@ this current-interactor)) (on-suspend this)))
+	(setf new-interactor (new (interactor-class this)))
+	((@ this _interactor-stack push) new-interactor)
+	((@ new-interactor on-start) this)))) 
+((@ push-interactor __define-getter__)
+ "doc"
+ (lambda ()
+   (setf int-names (list))
+   (for-in (int-name (@ this _interactor-classes)) ((@ int-names push) int-name))
+   (return (+ (+ "Sets the current interactor. (Currently defined: \"" ((@ int-names join) "\", \"")) "\")"))))
+
+(ps::inline-js "var javascriptInteractor = {
+    onStart: function(repl) {
+
+        Cc['@mozilla.org/observer-service;1']
+            .getService(Ci.nsIObserverService)
+            .notifyObservers(null, 'startupcache-invalidate', null);
+
+        this._inputBuffer = '';
+
+        if(true) {
+            repl.print('');
+            repl.print('Welcome to Repl.');
+            repl.print('');
+            repl.print(' - If you get stuck at the ...> prompt, enter a semicolon (;) at the beginning of the line to force evaluation.');
+            repl.print('');
+            repl.print('Current working context: ' + (repl._workContext instanceof Ci.nsIDOMWindow ?
+                                                      repl._workContext.document.location.href :
+                                                      repl._workContext));
+            repl.print('Current input mode: ' + repl._env['inputMode']);
+
+            repl.print('');
+        }
+
+        if(repl._name != 'repl') {
+            repl.print('Hmmm, seems like other repls are running in repl context.');
+            repl.print('To avoid conflicts, yours will be named ' + repl._name + '.');
+        }
+
+        repl._prompt();
+    },
+
+    onStop: function(repl) {},
+
+    onSuspend: function(repl) {},
+
+    onResume: function(repl) {},
+
+    getPrompt: function(repl) {
+        return repl._name + '> ';
+    },
+
+    handleInput: function(repl, input) {
+
+        if(input.match(/^\\s*$/) && this._inputBuffer.match(/^\\s*$/)) {
+            repl._prompt();
+            return;
+        }
+
+        const inputSeparators = {
+            line:      /\\n/m,
+            multiline: /\\n--end-remote-input\\n/m,
+        };
+
+        function handleError(e) {
+            var realException = (e instanceof LoadedScriptError ? e.cause : e);
+
+            repl.print('!!! ' + realException + '\\n');
+            if(realException) {
+                repl.print('Details:')
+                repl.print();
+                for(var name in realException) {
+                    var content = String(realException[name]);
+                    if(content.indexOf('\\n') != -1)
+                        content = '\\n' + content.replace(/^(?!$)/gm, '    ');
+                    else
+                        content = ' ' + content;
+
+                    repl.print('  ' + name + ':' + content.replace(/\\s*\\n$/m, ''));
+                }
+                repl.print();
+            }
+
+            repl._prompt();
+        }
+
+        switch(repl.getenv('inputMode')) {
+        case 'line':
+        case 'multiline':
+            this._inputBuffer += input;
+            var [chunk, rest] = scan(this._inputBuffer, inputSeparators[repl.getenv('inputMode')]);
+            while(chunk) {
+                try {
+                    var result = repl.evaluate(chunk);
+                    if(this != undefined)
+                        repl.print(repl.represent(result));
+                    repl._prompt();
+                } catch(e) {
+                    handleError(e);
+                }
+
+                [chunk, rest] = scan(rest, inputSeparators[repl.getenv('inputMode')]);
+            }
+            this._inputBuffer = rest;
+            break;
+
+        case 'syntax':
+            if(/^\\s*;\\s*$/.test(input)) {
+                try {
+                    var result = repl.evaluate(this._inputBuffer);
+                    if(result != undefined)
+                        repl.print(repl.represent(result));
+                    repl._prompt();
+                } catch(e) {
+                    handleError(e);
+                }
+
+                this._inputBuffer = '';
+            } else {
+                this._inputBuffer += input;
+                try {
+                    var result = repl.evaluate(this._inputBuffer);
+                    if(result != undefined)
+                        repl.print(repl.represent(result));
+                    repl._prompt();
+                    this._inputBuffer = '';
+                } catch(e if e.name == 'SyntaxError') {
+                    // ignore and keep filling the buffer
+                    repl._prompt(repl._name.replace(/./g, '.') + '> ');
+                } catch(e) {
+                    handleError(e);
+                    this._inputBuffer = '';
+                }
+            }
+        }
+    }
+}")
+
+;; (defvar javascript-interactor
+;;   (create on-start (lambda (repl) (chain (aref -cc "@mozilla.org/observer-service;1")
+;; 				    (get-service (@ -ci ns-i-observer-service))
+;; 				    (notify-observers nil "startupcache-invalidate" null))
+;; 		     (setf (@ this _input-buffer) "")
+;; 		     (print "A cathedral is not a cathedral till the last scaffolding is down and out of sight. -- Gauss")
+;; 		     (_prompt))
+;; 	  on-stop (lambda (repl))
+;; 	  on-suspend (lambda (repl))
+;; 	  on-resume (lambda (repl))
+;; 	  get-prompt (lambda (repl) (+ (@ repl _name) ">"))
+;; 	  handle-input (ps::inline-js "
+;; function(repl, input) {
+
+;;         if(input.match(/^\\s*$/) && this._inputBuffer.match(/^\\s*$/)) {
+;;             repl._prompt();
+;;             return;
+;;         }
+
+;;         const inputSeparators = {
+;;             line:      /\\n/m,
+;;             multiline: /\\n--end-remote-input\\n/m,
+;;         };
+
+;;         function handleError(e) {
+;;             var realException = (e instanceof LoadedScriptError ? e.cause : e);
+
+;;             repl.print('!!! ' + realException + '\\n');
+;;             if(realException) {
+;;                 repl.print('Details:')
+;;                 repl.print();
+;;                 for(var name in realException) {
+;;                     var content = String(realException[name]);
+;;                     if(content.indexOf('\\n') != -1)
+;;                         content = '\\n' + content.replace(/^(?!$)/gm, '    ');
+;;                     else
+;;                         content = ' ' + content;
+
+;;                     repl.print('  ' + name + ':' + content.replace(/\\s*\\n$/m, ''));
+;;                 }
+;;                 repl.print();
+;;             }
+
+;;             repl._prompt();
+;;         }
+
+;;         switch(repl.getenv('inputMode')) {
+;;         case 'line':
+;;         case 'multiline':
+;;             this._inputBuffer += input;
+;;             var [chunk, rest] = scan(this._inputBuffer, inputSeparators[repl.getenv('inputMode')]);
+;;             while(chunk) {
+;;                 try {
+;;                     var result = repl.evaluate(chunk);
+;;                     if(this != undefined)
+;;                         repl.print(repl.represent(result));
+;;                     repl._prompt();
+;;                 } catch(e) {
+;;                     handleError(e);
+;;                 }
+
+;;                 [chunk, rest] = scan(rest, inputSeparators[repl.getenv('inputMode')]);
+;;             }
+;;             this._inputBuffer = rest;
+;;             break;
+
+;;         case 'syntax':
+;;             if(/^\\s*;\\s*$/.test(input)) {
+;;                 try {
+;;                     var result = repl.evaluate(this._inputBuffer);
+;;                     if(result != undefined)
+;;                         repl.print(repl.represent(result));
+;;                     repl._prompt();
+;;                 } catch(e) {
+;;                     handleError(e);
+;;                 }
+
+;;                 this._inputBuffer = '';
+;;             } else {
+;;                 this._inputBuffer += input;
+;;                 try {
+;;                     var result = repl.evaluate(this._inputBuffer);
+;;                     if(result != undefined)
+;;                         repl.print(repl.represent(result));
+;;                     repl._prompt();
+;;                     this._inputBuffer = '';
+;;                 } catch(e if e.name == 'SyntaxError') {
+;;                     // ignore and keep filling the buffer
+;;                     repl._prompt(repl._name.replace(/./g, '.') + '> ');
+;;                 } catch(e) {
+;;                     handleError(e);
+;;                     this._inputBuffer = '';
+;;                 }
+;;             }}}")
+;; 	  ;; (lambda (repl input)
+;; 	  ;;   (defun handle-error (e)
+;; 	  ;;     (let* ((real-exception (if (instanceof e -loader-script-error)
+;; 	  ;; 				 (@ e cause)
+;; 	  ;; 				 e)))
+;; 	  ;; 	(print (+ "!!!" real-exception #\newline))
+;; 	  ;; 	(when real-exception
+;; 	  ;; 	  (print "Details:")
+;; 	  ;; 	  (print)
+;; 	  ;; 	  (loop for name in real-exception
+;; 	  ;; 		for content = (string (@ real-exception name))
+;; 	  ;; 		do (progn (setf content
+;; 	  ;; 				(if (= -1 (chain content (index-of #\newline)))
+;; 	  ;; 				    (+ " " content)
+;; 	  ;; 				    (+ #\newline (chain content (replace (regex "/^(?!$)/gm")
+;; 	  ;; 									 "     ")))))
+;; 	  ;; 			  (print (+ "  " name ":" (chain content (replace (regex "/\\s*\\n$/m") "")))))))
+;; 	  ;; 	(print)
+;; 	  ;; 	(_prompt)))
+;; 	  ;;   (try (let* ((result (evaluate (@ this _input-buffer))))
+;; 	  ;; 	   (unless (undefined result)
+;; 	  ;; 	     (print (represent result)))
+;; 	  ;; 	   (_prompt))
+;; 	  ;; 	 (:catch (e)
+;; 	  ;; 	   (if (string= (@ e name) "SyntaxError")
+;; 	  ;; 	       (_prompt (+ (chain (@ repl _name) 
+;; 	  ;; 				  (replace (regex "/./g") "."))
+;; 	  ;; 			   "> "))
+;; 	  ;; 	       (progn (handle-error e)
+;; 	  ;; 		      (setf (@ this _input-buffer) "")))))
+;; 	  ;;   (setf (@ this _input-buffer) ""))
+;; 	  ))
+
+(ps::inline-js "function _migrateTopLevel(context) {
+    if(this._hostContext instanceof Ci.nsIDOMWindow)
+        this._hostContext.removeEventListener('unload', this._emergencyExit, false);
+
+    this._hostContext[this._name] = undefined;
+    this._hostContext = context;
+    this._hostContext[this._name] = this;
+
+    if(this._hostContext instanceof Ci.nsIDOMWindow)
+        this._hostContext.addEventListener('unload', this._emergencyExit, false);
+}")
+
+;; (defun _migrate-top-level (context)
+;;   (ps::inline-js "if(this._hostContext instanceof Ci.nsIDOMWindow)
+;;         this._hostContext.removeEventListener('unload', this._emergencyExit, false)")
+;;   (setf (aref (@ this _host-context) (@ this _name)) undefined
+;; 	(@ this _host-context) context
+;; 	(aref (@ this _host-context) (@ this _name)) this)
+;;   (ps::inline-js "if(this._hostContext instanceof Ci.nsIDOMWindow)
+;;         this._hostContext.addEventListener('unload', this._emergencyExit, false)"))
+
+(defun _prompt (prompt) (print "PARENSCRIPT> " f)) 
+
+(defun receive (input)
+  (chain ((@ this current-interactor)) (handle-input this input)))
+
+(defun choose-name (basename context)
+  (if (in basename context)
+      (loop with i = 0
+	    while (in (+ i basename) context)
+	    do (incf i)
+	    finally (return (+ i basename)))
+      basename))
+
+(defun is-top-level (object)
+  (or (instanceof object (@ -ci ns-i-d-o-m-window))
+      (in "wrappedJSObject" object)
+      (in "NSGetModule" object)
+      (in "EXPORTED_SYMBOLS" object)
+      (and (@ object __parent__) (in "EXPORTED_SYMBOLS" (@ object __parent__)))))
+
+(defun scan (string separator)
+  (let* ((match ((@ string match) separator)))
+    (if match
+	(list ((@ string substring) 0 (@ match index))
+	      ((@ string substr) (+ (@ match index) (chain (aref match 0) length))))
+	(list nil string))))
+
+(ps::inline-js "
+function formatStackTrace(exception) {
+    var trace = '';
+    if(exception.stack) {
+        var calls = exception.stack.split('\n');
+        for each(var call in calls) {
+            if(call.length > 0) {
+                call = call.replace(/\\n/g, '\n');
+
+                if(call.length > 200)
+                    call = call.substr(0, 200) + '[...]\n';
+
+                trace += call.replace(/^/mg, '\t') + '\n';
+            }
+        }
+    }
+    return trace;
+}
+
+function evaluate(code) {
+    var _ = arguments.callee;
+    if(typeof(_.TMP_FILE) == 'undefined') {
+        _.TMP_FILE = Cc['@mozilla.org/file/directory_service;1']
+            .getService(Ci.nsIProperties)
+            .get('ProfD', Ci.nsIFile);
+        _.TMP_FILE.append('mozrepl.tmp.js');
+
+        _.TMP_FILE_URL = Cc['@mozilla.org/network/io-service;1']
+            .getService(Ci.nsIIOService)
+            .getProtocolHandler('file')
+            .QueryInterface(Ci.nsIFileProtocolHandler)
+            .getURLSpecFromFile(_.TMP_FILE);
+    }
+
+    var fos = Cc['@mozilla.org/network/file-output-stream;1']
+        .createInstance(Ci.nsIFileOutputStream);
+    fos.init(_.TMP_FILE, 0x02 | 0x08 | 0x20, 0600, 0);
+
+    var os = Cc['@mozilla.org/intl/converter-output-stream;1']
+        .createInstance(Ci.nsIConverterOutputStream);
+    os.init(fos, 'UTF-8', 0, 0x0000);
+    os.writeString(code);
+    os.close();
+
+    if(typeof(_.cacheKiller) == 'undefined')
+        _.cacheKiller = 0;
+    
+    _.cacheKiller++;
+    var scriptUrl = _.TMP_FILE_URL + '?' + _.cacheKiller;
+    var result = loader.loadSubScript(scriptUrl, this._workContext, 'UTF-8');
+
+    this.$$ = result;
+    return result;
+}")
+
+;; (defun evaluate (code)
+;;   (let* ((_ (@ arguments callee)))
+;;     (when (undefined (@ _ temp-file))
+;;       (setf (@ _ temp-file) (chain (aref -cc "@mozilla.org/file/directory_service;1") 
+;; 				   (get-service (@ -ci ns-i-properties))
+;; 				   (get "ProfD" (@ -ci ns-i-file))))
+;;       (chain (@ _ temp-file) (append "mozrepl.tmp.js"))
+;;       (setf (@ _ temp-file-url) (chain (aref -cc "mozilla.org/network/io-service;1")
+;; 				       (get-service (@ -ci ns-i-i-o-service))
+;; 				       (get-protocol-handler "file")
+;; 				       (-query-interface -ci-ns-i-file-protocol-handler)
+;; 				       (get-u-r-l-spec-from-file (@ _ temp-file)))))
+;;     (let* ((fos (chain (aref -cc "@mozilla.org/network/file-output-stream;1")
+;; 		       (create-instance (@ -ci ns-i-file-output-stream)))))
+;;       (ps::inline-js "fos.init(_.TMP_FILE, 0x02 | 0x08 | 0x20, 0600, 0)")
+;;       (let* ((os (chain (aref -cc "@mozilla.org/intl/converter-output-stream;1")
+;; 			(create-instance (@ -ci ns-i-converter-output-stream)))))
+;; 	(ps::inline-js "os.init(fos, 'UTF-8', 0, 0x0000)")
+;; 	(chain os (write-string code))
+;; 	(chain os (close))
+;; 	(when (equal undefined (typeof (@ _ cache-killer)))
+;; 	  (setf (@ _ cache-killer 0) 0))
+;; 	(incf (@ _ cache-killer))
+;; 	(let* ((script-url (+ (@ _ temp-file) "?" (@ _ cache-killer)))
+;; 	       (result ((@ loader load-sub-script) script-url (@ this _work-context) "UTF-8")))
+;; 	  (setf (@ this $$) result)
+;; 	  (return result))))))
+
+(defun -loaded-script-error (cause) (setf (@ this cause) cause))

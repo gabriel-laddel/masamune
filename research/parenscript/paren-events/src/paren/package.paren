@@ -1,0 +1,9 @@
+#+paren-packages
+(defpackage paren-events
+  (:use :parenscript :paren-psos)
+  (:export #:event
+	   #:event-emitter
+	   #:event-fired
+	   #:event-origin
+	   #:event-description
+	   #:register-event-handler))

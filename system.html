@@ -1,0 +1,1207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Masamune</title>
+<!-- 2015-05-28 Thu 13:10 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="root" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="finishing-touches.css"/>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Masamune</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Introduction</a></li>
+<li><a href="#sec-2">2. Installing</a>
+<ul>
+<li><a href="#sec-2-1">2.1. Live CD</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. Installing the Stage 3 tarball</a>
+<ul>
+<li><a href="#sec-3-1">3.1. Kernel</a></li>
+<li><a href="#sec-3-2">3.2. Installing a Bootloader</a></li>
+<li><a href="#sec-3-3">3.3. Configuring your network &gt; Wi-fi</a></li>
+<li><a href="#sec-3-4">3.4. Funtoo Linux First Steps</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. FAQ</a>
+<ul>
+<li><a href="#sec-4-1">4.1. <span class="todo TODO">TODO</span> how does on set hostname permanently on gentoo?</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5. Developers</a>
+<ul>
+<li><a href="#sec-5-1">5.1. Debugging</a></li>
+<li><a href="#sec-5-2">5.2. Dealing with C</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6. TODOs</a>
+<ul>
+<li><a href="#sec-6-1">6.1. alpha</a>
+<ul>
+<li><a href="#sec-6-1-1">6.1.1. <span class="todo TODO">TODO</span> point swank/slime to asdf sources or move them into the appropriate location.</a></li>
+<li><a href="#sec-6-1-2">6.1.2. <span class="todo TODO">TODO</span> update portage build</a></li>
+<li><a href="#sec-6-1-3">6.1.3. <span class="todo TODO">TODO</span> app-emacs/imaxima must be installed to have working latex support</a></li>
+<li><a href="#sec-6-1-4">6.1.4. <span class="todo TODO">TODO</span> possibly integrate</a></li>
+<li><a href="#sec-6-1-5">6.1.5. <span class="todo TODO">TODO</span> automate installation</a></li>
+<li><a href="#sec-6-1-6">6.1.6. <span class="todo TODO">TODO</span> install sbcl to correct location or point emacs to correct sources</a></li>
+<li><a href="#sec-6-1-7">6.1.7. <span class="todo TODO">TODO</span> leverage portage USE to ensure that systemd is not pulled in under any circumstances</a></li>
+<li><a href="#sec-6-1-8">6.1.8. <span class="todo TODO">TODO</span> lock lisp code + clone stable optima / Alexandria combination</a></li>
+<li><a href="#sec-6-1-9">6.1.9. <span class="todo TODO">TODO</span> unified documentation</a></li>
+<li><a href="#sec-6-1-10">6.1.10. <span class="todo TODO">TODO</span> remove all text editors other than emacs/climacs</a></li>
+<li><a href="#sec-6-1-11">6.1.11. <span class="todo TODO">TODO</span> bind debugger in all threads</a></li>
+<li><a href="#sec-6-1-12">6.1.12. <span class="todo TODO">TODO</span> move all data storage into PCLOS</a></li>
+<li><a href="#sec-6-1-13">6.1.13. <span class="todo TODO">TODO</span> add all pen testing tools</a></li>
+<li><a href="#sec-6-1-14">6.1.14. <span class="todo TODO">TODO</span> NixOS etc. automatically determine drivers something something kernel modules. How?</a></li>
+</ul>
+</li>
+<li><a href="#sec-6-2">6.2. beta</a>
+<ul>
+<li><a href="#sec-6-2-1">6.2.1. <span class="todo TODO">TODO</span> unify console mode and graphical UNIX</a></li>
+<li><a href="#sec-6-2-2">6.2.2. <span class="todo TODO">TODO</span> review common lisp style guides and codify</a></li>
+<li><a href="#sec-6-2-3">6.2.3. <span class="todo TODO">TODO</span> unified kill ring</a></li>
+<li><a href="#sec-6-2-4">6.2.4. <span class="todo TODO">TODO</span> 'unwind' maxima and move to asdf + quicklisp</a></li>
+<li><a href="#sec-6-2-5">6.2.5. <span class="todo TODO">TODO</span> improve plotting facilities</a></li>
+<li><a href="#sec-6-2-6">6.2.6. <span class="todo TODO">TODO</span> commission sexp printer, reader for haskell's Language.C.AST</a></li>
+<li><a href="#sec-6-2-7">6.2.7. <span class="todo TODO">TODO</span> translate dependency plotting to CL</a></li>
+<li><a href="#sec-6-2-8">6.2.8. <span class="todo TODO">TODO</span> advice system</a></li>
+<li><a href="#sec-6-2-9">6.2.9. <span class="todo TODO">TODO</span> HATRED</a></li>
+</ul>
+</li>
+<li><a href="#sec-6-3">6.3. gamma</a>
+<ul>
+<li><a href="#sec-6-3-1">6.3.1. <span class="todo TODO">TODO</span> pdf OCR</a></li>
+<li><a href="#sec-6-3-2">6.3.2. <span class="todo TODO">TODO</span> cleanup CL ecosystem</a></li>
+<li><a href="#sec-6-3-3">6.3.3. <span class="todo TODO">TODO</span> lispy audio</a></li>
+<li><a href="#sec-6-3-4">6.3.4. <span class="todo TODO">TODO</span> common lisp only editor</a></li>
+<li><a href="#sec-6-3-5">6.3.5. <span class="todo TODO">TODO</span> removing X</a></li>
+<li><a href="#sec-6-3-6">6.3.6. <span class="todo TODO">TODO</span> adopt all good ideas from related technologies</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+If you're reading via github's rendition of org-mode, try the spiffy HTML version <a href="http://gabriel-laddel.github.io/system.html">here</a>. Read <a href="./arsttep.html">this</a> if you're unsure as to what Masamune is.
+</p>
+
+<p>
+Inline code snippets <code>look like this</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Installing</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+Until such a time that portage can be hacked through in some sane manner, we must install Masamune on top of funtoo. This is a time consuming PITA. Apologies. Follow the <a href="./Funtoo_Linux_Installation.htm ">Funtoo Linux Installation</a> (locally cached to prevent shitgnomery), using the following replacements for sections of the same name. If you attempt to <code>emerge whatever</code> and get output resembling 
+</p>
+
+<pre class="example">
+root@rainbowdash ~ # emerge www-client/google-chrome-unstable
+
+ * IMPORTANT: 3 news items need reading for repository 'gentoo'.
+ * Use eselect news to read news items.
+
+
+ * IMPORTANT: config file '/etc/portage/package.use' needs updating.
+ * See the CONFIGURATION FILES section of the emerge
+ * man page to learn how to update config files.
+Calculating dependencies  ... done!
+[ebuild  N     ] gnome-base/gconf-3.2.6-r3  USE="-debug -introspection -ldap -policykit" PYTHON_TARGETS="python2_7" 
+[ebuild  N    ~] www-client/google-chrome-unstable-41.0.2224.3_p1  USE="plugins" LINGUAS="am ar bg bn ca cs da de el en_GB es es_LA et fa fi fil fr gu he hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt_BR pt_PT ro ru sk sl sr sv sw ta te th tr uk vi zh_CN zh_TW" 
+
+The following keyword changes are necessary to proceed:
+ (see "package.accept_keywords" in the portage(5) man page for more details)
+# required by www-client/google-chrome-unstable (argument)
+=www-client/google-chrome-unstable-41.0.2224.3_p1 ~amd64
+
+The following license changes are necessary to proceed:
+ (see "package.license" in the portage(5) man page for more details)
+# required by www-client/google-chrome-unstable (argument)
+&gt;=www-client/google-chrome-unstable-41.0.2224.3_p1 google-chrome
+
+Use --autounmask-write to write changes to config files (honoring
+CONFIG_PROTECT). Carefully examine the list of proposed changes,
+paying special attention to mask or keyword changes that may expose
+experimental or unstable packages.
+root@rainbowdash ~ #
+</pre>
+
+<p>
+You need to add
+</p>
+
+<pre class="example">
+=www-client/google-chrome-unstable-41.0.2224.3_p1 ~amd64
+&gt;=www-client/google-chrome-unstable-41.0.2224.3_p1 google-chrome
+</pre>
+
+<p>
+To the file <code>/etc/portage/package.use</code>. There may be an automated way of doing this, but idk.
+</p>
+</div>
+
+<div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Live CD</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Install SystemrescueCD <a href="http://www.sysresccd.org/Sysresccd-manual-en_How_to_install_SystemRescueCd_on_an_USB-stick">on a USB stick</a>. The "script in the root of the CD-rom" doesn't work. Run <code>bash ./usb_inst.sh --help</code> and then each step individually. When you start system rescue CD, use <b>Standard 64bit kernel (rescue64) &gt; SystemRescueCd with the default graphical environment</b>. If you need to use colemak, dvorak
+</p>
+
+<pre class="example">
+setxkbmap us -variant colemak -option ctrl:nocaps
+</pre>
+
+<p>
+from the terminal after the graphical env has started.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Installing the Stage 3 tarball</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Instead of the stage3 tarball supplied by funtoo, download <a href="https://drive.google.com/file/d/0Bznn0f9Mk3KAalRUVHJCeDROYWs/view?usp=sharing">this one</a>. The SystemrescueCD web browser is borked and will falsely indicate it has been fully downloaded almost immediately. Wait until a desktop popup message appears in the top right corner.
+</p>
+
+<pre class="example">
+cd /mnt/funtoo
+mv /root/stage3-old.tar.xz ./
+tar xpf stage3-old.tar.xz
+
+# It is very important to use tar's "p" option when extracting the Stage 3
+# tarball - it tells tar to preserve any permissions and ownership that exist
+# within the archive. Without this option, your Funtoo Linux filesystem
+# permissions will be incorrect. 
+
+mount -t proc none proc
+mount --rbind /sys sys
+mount --rbind /dev dev
+cp /etc/resolv.conf etc
+env -i HOME=/root TERM=$TERM chroot . bash -l
+emerge --sync
+</pre>
+
+<p>
+Edit <code>/etc/fstab</code> to reflect the filesystem layout (using <code>nano -w /etc/fstab</code>). E.G.,
+</p>
+
+<pre class="example">
+# The root filesystem should have a pass number of either 0 or 1.
+# All other filesystems should have a pass number of 0 or greater than 1.
+#
+# NOTE: If your BOOT partition is ReiserFS, add the notail option to opts.
+#
+# See the manpage fstab(5) for more information.
+#
+# &lt;fs&gt;	     &lt;mountpoint&gt;  &lt;type&gt;  &lt;opts&gt;         &lt;dump/pass&gt;
+
+/dev/sda1    /boot         ext2    noauto,noatime 1 2
+/dev/sda2    none          swap    sw             0 0
+/dev/sda3    /             ext4    noatime        0 1
+#/dev/cdrom  /mnt/cdrom    auto    noauto,ro      0 0
+</pre>
+
+<pre class="example">
+echo MAKEOPTS=\"-j$(($(nproc) + 1))\" &gt;&gt; /etc/portage/make.conf
+</pre>
+</div>
+
+<div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Kernel</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+The kernel is packaged in the stage3 tarball. The following will build it. This will take over an hour.
+</p>
+
+<pre class="example">
+install -d /etc/portage/sets &amp;&amp; echo 'sys-kernel/debian-sources' &gt;&gt; /etc/portage/sets/kernel &amp;&amp; emerge -1 @kernel
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Installing a Bootloader</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+<code>emerge boot-update</code>, edit (<code>nano -w /unix/filename/</code>) <code>/etc/boot.conf</code> to
+</p>
+
+<pre class="example">
+boot {
+	generate grub
+	default "Funtoo Linux genkernel" 
+	timeout 3 
+}
+
+"Funtoo Linux" {
+	kernel bzImage[-v]
+}
+
+"Funtoo Linux genkernel" {
+	kernel kernel[-v]
+	initrd initramfs[-v]
+	params += real_root=auto rootfstype=auto
+} 
+
+"Funtoo Linux better-initramfs" {
+	kernel vmlinuz[-v]
+	initrd /initramfs.cpio.gz
+}
+</pre>
+
+<pre class="example">
+grub-install --target=i386-pc --no-floppy /dev/sda
+boot-update
+</pre>
+</div>
+</div>
+
+<div id="outline-container-sec-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Configuring your network &gt; Wi-fi</h3>
+<div class="outline-text-3" id="text-3-3">
+<div class="org-src-container">
+
+<pre class="src src-bash">emerge linux-firmware
+emerge networkmanager 
+rc-update add NetworkManager default
+</pre>
+</div>
+
+<p>
+NetworkManager includes an ncurses gui (available via <code>nmtui</code>), which is far more convenient than futzing around with shell commands. Fair warning, <code>emerge networkmanager</code> takes ~1hr.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Funtoo Linux First Steps</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+You can skip the <a href="http://www.funtoo.org/Funtoo_Linux_First_Steps">Funtoo Linux First Steps</a> page. Setup internet via <code>nmtui</code>. AFAIK there doesn't exist a canonical hardware to drivers mapping and video drivers must be installed by hand. This amounts to
+</p>
+
+<pre class="example">
+echo 'VIDEO_CARDS="funtoo-specific-chipset-id"' &gt;&gt; /etc/portage/make.conf # determine the chipset-id using the guide here http://www.funtoo.org/Video
+emerge video-driver-name
+</pre>
+
+<p>
+Choosing the right driver will probably require some guesswork. The guides to the <a href="http://www.funtoo.org/X_Window_System">X window system</a> and <a href="http://www.funtoo.org/Video">Video hardware</a> will prove useful. If your setup isn't documented run <code>emerge -s driver</code> at the shell to get a list of all drivers. You can get some information about your chipset with <code>uname -a</code>. (NOTE: if you find that you need to do this, you may want to <code>emerge emacs</code> so you can look through the output. Otherwise, shift-page-up/down will scroll through console output).
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-common-lisp">(defvar known-configurations
+  ("Compaq Presario CQ57" (:x11-driver "x11-drivers/xf86-video-intel" :make-conf "VIDEO_CARDS=\"intel\""))
+  ("dell precision m4400" (:x11-driver "x11-base/xorg-drivers" :make-conf "VIDEO_CARDS=\"nouveau\"")))
+</pre>
+</div>
+
+<p>
+IFF you've managed to install video drivers, it is time to build the ALGOL systems required by Masamune
+</p>
+
+<pre class="example">
+export SBCL_HOME=/usr/lib64/sbcl # sadly this is required, the SBCL build in portage doesn't work because idiots.
+emerge sbcl
+
+# emerge each of these, adding whatever necessary to package.use
+
+virtual/jpeg
+media-libs/tiff
+media-libs/giflib
+x11-libs/libXpm
+x11-base/xorg-drivers # required on almost all chips. even those that need x11-drivers/xf86-video-intel. Installing it can't hurt.
+x11-base/xorg-x11
+app-text/enchant
+app-text/ghostscript-gpl
+media-gfx/imagemagick
+sys-apps/lshw
+net-wireless/aircrack-ng
+app-text/sloccount
+app-misc/mc
+net-analyzer/nmap
+sys-process/htop
+net-analyzer/netcat
+x11-apps/xrandr
+x11-misc/xcalib 
+x11-apps/xdpyinfo
+xterm
+
+mkdir -p ~/quicklisp/local-projects/
+cd ~/quicklisp/local-projects/
+git clone https://github.com/gabriel-laddel/masamune.git
+curl http://beta.quicklisp.org/quicklisp.lisp &gt; /tmp/quicklisp.lisp
+sbcl --load /tmp/quicklisp.lisp
+
+# evaluate (quicklisp-quickstart:install) when prompted,
+# then evaluate
+# 
+# (ql:add-to-init-file)
+# 
+# press RET and
+# 
+# (quit)
+# 
+# if you run into an SB-BSD-SOCKETS:TRY-AGAIN-ERROR activate the ABORT restart
+# and retry. Perhaps it is just my flaky connection, but this appears to be
+# rather common.
+
+cd
+sbcl --load ~/quicklisp/local-projects/masamune/build/install-initialize.lisp
+
+cd ~/quicklisp/local-projects/emacs-24.4/
+./configure
+make
+make install
+
+cd ~/quicklisp/local-projects/stumpwm/
+autoconf
+./configure
+make
+make install
+
+emerge conkeror
+
+mkdir -p ~/algol/xulrunner/
+curl http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/33.1/runtimes/xulrunner-33.1.en-US.linux-x86_64.tar.bz2 &gt; /tmp/xulrunner-33.1.en-US.linux-x86_64.tar.bz2
+mv /tmp/xulrunner-33.1.en-US.linux-x86_64.tar.bz2 ~/algol/ &amp;&amp; cd ~/algol/ &amp;&amp; tar xvjf xulrunner-33.1.en-US.linux-x86_64.tar.bz2
+chmod +x ~/algol/xulrunner/xulrunner
+
+# check that it works via ~/algol/xulrunner/xulrunner --version
+
+mkdir ~/algol/conkeror/
+cd ~/algol/conkeror/
+git init
+git remote add origin git://repo.or.cz/conkeror.git
+git fetch origin 48d3ef4369f267faf42451a580b1ac6bcb6a5a18:refs/remotes/origin/master
+git reset --hard FETCH_HEAD
+make # required if one wishes to edit text fields from emacs
+
+cd
+emerge app-emacs/imaxima
+startx
+
+# the rest of the install process is automated from this point and will boot
+# into a tutorial. If you run into errors, let me know in #bitcoin-assets on
+# freenode (for live help) or register an issue on github.
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> FAQ</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+Q: Invalid MIT-MAGIC-COOKIE-1 keyError - Can't open display :0.0
+</p>
+
+<p>
+Your hostname isn't permanently set and has been changed because idiots. Restore it using <code>hostname old-hostname-string</code>.
+</p>
+
+<p>
+Info from: <a href="https://bbs.archlinux.org/viewtopic.php?id=159573">https://bbs.archlinux.org/viewtopic.php?id=159573</a>
+</p>
+</div>
+
+<div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> <span class="todo TODO">TODO</span> how does on set hostname permanently on gentoo?</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Q: When the browser starts it also launches several windows corresponding to failed downloads. How can I remove them?
+</p>
+
+<p>
+A: M-x download-remove from each one of the windows before killing with stumpwm
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Developers</h2>
+<div class="outline-text-2" id="text-5">
+</div><div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Debugging</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+I don't really understand how to go about debugging ALGOL programs. This section exists to dump debugging hacks that might not be obvious to a n00b (i.e., me).
+</p>
+
+<p>
+<code>journalctl --no-pager</code>
+</p>
+
+<p>
+<a href="http://jvns.ca/blog/2014/04/20/debug-your-programs-like-theyre-closed-source/">http://jvns.ca/blog/2014/04/20/debug-your-programs-like-theyre-closed-source/</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Dealing with C</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+Linux is a gigantic mass of C code an there isn't, afaik, much in the way of sane tooling (e.g., find all who call, or reference $CONSTRUCT). The Haskell package <a href="https://hackage.haskell.org/package/language-c-0.4.4/docs/Language-C-Syntax-AST.html">Language.C.syntax.AST</a> can parse the entire linux kernel. Pay a haskellite to add a sexpr interface?
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> TODOs</h2>
+<div class="outline-text-2" id="text-6">
+</div><div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> alpha</h3>
+<div class="outline-text-3" id="text-6-1">
+</div><div id="outline-container-sec-6-1-1" class="outline-4">
+<h4 id="sec-6-1-1"><span class="section-number-4">6.1.1</span> <span class="todo TODO">TODO</span> point swank/slime to asdf sources or move them into the appropriate location.</h4>
+</div>
+<div id="outline-container-sec-6-1-2" class="outline-4">
+<h4 id="sec-6-1-2"><span class="section-number-4">6.1.2</span> <span class="todo TODO">TODO</span> update portage build</h4>
+<div class="outline-text-4" id="text-6-1-2">
+<p>
+<code>emerge sci-visualization/gnuplot</code>
+</p>
+
+<p>
+add the following to <code>/etc/portage/package.use</code>
+</p>
+
+<p>
+<code>media-libs/gd-2.0.35-r4</code>
+</p>
+
+<p>
+WTF why doesn't this work?
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-1-3" class="outline-4">
+<h4 id="sec-6-1-3"><span class="section-number-4">6.1.3</span> <span class="todo TODO">TODO</span> app-emacs/imaxima must be installed to have working latex support</h4>
+</div>
+<div id="outline-container-sec-6-1-4" class="outline-4">
+<h4 id="sec-6-1-4"><span class="section-number-4">6.1.4</span> <span class="todo TODO">TODO</span> possibly integrate</h4>
+<div class="outline-text-4" id="text-6-1-4">
+<ul class="org-ul">
+<li>cl-store
+</li>
+<li><a href="https://github.com/vermiculus/sx.el/blob/master/README.org">https://github.com/vermiculus/sx.el/blob/master/README.org</a>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-6-1-5" class="outline-4">
+<h4 id="sec-6-1-5"><span class="section-number-4">6.1.5</span> <span class="todo TODO">TODO</span> automate installation</h4>
+</div>
+<div id="outline-container-sec-6-1-6" class="outline-4">
+<h4 id="sec-6-1-6"><span class="section-number-4">6.1.6</span> <span class="todo TODO">TODO</span> install sbcl to correct location or point emacs to correct sources</h4>
+</div>
+<div id="outline-container-sec-6-1-7" class="outline-4">
+<h4 id="sec-6-1-7"><span class="section-number-4">6.1.7</span> <span class="todo TODO">TODO</span> leverage portage USE to ensure that systemd is not pulled in under any circumstances</h4>
+</div>
+<div id="outline-container-sec-6-1-8" class="outline-4">
+<h4 id="sec-6-1-8"><span class="section-number-4">6.1.8</span> <span class="todo TODO">TODO</span> lock lisp code + clone stable optima / Alexandria combination</h4>
+<div class="outline-text-4" id="text-6-1-8">
+<p>
+I ran into an issue with a combination of optima / alexandria that can be resolved by loading the following commits:
+</p>
+
+<p>
+Optima commit: b2b9e325e09f8c9af1abf7dedc3b072e23318a70 
+Alexandria commit: b1c6ee0
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-1-9" class="outline-4">
+<h4 id="sec-6-1-9"><span class="section-number-4">6.1.9</span> <span class="todo TODO">TODO</span> unified documentation</h4>
+<div class="outline-text-4" id="text-6-1-9">
+<p>
+The portage USE flag 'doc' will cause circular dependencies by default. Debug?
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-1-10" class="outline-4">
+<h4 id="sec-6-1-10"><span class="section-number-4">6.1.10</span> <span class="todo TODO">TODO</span> remove all text editors other than emacs/climacs</h4>
+</div>
+<div id="outline-container-sec-6-1-11" class="outline-4">
+<h4 id="sec-6-1-11"><span class="section-number-4">6.1.11</span> <span class="todo TODO">TODO</span> bind debugger in all threads</h4>
+<div class="outline-text-4" id="text-6-1-11">
+<p>
+currently errors get nesed up to sb-kernel:*maximum-error-depth* when I attempt to join an IRC channel from the knowledge map
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-1-12" class="outline-4">
+<h4 id="sec-6-1-12"><span class="section-number-4">6.1.12</span> <span class="todo TODO">TODO</span> move all data storage into PCLOS</h4>
+<div class="outline-text-4" id="text-6-1-12">
+<p>
+the system <code>(ql:quickload '(fmarshal fmarshal-test))</code> can store most types of data - integrate with manardb.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-1-13" class="outline-4">
+<h4 id="sec-6-1-13"><span class="section-number-4">6.1.13</span> <span class="todo TODO">TODO</span> add all pen testing tools</h4>
+</div>
+<div id="outline-container-sec-6-1-14" class="outline-4">
+<h4 id="sec-6-1-14"><span class="section-number-4">6.1.14</span> <span class="todo TODO">TODO</span> NixOS etc. automatically determine drivers something something kernel modules. How?</h4>
+<div class="outline-text-4" id="text-6-1-14">
+<p>
+compare with portage genkernel
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> beta</h3>
+<div class="outline-text-3" id="text-6-2">
+</div><div id="outline-container-sec-6-2-1" class="outline-4">
+<h4 id="sec-6-2-1"><span class="section-number-4">6.2.1</span> <span class="todo TODO">TODO</span> unify console mode and graphical UNIX</h4>
+<div class="outline-text-4" id="text-6-2-1">
+<p>
+The correct way to address the situation is to:
+</p>
+
+<ol class="org-ol">
+<li>when the user is first dropped into console mode, query as to the keyboard to be used: dvorak, colemak and qwerty
+</li>
+
+<li>ensure that a modern Emacs with SLIME and a CL compiler are available.
+</li>
+
+<li>document in some fashion (probably info pages) all of the things that you can possibly do in this mode.
+</li>
+
+<li>when the user is dropped into console mode for some reason, list all possible commands and promt them to assign them to keys and show them where the documentation describing console mode is while within emacs.
+</li>
+</ol>
+
+<div class="org-src-container">
+
+<pre class="src src-elisp">(progn
+ (defun console-mode-colemak ()
+  "XXX probably only works on my machine"
+  (interactive)
+  (save-window-excursion 
+    (find-file "/tmp/caps-to-control.map")
+    (with-current-buffer "caps-to-control.map"
+      (erase-buffer)
+      (insert 
+       "keycode 58 = Control\n"
+       "alt_is_meta\n"
+       (shell-command-to-string "dumpkeys | head -1"))
+       (save-buffer)))
+  (shell-command-to-string "loadkeys /usr/share/keymaps/i386/colemak/en-latin9.map.gz")
+  (shell-command-to-string "loadkeys /tmp/caps-to-control.map"))
+(console-mode-colemak))
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-6-2-2" class="outline-4">
+<h4 id="sec-6-2-2"><span class="section-number-4">6.2.2</span> <span class="todo TODO">TODO</span> review common lisp style guides and codify</h4>
+</div>
+<div id="outline-container-sec-6-2-3" class="outline-4">
+<h4 id="sec-6-2-3"><span class="section-number-4">6.2.3</span> <span class="todo TODO">TODO</span> unified kill ring</h4>
+</div>
+<div id="outline-container-sec-6-2-4" class="outline-4">
+<h4 id="sec-6-2-4"><span class="section-number-4">6.2.4</span> <span class="todo TODO">TODO</span> 'unwind' maxima and move to asdf + quicklisp</h4>
+</div>
+<div id="outline-container-sec-6-2-5" class="outline-4">
+<h4 id="sec-6-2-5"><span class="section-number-4">6.2.5</span> <span class="todo TODO">TODO</span> improve plotting facilities</h4>
+</div>
+<div id="outline-container-sec-6-2-6" class="outline-4">
+<h4 id="sec-6-2-6"><span class="section-number-4">6.2.6</span> <span class="todo TODO">TODO</span> commission sexp printer, reader for haskell's Language.C.AST</h4>
+</div>
+<div id="outline-container-sec-6-2-7" class="outline-4">
+<h4 id="sec-6-2-7"><span class="section-number-4">6.2.7</span> <span class="todo TODO">TODO</span> translate dependency plotting to CL</h4>
+<div class="outline-text-4" id="text-6-2-7">
+<p>
+<a href="http://code.google.com/p/yjl/source/browse/Miscellaneous/PDepGraph.py">http://code.google.com/p/yjl/source/browse/Miscellaneous/PDepGraph.py</a>
+<a href="http://yjl.googlecode.com/hg/Miscellaneous/PDepGraph.py">http://yjl.googlecode.com/hg/Miscellaneous/PDepGraph.py</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-2-8" class="outline-4">
+<h4 id="sec-6-2-8"><span class="section-number-4">6.2.8</span> <span class="todo TODO">TODO</span> advice system</h4>
+<div class="outline-text-4" id="text-6-2-8">
+<ul class="org-ul">
+<li>translate advice.el
+</li>
+<li><a href="http://www.lispworks.com/documentation/lw445/LWRM/html/lwref-268.htm">http://www.lispworks.com/documentation/lw445/LWRM/html/lwref-268.htm</a>
+</li>
+<li><a href="http://www.cs.cmu.edu/afs/cs/project/clisp/hackers/phg/clim/src/utils/clos-patches.lisp">http://www.cs.cmu.edu/afs/cs/project/clisp/hackers/phg/clim/src/utils/clos-patches.lisp</a>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-6-2-9" class="outline-4">
+<h4 id="sec-6-2-9"><span class="section-number-4">6.2.9</span> <span class="todo TODO">TODO</span> HATRED</h4>
+<div class="outline-text-4" id="text-6-2-9">
+<ol class="org-ol">
+<li>Networking. I wanted to send a file to another machine connected to me via Ethernet cable and cannot. All the stackoverflow questions on the matter are utterly useless. There isn't any documentation to look at that would allow me to understand the networking protocol.
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-6-3" class="outline-3">
+<h3 id="sec-6-3"><span class="section-number-3">6.3</span> gamma</h3>
+<div class="outline-text-3" id="text-6-3">
+</div><div id="outline-container-sec-6-3-1" class="outline-4">
+<h4 id="sec-6-3-1"><span class="section-number-4">6.3.1</span> <span class="todo TODO">TODO</span> pdf OCR</h4>
+<div class="outline-text-4" id="text-6-3-1">
+<p>
+All the citations must be clickable, and when you click on them, they open up the linked paper, or tell you where it is located (i.e. behind a paywall). I don't want plaintext output, but rather a better format with the exact same formatting as the original pdf that allows me to click, drag-and-drop and add new content. The authors etc should all be programmatically accessible "new content" should be anything I wish - 3D etc. all the data used to perform the computations should have a "warning - unlinked &lt;location of data, who is responsible for it&gt;" unless a human resolved it to the correct source and bundled it along with the paper.
+</p>
+
+<p>
+The docview program for Emacs converts .pdfs into .png files for viewing. Use this in 'batch mode' to prep for OCR, hack the remainder onto this.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-3-2" class="outline-4">
+<h4 id="sec-6-3-2"><span class="section-number-4">6.3.2</span> <span class="todo TODO">TODO</span> cleanup CL ecosystem</h4>
+<div class="outline-text-4" id="text-6-3-2">
+<p>
+I reviewed the output of <code>(ql:system-apropos "")</code> and thought that these looked interesting. The idea is to make sure that they're all up-to-date (have maintainers, documentation), pass their tests have a website etc. and make as much of this as possible programmatically accessible. Also, don't reimplement functionality that probably already exists.
+</p>
+
+<p>
+asdf-defdoc asdf-dependency-grovel asdf-driver asdf-encodings
+asdf-encodings-test asdf-finalizers asdf-finalizers-test asdf-finalizers-test/1
+asdf-linguist asdf-linguist-test asdf-nst asdf-package-system
+asdf-project-helper asdf-system-connections asdf-utils autoproject
+autoproject.crud autoproject.pkg autoproject.util cl-heredoc cl-heredoc-test
+cl-hooks cl-hooks-test cl-log cl-log-test cl-ltsv cl-ltsv-test cl-moneris
+cl-moneris-test cl-mpi cl-mpi-test cl-murmurhash cl-mustache cl-mustache-test
+cl-num-utils cl-num-utils-tests cl-olefs cl-oneliner cl-op cl-openal
+cl-openal-examples cl-openstack cl-pass cl-pass-test cl-paths cl-paths-ttf
+cl-plumbing cl-plumbing-test cl-primality cl-primality-test cl-prime-maker
+cl-qprint cl-qrencode cl-qrencode-test cl-slice cl-slice-tests cl-splicing-macro
+cl-stopwatch cl-string-complete cl-string-match cl-string-match-test cl-syslog
+cl-syslog-tests cl-template cl-template-tests cl-tidy cl-timing cl-utilities
+cl-voxelize cl-voxelize-examples cl-voxelize-test clache clache-test clem
+clem-benchmark clem-test cleric cleric-test cletris cletris-network cletris-test
+cli-parser clos-diff clos-fixtures clos-fixtures-test clos-utils closer-mop clot
+cls clss collectors collectors-test com.informatimago.common-lisp.graphviz
+com.informatimago.linc command-line-arguments conditional-commands conium consix
+contextl crypt crypto-shortcuts curry-compose-reader-macros dissect
+documentation-template docutils double-metaphone enchant enchant-autoload
+enumerations equals fare-memoization fare-memoization/test fare-utils femlisp
+femlisp-basic femlisp-matlisp ffa fft file-utils fitting flac folio folio.as
+folio.boxes folio.collections folio.functions fprog fs-watcher functional-utils
+funds funds-examples generic-math geo gettext gettext-example gettext-tests
+glu-tessellate glyphs glyphs-test group-by group-by-test gzip-stream histogram
+hompack hompack-test-mainf hompack-test-mainp hompack-test-mains hu.dwim.asdf
+hu.dwim.common hu.dwim.util hyperobject hyperobject-tests iconv idna ie3fp image
+incf-cl incf-cl-test inner-conditional inner-conditional-test inotify int-char
+integral integral-test intercom intercom-examples introspect-environment
+introspect-environment-test ip-interfaces irc-logger ixf jwacs jwacs-tests
+kanren-trs kanren-trs-test kl-verify km kmrcl kmrcl-tests l-math lambda-fiddle
+lambda-reader lambda-reader-8bit lambdalite langutils lass lassie let-over-lambda let-plus
+let-plus-tests levenshtein lhstats lift lift-and-metatilities lift-documentation
+lift-test lil lil/test linedit lisa lisp-executable lisp-executable-example
+lisp-executable-tests lisp-interface-library lisp-invocation lisp-matrix lisphys
+list-of list-utils listoflist lml lml-tests lml2 lml2-tests log4cl
+log4cl-examples log4cl-test log4slime logv lol-re lol-re-tests lorentz lowlight
+lowlight.doc lowlight.old lowlight.tests lquery lquery-test lracer ltk ltk-mw
+ltk-remote lw-compat m2cl m2cl-examples m2cl-test mach-par macro-level
+macro-utils macroexpand-dammit madeira-port madeira-port-tests makeres
+makeres-graphviz makeres-macro marching-cubes marching-cubes-example
+marching-cubes-test math-high math-high-tests md5 mel-base memoization memoize
+meta meta-sexp metabang-bind metabang-bind-test metacopy metacopy-test
+metacopy-test-with-contextl metacopy-with-contextl metafs metatilities
+metatilities-base metatilities-test method-combination-utilities
+method-combination-utilities.tests method-versions mexpr mexpr-tests mgl
+micmac-test midi mgl-visuals mini-cas mk-string-metrics modf modf-fset modf-test
+modlisp modularize modularize-hooks montezuma montezuma-indexfiles
+montezuma-tests more-conditions more-conditions-test mpc mw-equiv myway
+myway-test nekthuth network-streaming neutral new-op nibbles nibbles-tests
+ningle ningle-test npg nst nst-manual-tests nst-meta-tests nst-mop-utils
+nst-selftest-utils nst-simple-tests nst-test ntuple-table nxt oct odd-streams
+odd-streams-test odesk ods4cl open-vrp open-vrp-lib org-davep-dict
+org-davep-dictrepl os-interface osc osicat osicat-tests pack package-renaming
+package-renaming-test package-utils packet par-eval parameterized-function
+paren-files paren-util parenscript parenscript-classic parenscript.test
+parse-declarations-1.0 parse-float parse-float-tests pathname-utils patron pcall
+pcall-queue pcall-tests pcl-unit-test percent-encoding percent-encoding-test
+perfpiece periodic-table periods petit.package-utils petit.string-utils
+petit.string-utils-test pettomato-deque pettomato-deque-tests
+pettomato-indexed-priority-queue pettomato-indexed-priority-queue-tests pg
+pgloader ph-maths pileup pileup-tests pipes piping place-modifiers place-utils
+plain-odbc plain-odbc-with-libs planks plokami pod-utils positional-lambda postoffice
+prepl pretty-function printv priority-queue projectured protobuf prove
+prove-asdf psgraph ptester puri purl qbook qlot qlot-install qlot-test qmynd
+qmynd-test qtools quantity query-fs queue queues queues.priority-cqueue
+queues.priority-queue queues.simple-cqueue queues.simple-queue
+quicklisp-slime-helper quickproject quicksearch quickutil quickutil-client
+quickutil-client-management quickutil-server quickutil-utilities
+quickutil-utilities-test quid-pro-quo quid-pro-quo-tests quine-mccluskey racer
+random random-access-lists ratify reader-interception reader-interception-test
+rectangle-packing recur red-black repair repl-utilities rlc robot rock romreader
+rpc4cl rpc4cl-test rpm rss rt rutils rutilsx s-base64 s-dot sanitize
+sanitize-test sb-cga sb-fastcgi sb-vector-io scribble scribble-test scriptl
+scriptl-examples scriptl-util secret-values secure-random selenium serapeum
+serialization series series-tests shadchen sheeple sheeple-tests shelly
+shelly-test shuffletron softdrink simple-currency skippy software-evolution
+software-evolution-command-line software-evolution-test
+software-evolution-utility south spartns spartns-test spatial-trees
+spatial-trees.nns spatial-trees.nns.test spatial-trees.test spellcheck sphinx
+spinneret standard-cl statistics stem stmx stmx.test string-utils stringprep
+stringprep-test stump-touchy-mode-line submarine surf swap-bytes swap-bytes/test
+synonyms tagger talcl talcl-examples talcl-speed-tests talcl-test tcod
+teepeedee2 teepeedee2-test template temporary-file tensor test-harness
+text-query thnappy thopter time-interval tinaa tinaa-and-cl-markdown tinaa-test
+toms419 toms419-test toms717 toms717-tests toot torta towers track-best
+track-best-tests trees trivial-arguments trivial-backtrace
+trivial-backtrace-test trivial-benchmark trivial-bit-streams trivial-channels
+trivial-download trivial-dump-core trivial-extract trivial-extract-test
+trivial-features trivial-features-tests trivial-garbage trivial-garbage-tests
+trivial-gray-streams trivial-gray-streams-test trivial-http trivial-http-test
+trivial-indent trivial-irc trivial-irc-echobot trivial-lazy trivial-ldap
+trivial-mimes trivial-octet-streams trivial-raw-io trivial-shell
+trivial-shell-test trivial-signal trivial-tco trivial-tco-test trivial-thumbnail
+trivial-timeout trivial-timers trivial-types trivial-utf-8 trivial-utf-8-tests
+tutorial-example twfy ucw ucw-core ucw-core.test ucw.examples ucw.httpd
+ucw.iolib ucw.manual-examples ucw.mod-lisp uiop umlisp umlisp-tests unifgram
+unit-formulas utilities.print-items utilities.print-items-test
+utilities.print-tree verbose vom wilbur wire-world woo wookie wu-decimal
+wu-sugar wuwei wuwei-examples xarray xarray-test xecto xembed xfactory
+xfactory-test xhtmlambda xhtmlgen xhtmlgen-test xkeyboard xkeyboard-test xsubseq
+xsubseq-test zip zlib zsort cl-devil cl-ilu cl-ilut
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-3-3" class="outline-4">
+<h4 id="sec-6-3-3"><span class="section-number-4">6.3.3</span> <span class="todo TODO">TODO</span> lispy audio</h4>
+<div class="outline-text-4" id="text-6-3-3">
+<pre class="example">
+# for emacspeaks
+
+flite -voice kal16 -t testing
+</pre>
+
+<p>
+review the following codebases
+</p>
+
+<ul class="org-ul">
+<li>pocket sphinx
+</li>
+<li>sphinx2
+</li>
+<li>sphinx3
+</li>
+<li>sphinxbase
+</li>
+<li>cl-pulseaudio
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-sec-6-3-4" class="outline-4">
+<h4 id="sec-6-3-4"><span class="section-number-4">6.3.4</span> <span class="todo TODO">TODO</span> common lisp only editor</h4>
+<div class="outline-text-4" id="text-6-3-4">
+<p>
+see <a href="https://github.com/capitaomorte/sly">https://github.com/capitaomorte/sly</a> for a rethinking of SLIME+SWANK. In the
+new Lisp editor there are a few things that are needed out of the box we don't
+have today in anything else.  persistant, cl-ppcre searchable rings, slime eval,
+eval in frame etc. that (possibly) specializes on the place in the 'global-tree'
+of such things.
+</p>
+
+<ul class="org-ul">
+<li>when I change the name of a function or its arglist, register a pending request to update all of the calls to the function.
+</li>
+
+<li>keep track of all undefined functions etc. within the program even after an individual sexpr is compiled
+</li>
+
+<li>keep track of "" matching within and nested strings?
+</li>
+
+<li>with-open-file autocompletion (ie, just give me a stream name and complete symbols - can other forms use type inference to determine intermediate symbol names? I generally don't care much what they're called)
+</li>
+
+<li>full english / todo editing integrated into the comments
+</li>
+
+<li>index all codebases loaded into the lisp image for commands like `who-calls'
+</li>
+
+<li>detect invalid lambda-lists
+</li>
+
+<li>testing out of the box + stats on what is untested &amp; tested
+</li>
+
+<li>apropos (cl-ppcre regex)
+</li>
+
+<li>smart updates of packages and .asd files according to your exports at the repl
+</li>
+
+<li>better autodocs
+</li>
+
+<li>autocompletion everywhere that works across packages (ie, pathnames, names should complete in both repl and buffers)
+</li>
+
+<li>structure editing <i>only</i>
+</li>
+
+<li>multiple repls
+</li>
+
+<li>repl into other boxes trivially
+</li>
+
+<li>better inspector - if I've a image / video / audio on one of my objects I should be able to see it
+</li>
+
+<li>renaming files should update the .asd and also take care of any documentation references.
+</li>
+
+<li>smart renaming mechanisms, smart argument list changes- notify me what else needs to be updated when I update a function &#x2013; this should carry through to the documentation of the codebase
+</li>
+
+<li>'flavors' of asdf-compiling a system, that is, "fast" "debuggable"
+</li>
+</ul>
+</div>
+
+<ol class="org-ol"><li><a id="sec-6-3-4-1" name="sec-6-3-4-1"></a><span class="todo TODO">TODO</span> removing Emacs<br  /><div class="outline-text-5" id="text-6-3-4-1">
+<p>
+Emacs is currently kept around to perform the following tasks
+</p>
+
+<ul class="org-ul">
+<li>reading info files
+</li>
+
+<li>reading pdfs
+</li>
+
+<li>Magit
+</li>
+</ul>
+
+<p>
+At some point in time someone sane will get fed up with git and write a CL-aware alternative, but until then we're stuck with Magit. Or we could just ditch git which performs a <i>very</i> basic task and is a massive pos.
+</p>
+</div>
+</li></ol>
+</div>
+
+<div id="outline-container-sec-6-3-5" class="outline-4">
+<h4 id="sec-6-3-5"><span class="section-number-4">6.3.5</span> <span class="todo TODO">TODO</span> removing X</h4>
+<div class="outline-text-4" id="text-6-3-5">
+<p>
+relevent codebases,
+</p>
+
+<p>
+<a href="https://github.com/pyb/zen">https://github.com/pyb/zen</a>
+<a href="http://www.cliki.net/CLX-CURSOR">http://www.cliki.net/CLX-CURSOR</a>
+<a href="http://www.cliki.net/CLX-TRUETYPE">http://www.cliki.net/CLX-TRUETYPE</a>
+<a href="http://xcb.freedesktop.org/XmlXcb/">http://xcb.freedesktop.org/XmlXcb/</a>
+<a href="http://www.cliki.net/Acclaim">drawings directly on the screen using CLX</a>
+<a href="http://www.cliki.net/CL-VECTORS">http://www.cliki.net/CL-VECTORS</a>
+<a href="http://users.actrix.co.nz/mycroft/event.lisp">CLX events</a>
+<a href="http://common-lisp.net/project/cmucl/doc/clx/">CLX manual</a>
+<a href="http://www.cawtech.demon.co.uk/clx/simple/examples.html">tutorial of using CLX</a>
+<a href="https://github.com/filonenko-mikhail/clx-xkeyboard">If we could get rid of the X keyboard system entirely that would be great.</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-6-3-6" class="outline-4">
+<h4 id="sec-6-3-6"><span class="section-number-4">6.3.6</span> <span class="todo TODO">TODO</span> adopt all good ideas from related technologies</h4>
+<div class="outline-text-4" id="text-6-3-6">
+</div><ol class="org-ol"><li><a id="sec-6-3-6-1" name="sec-6-3-6-1"></a>ankisrs.net<br  /><ol class="org-ol"><li><a id="sec-6-3-6-1-1" name="sec-6-3-6-1-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-1-2" name="sec-6-3-6-1-2"></a>cons<br  /></li></ol>
+</li>
+<li><a id="sec-6-3-6-2" name="sec-6-3-6-2"></a>Knewton<br  /><ol class="org-ol"><li><a id="sec-6-3-6-2-1" name="sec-6-3-6-2-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-2-2" name="sec-6-3-6-2-2"></a>cons<br  /><div class="outline-text-6" id="text-6-3-6-2-2">
+<p>
+Their product is currently not (and will never be?) open to the public. Thus it has no future.
+</p>
+</div>
+</li></ol>
+</li>
+
+<li><a id="sec-6-3-6-3" name="sec-6-3-6-3"></a>Khan Academy<br  /><ol class="org-ol"><li><a id="sec-6-3-6-3-1" name="sec-6-3-6-3-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-3-2" name="sec-6-3-6-3-2"></a>cons<br  /><div class="outline-text-6" id="text-6-3-6-3-2">
+<ul class="org-ul">
+<li>there is far too much going on visually.
+</li>
+
+<li>I'm not entirely sold on the idea of hints - generally speaking, you either
+understand something, or not. It's not as if seeing a 'hint' (part of the
+solution) is going to jump start your brain into understanding. If I don't
+understand show exactly how the solution was derived and call it "show
+solution". Renaming it to 'hint' is dishonest.
+</li>
+
+<li>It's rather irritating that I can't sign up for a course / lesson / path and resume where I left off.
+</li>
+
+<li>Not personalized enough - when it knows the language I use and other such settings.
+</li>
+
+<li>resource intensive - slow, causes chrome to crash
+</li>
+
+<li>The concepts they teach are all relatively sophomoric. 
+</li>
+
+<li>doesn't allow for mastery, as in, it's a technology that punishes experts.
+</li>
+
+<li>there isn't a clear flow when practicing skills
+</li>
+
+<li>Overload of points and notifications / badges, and it's not clear what they represent, or what their value is.
+</li>
+
+<li>the community page is far too cluttered
+</li>
+
+<li>on the 'mission' page there is far too much going on. You really only need one progress bar.
+</li>
+
+<li>Logos suck
+</li>
+
+<li>There isn't a GO button, or any clear way to quickly set off from what you were last learning.
+</li>
+
+<li>Okay, yes, the UI is friendly, but it's also insulting to my intelligence. Where are my options, settings etc?
+</li>
+
+<li>HTML5 back button doesn't work like you would expect
+</li>
+
+<li>slow
+</li>
+
+<li>Problems should fit on the screen
+</li>
+
+<li>I can scroll down when I'm in the middle of solving problems. Irritating, especially since there isn't anything there.
+</li>
+
+<li>If I get something correct, automatically move me onto the next problem
+</li>
+
+<li>When I get to the end of a task and see the task dashboard, there isn't a 'continue' button. This breaks my flow.
+</li>
+
+<li>the graphs / dashboard visualizations don't fit together to form a coherent whole. How much have I learned of the subject, course, mission? I've nfi. What is the purpose of the metrics you're showing me?
+</li>
+
+<li>I want an introduction to the concepts used to structure information within their program, but nothing is available. I know what a coach is irl, but no idea what it means on your system.
+</li>
+
+<li>it's not clear where to get started if I want to learn something new or spend my time browsing around - probably b/c the concepts are not clearly defined.
+</li>
+</ul>
+</div>
+</li></ol>
+</li>
+
+<li><a id="sec-6-3-6-4" name="sec-6-3-6-4"></a>clever<br  /><ol class="org-ol"><li><a id="sec-6-3-6-4-1" name="sec-6-3-6-4-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-4-2" name="sec-6-3-6-4-2"></a>cons<br  /></li></ol>
+</li>
+<li><a id="sec-6-3-6-5" name="sec-6-3-6-5"></a>EdX<br  /><ol class="org-ol"><li><a id="sec-6-3-6-5-1" name="sec-6-3-6-5-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-5-2" name="sec-6-3-6-5-2"></a>cons<br  /></li></ol>
+</li>
+<li><a id="sec-6-3-6-6" name="sec-6-3-6-6"></a>Coursera<br  /><ol class="org-ol"><li><a id="sec-6-3-6-6-1" name="sec-6-3-6-6-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-6-2" name="sec-6-3-6-6-2"></a>cons<br  /></li></ol>
+</li>
+<li><a id="sec-6-3-6-7" name="sec-6-3-6-7"></a>brilliant.org<br  /><ol class="org-ol"><li><a id="sec-6-3-6-7-1" name="sec-6-3-6-7-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-7-2" name="sec-6-3-6-7-2"></a>cons<br  /></li></ol>
+</li>
+<li><a id="sec-6-3-6-8" name="sec-6-3-6-8"></a>quizlet<br  /><ol class="org-ol"><li><a id="sec-6-3-6-8-1" name="sec-6-3-6-8-1"></a>pros<br  /></li>
+<li><a id="sec-6-3-6-8-2" name="sec-6-3-6-8-2"></a>cons<br  /><div class="outline-text-6" id="text-6-3-6-8-2">
+<ul class="org-ul">
+<li>slow
+</li>
+</ul>
+</div>
+</li></ol>
+</li>
+
+<li><a id="sec-6-3-6-9" name="sec-6-3-6-9"></a>elm-art<br  /><div class="outline-text-5" id="text-6-3-6-9">
+<p>
+<a href="http://art2.ph-freiburg.de/Lisp-Course">http://art2.ph-freiburg.de/Lisp-Course</a>     
+</p>
+</div>
+</li></ol>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

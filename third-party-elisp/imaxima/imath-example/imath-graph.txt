@@ -1,0 +1,15 @@
+-*- imath -*-
+
+{maxima wxdraw2d(explicit(x^2*sin(10*x),x,-5,5)) maxima}
+
+{maxima wxdraw3d(explicit(x^2-y^2,x,-5,5,y,-5,5)) maxima}
+
+{maxima wxplot2d(sin(10*x)*x,[x,-5,5]) maxima}
+
+{maxima wxplot3d(sin(x)*y,[x,-5,5],[y,-5,5]) maxima}
+
+{maxima wximplicit_plot(x^2+y^3=7,[x,-5,5],[y,-5,5]) maxima}
+
+{maxima integrate(f(x),x) maxima}
+
+

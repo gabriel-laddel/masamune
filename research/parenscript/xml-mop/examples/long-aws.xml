@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ItemLookupResponse xmlns="http://webservices.amazon.com/AWSECommerceService/2006-10-31">
+  <OperationRequest>
+    <HTTPHeaders>
+      <Header Name="UserAgent" Value="Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)"/>
+    </HTTPHeaders>
+    <RequestId>0EWQ0RD6NQYMNCB1SQE2</RequestId>
+    <Arguments>
+      <Argument Name="MerchantId" Value="All"/>
+      <Argument Name="Service" Value="AWSECommerceService"/>
+      <Argument Name="AssociateTag" Value="[Your Associate ID Here]"/>
+      <Argument Name="AWSAccessKeyId" Value="[Your Access Key ID Here]"/>
+      <Argument Name="ItemId" Value="0439358078"/>
+      <Argument Name="ResponseGroup" Value="OfferSummary"/>
+      <Argument Name="Operation" Value="ItemLookup"/>
+    </Arguments>
+  </OperationRequest>
+  <Items>
+    <Request>
+      <IsValid>True</IsValid>
+    </Request>
+    <Item>
+      <ASIN>0439358078</ASIN>
+      <OfferSummary>
+        <LowestNewPrice>
+          <Amount>514</Amount>
+          <CurrencyCode>USD</CurrencyCode>
+          <FormattedPrice>$5.14</FormattedPrice>
+        </LowestNewPrice>
+        <LowestUsedPrice>
+          <Amount>525</Amount>
+          <CurrencyCode>USD</CurrencyCode>
+          <FormattedPrice>$5.25</FormattedPrice>
+        </LowestUsedPrice>
+        <LowestCollectiblePrice>
+          <Amount>957</Amount>
+          <CurrencyCode>USD</CurrencyCode>
+          <FormattedPrice>$9.57</FormattedPrice>
+        </LowestCollectiblePrice>
+        <TotalNew>48</TotalNew>
+        <TotalUsed>46</TotalUsed>
+        <TotalCollectible>7</TotalCollectible>
+        <TotalRefurbished>0</TotalRefurbished>
+      </OfferSummary>
+    </Item>
+  </Items>
+</ItemLookupResponse>

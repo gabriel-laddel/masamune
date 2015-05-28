@@ -1,0 +1,103 @@
+(in-package :paren-dev)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; WebSockets
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun init-ws-emulation (swf &key (debug t))
+  "SWF is the location of the WebSocketMain.swf flash file used for
+WebSockets emulation."
+  (let ((ws (@ window "WebSocket")))
+    (setf (@ ws "__swfLocation") swf
+          (@ ws "__debug") debug
+          *web-socket-swf-location* swf
+          *web-socket-debug* debug)))
+
+(init-ws-emulation (lisp *web-sockets-swf-uri*))
+
+
+(defun make-web-socket (uri &key on-open on-message on-close on-error)
+  "Returns a web socket initialized with the given event handlers."
+  (let ((ws (new (-web-socket uri))))
+    (setf (@ ws "onopen") on-open
+          (@ ws "onmessage") on-message
+          (@ ws "onclose") on-close
+          (@ ws "onerror") on-error)
+    (return ws)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; SWANK
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar *swank-web-socket* nil
+  "WebSocket used to connect to an instance of swank running on the server.")
+
+(defun close-swank-connection (&optional (ws *swank-web-socket*))
+  (funcall (@ ws "close")))
+
+(defvar *) (defvar **) (defvar ***)
+
+(defun global-eval (src)
+  "Evals javascript SRC in a global environment, setting globals at
+will and such.
+
+See http://weblogs.java.net/blog/driscoll/archive/2009/09/08/eval-javascript-global-context"
+  ;; IE be damned, it's breaking chrome to use execScript at all
+;  (if (@ window 'exec-script) ;; IE
+;      (return (funcall (@ window 'exec-script) src))
+  (flet ((fn ()
+           (return (funcall (@ window 'eval 'call) window src))))
+    (return (fn))))
+
+(defun swank-eval-form (form)
+  (with window
+        (setf *** ** ** *)
+        (setf * (global-eval form))
+        (return *)))
+  
+
+(defun make-swank-connection (&key port hostname)
+  (setf port (or port (lisp swank-proxy::*swank-proxy-port*) "12344"))
+  (setf hostname (or hostname (@ window 'location 'hostname)  "127.0.0.1"))
+
+  (flet ((json-parse (data)
+           (return (funcall (@ *JSON* "parse") data)))
+         (stringify (data)
+           (return (funcall (@ *JSON* "stringify") data))))
+    
+    (let ((uri (+ "ws://" hostname ":" port "/swank"))
+          (ws nil))
+      (setf ws
+            (make-web-socket uri
+                             :on-open (lambda ()
+                                        (swanklog "Connected to %s" uri))
+                             :on-close (lambda ()
+                                         (swanklog "Closed connection to %s" uri))
+                             :on-error (lambda ()
+                                         (swanklog "Error on connection to %s" uri))
+                             :on-message (lambda (e)
+                                           (flet ((send (data)
+                                                    (funcall (@ ws "send") data)))
+                                             (let* ((data (@ e "data"))
+                                                    (data-parsed (json-parse data)))
+                                               (with-slots ((form "FORM")
+                                                            (id "ID"))
+                                                   data-parsed
+                                                 (try
+                                                  (progn
+                                                    (swanklog "Received message %o from %o" data-parsed ws)
+                                                    (let* ((evaled (swank-eval-form form))
+                                                           (outbound-message
+                                                            (stringify (create "OK" t "ID" id "RESULT" evaled))))
+                                                      (send outbound-message)
+                                                      (swanklog "%o" (or evaled "undefined"))
+                                                      (swanklog "Sent message %o" data-parsed)))
+                                                  (:catch (e)
+                                                    (swanklog "Eval failed %o" e)
+                                                    (let ((outbound-message
+                                                           (stringify (create "OK" false "ID" id "RESULT" nil
+                                                                              "ERROR" e))))
+                                                      (send outbound-message)
+                                                      (throw e))))))))))
+      (setf *swank-web-socket* ws)))
+  (return ws))
+                                                
+                                                

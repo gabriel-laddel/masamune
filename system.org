@@ -1,0 +1,679 @@
+#+TITLE: Masamune
+#+STARTUP: overview
+#+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="finishing-touches.css"/>
+
+* Introduction
+
+If you're reading via github's rendition of org-mode, try the spiffy HTML version [[http://gabriel-laddel.github.io/system.html][here]]. Read [[./arsttep.html][this]] if you're unsure as to what Masamune is.
+
+Inline code snippets =look like this=.
+
+* Installing
+
+Until such a time that portage can be hacked through in some sane manner, we must install Masamune on top of funtoo. This is a time consuming PITA. Apologies. Follow the [[./Funtoo_Linux_Installation.htm ][Funtoo Linux Installation]] (locally cached to prevent shitgnomery), using the following replacements for sections of the same name. If you attempt to =emerge whatever= and get output resembling 
+
+#+BEGIN_SRC
+root@rainbowdash ~ # emerge www-client/google-chrome-unstable
+
+ * IMPORTANT: 3 news items need reading for repository 'gentoo'.
+ * Use eselect news to read news items.
+
+
+ * IMPORTANT: config file '/etc/portage/package.use' needs updating.
+ * See the CONFIGURATION FILES section of the emerge
+ * man page to learn how to update config files.
+Calculating dependencies  ... done!
+[ebuild  N     ] gnome-base/gconf-3.2.6-r3  USE="-debug -introspection -ldap -policykit" PYTHON_TARGETS="python2_7" 
+[ebuild  N    ~] www-client/google-chrome-unstable-41.0.2224.3_p1  USE="plugins" LINGUAS="am ar bg bn ca cs da de el en_GB es es_LA et fa fi fil fr gu he hi hr hu id it ja kn ko lt lv ml mr ms nb nl pl pt_BR pt_PT ro ru sk sl sr sv sw ta te th tr uk vi zh_CN zh_TW" 
+
+The following keyword changes are necessary to proceed:
+ (see "package.accept_keywords" in the portage(5) man page for more details)
+# required by www-client/google-chrome-unstable (argument)
+=www-client/google-chrome-unstable-41.0.2224.3_p1 ~amd64
+
+The following license changes are necessary to proceed:
+ (see "package.license" in the portage(5) man page for more details)
+# required by www-client/google-chrome-unstable (argument)
+>=www-client/google-chrome-unstable-41.0.2224.3_p1 google-chrome
+
+Use --autounmask-write to write changes to config files (honoring
+CONFIG_PROTECT). Carefully examine the list of proposed changes,
+paying special attention to mask or keyword changes that may expose
+experimental or unstable packages.
+root@rainbowdash ~ # 
+#+END_SRC
+
+You need to add
+
+#+BEGIN_SRC
+=www-client/google-chrome-unstable-41.0.2224.3_p1 ~amd64
+>=www-client/google-chrome-unstable-41.0.2224.3_p1 google-chrome
+#+END_SRC
+
+To the file =/etc/portage/package.use=. There may be an automated way of doing this, but idk.
+
+** Live CD
+
+Install SystemrescueCD [[http://www.sysresccd.org/Sysresccd-manual-en_How_to_install_SystemRescueCd_on_an_USB-stick][on a USB stick]]. The "script in the root of the CD-rom" doesn't work. Run =bash ./usb_inst.sh --help= and then each step individually. When you start system rescue CD, use *Standard 64bit kernel (rescue64) > SystemRescueCd with the default graphical environment*. If you need to use colemak, dvorak
+
+#+BEGIN_SRC
+setxkbmap us -variant colemak -option ctrl:nocaps
+#+END_SRC
+
+from the terminal after the graphical env has started.
+
+* Installing the Stage 3 tarball
+
+Instead of the stage3 tarball supplied by funtoo, download [[https://drive.google.com/file/d/0Bznn0f9Mk3KAalRUVHJCeDROYWs/view?usp=sharing][this one]]. The SystemrescueCD web browser is borked and will falsely indicate it has been fully downloaded almost immediately. Wait until a desktop popup message appears in the top right corner.
+
+#+BEGIN_SRC
+cd /mnt/funtoo
+mv /root/stage3-old.tar.xz ./
+tar xpf stage3-old.tar.xz
+
+# It is very important to use tar's "p" option when extracting the Stage 3
+# tarball - it tells tar to preserve any permissions and ownership that exist
+# within the archive. Without this option, your Funtoo Linux filesystem
+# permissions will be incorrect. 
+
+mount -t proc none proc
+mount --rbind /sys sys
+mount --rbind /dev dev
+cp /etc/resolv.conf etc
+env -i HOME=/root TERM=$TERM chroot . bash -l
+emerge --sync
+#+END_SRC
+
+Edit =/etc/fstab= to reflect the filesystem layout (using =nano -w /etc/fstab=). E.G.,
+
+#+BEGIN_SRC
+# The root filesystem should have a pass number of either 0 or 1.
+# All other filesystems should have a pass number of 0 or greater than 1.
+#
+# NOTE: If your BOOT partition is ReiserFS, add the notail option to opts.
+#
+# See the manpage fstab(5) for more information.
+#
+# <fs>	     <mountpoint>  <type>  <opts>         <dump/pass>
+
+/dev/sda1    /boot         ext2    noauto,noatime 1 2
+/dev/sda2    none          swap    sw             0 0
+/dev/sda3    /             ext4    noatime        0 1
+#/dev/cdrom  /mnt/cdrom    auto    noauto,ro      0 0
+#+END_SRC
+
+#+BEGIN_SRC
+echo MAKEOPTS=\"-j$(($(nproc) + 1))\" >> /etc/portage/make.conf
+#+END_SRC
+
+** Kernel
+
+The kernel is packaged in the stage3 tarball. The following will build it. This will take over an hour.
+
+#+BEGIN_SRC
+install -d /etc/portage/sets && echo 'sys-kernel/debian-sources' >> /etc/portage/sets/kernel && emerge -1 @kernel 
+#+END_SRC
+
+** Installing a Bootloader
+
+=emerge boot-update=, edit (=nano -w /unix/filename/=) =/etc/boot.conf= to
+
+#+BEGIN_SRC
+boot {
+	generate grub
+	default "Funtoo Linux genkernel" 
+	timeout 3 
+}
+
+"Funtoo Linux" {
+	kernel bzImage[-v]
+}
+
+"Funtoo Linux genkernel" {
+	kernel kernel[-v]
+	initrd initramfs[-v]
+	params += real_root=auto rootfstype=auto
+} 
+
+"Funtoo Linux better-initramfs" {
+	kernel vmlinuz[-v]
+	initrd /initramfs.cpio.gz
+}
+#+END_SRC
+
+#+BEGIN_SRC
+grub-install --target=i386-pc --no-floppy /dev/sda
+boot-update
+#+END_SRC
+
+** Configuring your network > Wi-fi
+
+#+BEGIN_SRC bash
+emerge linux-firmware
+emerge networkmanager 
+rc-update add NetworkManager default
+#+END_SRC
+
+NetworkManager includes an ncurses gui (available via =nmtui=), which is far more convenient than futzing around with shell commands. Fair warning, =emerge networkmanager= takes ~1hr.
+
+** Funtoo Linux First Steps
+
+You can skip the [[http://www.funtoo.org/Funtoo_Linux_First_Steps][Funtoo Linux First Steps]] page. Setup internet via =nmtui=. AFAIK there doesn't exist a canonical hardware to drivers mapping and video drivers must be installed by hand. This amounts to
+
+#+BEGIN_SRC
+echo 'VIDEO_CARDS="funtoo-specific-chipset-id"' >> /etc/portage/make.conf # determine the chipset-id using the guide here http://www.funtoo.org/Video
+emerge video-driver-name
+#+END_SRC
+
+Choosing the right driver will probably require some guesswork. The guides to the [[http://www.funtoo.org/X_Window_System][X window system]] and [[http://www.funtoo.org/Video][Video hardware]] will prove useful. If your setup isn't documented run =emerge -s driver= at the shell to get a list of all drivers. You can get some information about your chipset with =uname -a=. (NOTE: if you find that you need to do this, you may want to =emerge emacs= so you can look through the output. Otherwise, shift-page-up/down will scroll through console output).
+
+#+BEGIN_SRC common-lisp
+(defvar known-configurations
+  ("Compaq Presario CQ57" (:x11-driver "x11-drivers/xf86-video-intel" :make-conf "VIDEO_CARDS=\"intel\""))
+  ("dell precision m4400" (:x11-driver "x11-base/xorg-drivers" :make-conf "VIDEO_CARDS=\"nouveau\"")))
+#+END_SRC
+
+IFF you've managed to install video drivers, it is time to build the ALGOL systems required by Masamune
+
+#+BEGIN_SRC
+export SBCL_HOME=/usr/lib64/sbcl # sadly this is required, the SBCL build in portage doesn't work because idiots.
+emerge sbcl
+
+# emerge each of these, adding whatever necessary to package.use
+
+virtual/jpeg
+media-libs/tiff
+media-libs/giflib
+x11-libs/libXpm
+x11-base/xorg-drivers # required on almost all chips. even those that need x11-drivers/xf86-video-intel. Installing it can't hurt.
+x11-base/xorg-x11
+app-text/enchant
+app-text/ghostscript-gpl
+media-gfx/imagemagick
+sys-apps/lshw
+net-wireless/aircrack-ng
+app-text/sloccount
+app-misc/mc
+net-analyzer/nmap
+sys-process/htop
+net-analyzer/netcat
+x11-apps/xrandr
+x11-misc/xcalib 
+x11-apps/xdpyinfo
+xterm
+
+mkdir -p ~/quicklisp/local-projects/
+cd ~/quicklisp/local-projects/
+git clone https://github.com/gabriel-laddel/masamune.git
+curl http://beta.quicklisp.org/quicklisp.lisp > /tmp/quicklisp.lisp
+sbcl --load /tmp/quicklisp.lisp
+
+# evaluate (quicklisp-quickstart:install) when prompted,
+# then evaluate
+# 
+# (ql:add-to-init-file)
+# 
+# press RET and
+# 
+# (quit)
+# 
+# if you run into an SB-BSD-SOCKETS:TRY-AGAIN-ERROR activate the ABORT restart
+# and retry. Perhaps it is just my flaky connection, but this appears to be
+# rather common.
+
+cd
+sbcl --load ~/quicklisp/local-projects/masamune/build/install-initialize.lisp
+
+cd ~/quicklisp/local-projects/emacs-24.4/
+./configure
+make
+make install
+
+cd ~/quicklisp/local-projects/stumpwm/
+autoconf
+./configure
+make
+make install
+
+emerge conkeror
+
+mkdir -p ~/algol/xulrunner/
+curl http://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/33.1/runtimes/xulrunner-33.1.en-US.linux-x86_64.tar.bz2 > /tmp/xulrunner-33.1.en-US.linux-x86_64.tar.bz2
+mv /tmp/xulrunner-33.1.en-US.linux-x86_64.tar.bz2 ~/algol/ && cd ~/algol/ && tar xvjf xulrunner-33.1.en-US.linux-x86_64.tar.bz2
+chmod +x ~/algol/xulrunner/xulrunner
+
+# check that it works via ~/algol/xulrunner/xulrunner --version
+
+mkdir ~/algol/conkeror/
+cd ~/algol/conkeror/
+git init
+git remote add origin git://repo.or.cz/conkeror.git
+git fetch origin 48d3ef4369f267faf42451a580b1ac6bcb6a5a18:refs/remotes/origin/master
+git reset --hard FETCH_HEAD
+make # required if one wishes to edit text fields from emacs
+
+cd
+emerge app-emacs/imaxima
+startx
+
+# the rest of the install process is automated from this point and will boot
+# into a tutorial. If you run into errors, let me know in #bitcoin-assets on
+# freenode (for live help) or register an issue on github. 
+#+END_SRC
+
+* FAQ
+
+Q: Invalid MIT-MAGIC-COOKIE-1 keyError - Can't open display :0.0
+
+Your hostname isn't permanently set and has been changed because idiots. Restore it using =hostname old-hostname-string=.
+
+Info from: https://bbs.archlinux.org/viewtopic.php?id=159573
+
+** TODO how does on set hostname permanently on gentoo?
+
+Q: When the browser starts it also launches several windows corresponding to failed downloads. How can I remove them?
+
+A: M-x download-remove from each one of the windows before killing with stumpwm
+
+* Developers
+** Debugging
+
+I don't really understand how to go about debugging ALGOL programs. This section exists to dump debugging hacks that might not be obvious to a n00b (i.e., me).
+
+=journalctl --no-pager=
+
+http://jvns.ca/blog/2014/04/20/debug-your-programs-like-theyre-closed-source/
+
+** Dealing with C
+
+Linux is a gigantic mass of C code an there isn't, afaik, much in the way of sane tooling (e.g., find all who call, or reference $CONSTRUCT). The Haskell package [[https://hackage.haskell.org/package/language-c-0.4.4/docs/Language-C-Syntax-AST.html][Language.C.syntax.AST]] can parse the entire linux kernel. Pay a haskellite to add a sexpr interface?
+
+* TODOs
+** alpha
+*** TODO point swank/slime to asdf sources or move them into the appropriate location.
+*** TODO update portage build
+
+=emerge sci-visualization/gnuplot=
+
+add the following to =/etc/portage/package.use=
+
+=media-libs/gd-2.0.35-r4=
+
+WTF why doesn't this work?
+
+*** TODO app-emacs/imaxima must be installed to have working latex support
+*** TODO possibly integrate
+
+- cl-store
+- https://github.com/vermiculus/sx.el/blob/master/README.org
+
+*** TODO automate installation
+*** TODO install sbcl to correct location or point emacs to correct sources
+*** TODO leverage portage USE to ensure that systemd is not pulled in under any circumstances
+*** TODO lock lisp code + clone stable optima / Alexandria combination
+
+I ran into an issue with a combination of optima / alexandria that can be resolved by loading the following commits:
+
+Optima commit: b2b9e325e09f8c9af1abf7dedc3b072e23318a70 
+Alexandria commit: b1c6ee0
+   
+*** TODO unified documentation
+
+The portage USE flag 'doc' will cause circular dependencies by default. Debug?
+
+*** TODO remove all text editors other than emacs/climacs
+*** TODO bind debugger in all threads
+
+currently errors get nesed up to sb-kernel:*maximum-error-depth* when I attempt to join an IRC channel from the knowledge map
+
+*** TODO move all data storage into PCLOS
+
+the system =(ql:quickload '(fmarshal fmarshal-test))= can store most types of data - integrate with manardb.
+
+*** TODO add all pen testing tools
+*** TODO NixOS etc. automatically determine drivers something something kernel modules. How?
+
+compare with portage genkernel
+
+** beta
+*** TODO unify console mode and graphical UNIX
+
+The correct way to address the situation is to:
+
+0. when the user is first dropped into console mode, query as to the keyboard to be used: dvorak, colemak and qwerty
+
+1. ensure that a modern Emacs with SLIME and a CL compiler are available.
+
+2. document in some fashion (probably info pages) all of the things that you can possibly do in this mode.
+
+3. when the user is dropped into console mode for some reason, list all possible commands and promt them to assign them to keys and show them where the documentation describing console mode is while within emacs.
+
+#+BEGIN_SRC elisp
+
+(progn
+ (defun console-mode-colemak ()
+  "XXX probably only works on my machine"
+  (interactive)
+  (save-window-excursion 
+    (find-file "/tmp/caps-to-control.map")
+    (with-current-buffer "caps-to-control.map"
+      (erase-buffer)
+      (insert 
+       "keycode 58 = Control\n"
+       "alt_is_meta\n"
+       (shell-command-to-string "dumpkeys | head -1"))
+       (save-buffer)))
+  (shell-command-to-string "loadkeys /usr/share/keymaps/i386/colemak/en-latin9.map.gz")
+  (shell-command-to-string "loadkeys /tmp/caps-to-control.map"))
+(console-mode-colemak))
+
+#+END_SRC
+
+*** TODO review common lisp style guides and codify
+*** TODO unified kill ring
+*** TODO 'unwind' maxima and move to asdf + quicklisp 
+*** TODO improve plotting facilities
+*** TODO commission sexp printer, reader for haskell's Language.C.AST
+*** TODO translate dependency plotting to CL
+
+http://code.google.com/p/yjl/source/browse/Miscellaneous/PDepGraph.py
+http://yjl.googlecode.com/hg/Miscellaneous/PDepGraph.py
+
+*** TODO advice system
+
+- translate advice.el
+- http://www.lispworks.com/documentation/lw445/LWRM/html/lwref-268.htm
+- http://www.cs.cmu.edu/afs/cs/project/clisp/hackers/phg/clim/src/utils/clos-patches.lisp
+
+*** TODO HATRED
+
+1. Networking. I wanted to send a file to another machine connected to me via Ethernet cable and cannot. All the stackoverflow questions on the matter are utterly useless. There isn't any documentation to look at that would allow me to understand the networking protocol.
+
+** gamma
+*** TODO pdf OCR
+
+All the citations must be clickable, and when you click on them, they open up the linked paper, or tell you where it is located (i.e. behind a paywall). I don't want plaintext output, but rather a better format with the exact same formatting as the original pdf that allows me to click, drag-and-drop and add new content. The authors etc should all be programmatically accessible "new content" should be anything I wish - 3D etc. all the data used to perform the computations should have a "warning - unlinked <location of data, who is responsible for it>" unless a human resolved it to the correct source and bundled it along with the paper.
+
+The docview program for Emacs converts .pdfs into .png files for viewing. Use this in 'batch mode' to prep for OCR, hack the remainder onto this.
+
+*** TODO cleanup CL ecosystem 
+
+I reviewed the output of =(ql:system-apropos "")= and thought that these looked interesting. The idea is to make sure that they're all up-to-date (have maintainers, documentation), pass their tests have a website etc. and make as much of this as possible programmatically accessible. Also, don't reimplement functionality that probably already exists.
+
+asdf-defdoc asdf-dependency-grovel asdf-driver asdf-encodings
+asdf-encodings-test asdf-finalizers asdf-finalizers-test asdf-finalizers-test/1
+asdf-linguist asdf-linguist-test asdf-nst asdf-package-system
+asdf-project-helper asdf-system-connections asdf-utils autoproject
+autoproject.crud autoproject.pkg autoproject.util cl-heredoc cl-heredoc-test
+cl-hooks cl-hooks-test cl-log cl-log-test cl-ltsv cl-ltsv-test cl-moneris
+cl-moneris-test cl-mpi cl-mpi-test cl-murmurhash cl-mustache cl-mustache-test
+cl-num-utils cl-num-utils-tests cl-olefs cl-oneliner cl-op cl-openal
+cl-openal-examples cl-openstack cl-pass cl-pass-test cl-paths cl-paths-ttf
+cl-plumbing cl-plumbing-test cl-primality cl-primality-test cl-prime-maker
+cl-qprint cl-qrencode cl-qrencode-test cl-slice cl-slice-tests cl-splicing-macro
+cl-stopwatch cl-string-complete cl-string-match cl-string-match-test cl-syslog
+cl-syslog-tests cl-template cl-template-tests cl-tidy cl-timing cl-utilities
+cl-voxelize cl-voxelize-examples cl-voxelize-test clache clache-test clem
+clem-benchmark clem-test cleric cleric-test cletris cletris-network cletris-test
+cli-parser clos-diff clos-fixtures clos-fixtures-test clos-utils closer-mop clot
+cls clss collectors collectors-test com.informatimago.common-lisp.graphviz
+com.informatimago.linc command-line-arguments conditional-commands conium consix
+contextl crypt crypto-shortcuts curry-compose-reader-macros dissect
+documentation-template docutils double-metaphone enchant enchant-autoload
+enumerations equals fare-memoization fare-memoization/test fare-utils femlisp
+femlisp-basic femlisp-matlisp ffa fft file-utils fitting flac folio folio.as
+folio.boxes folio.collections folio.functions fprog fs-watcher functional-utils
+funds funds-examples generic-math geo gettext gettext-example gettext-tests
+glu-tessellate glyphs glyphs-test group-by group-by-test gzip-stream histogram
+hompack hompack-test-mainf hompack-test-mainp hompack-test-mains hu.dwim.asdf
+hu.dwim.common hu.dwim.util hyperobject hyperobject-tests iconv idna ie3fp image
+incf-cl incf-cl-test inner-conditional inner-conditional-test inotify int-char
+integral integral-test intercom intercom-examples introspect-environment
+introspect-environment-test ip-interfaces irc-logger ixf jwacs jwacs-tests
+kanren-trs kanren-trs-test kl-verify km kmrcl kmrcl-tests l-math lambda-fiddle
+lambda-reader lambda-reader-8bit lambdalite langutils lass lassie let-over-lambda let-plus
+let-plus-tests levenshtein lhstats lift lift-and-metatilities lift-documentation
+lift-test lil lil/test linedit lisa lisp-executable lisp-executable-example
+lisp-executable-tests lisp-interface-library lisp-invocation lisp-matrix lisphys
+list-of list-utils listoflist lml lml-tests lml2 lml2-tests log4cl
+log4cl-examples log4cl-test log4slime logv lol-re lol-re-tests lorentz lowlight
+lowlight.doc lowlight.old lowlight.tests lquery lquery-test lracer ltk ltk-mw
+ltk-remote lw-compat m2cl m2cl-examples m2cl-test mach-par macro-level
+macro-utils macroexpand-dammit madeira-port madeira-port-tests makeres
+makeres-graphviz makeres-macro marching-cubes marching-cubes-example
+marching-cubes-test math-high math-high-tests md5 mel-base memoization memoize
+meta meta-sexp metabang-bind metabang-bind-test metacopy metacopy-test
+metacopy-test-with-contextl metacopy-with-contextl metafs metatilities
+metatilities-base metatilities-test method-combination-utilities
+method-combination-utilities.tests method-versions mexpr mexpr-tests mgl
+micmac-test midi mgl-visuals mini-cas mk-string-metrics modf modf-fset modf-test
+modlisp modularize modularize-hooks montezuma montezuma-indexfiles
+montezuma-tests more-conditions more-conditions-test mpc mw-equiv myway
+myway-test nekthuth network-streaming neutral new-op nibbles nibbles-tests
+ningle ningle-test npg nst nst-manual-tests nst-meta-tests nst-mop-utils
+nst-selftest-utils nst-simple-tests nst-test ntuple-table nxt oct odd-streams
+odd-streams-test odesk ods4cl open-vrp open-vrp-lib org-davep-dict
+org-davep-dictrepl os-interface osc osicat osicat-tests pack package-renaming
+package-renaming-test package-utils packet par-eval parameterized-function
+paren-files paren-util parenscript parenscript-classic parenscript.test
+parse-declarations-1.0 parse-float parse-float-tests pathname-utils patron pcall
+pcall-queue pcall-tests pcl-unit-test percent-encoding percent-encoding-test
+perfpiece periodic-table periods petit.package-utils petit.string-utils
+petit.string-utils-test pettomato-deque pettomato-deque-tests
+pettomato-indexed-priority-queue pettomato-indexed-priority-queue-tests pg
+pgloader ph-maths pileup pileup-tests pipes piping place-modifiers place-utils
+plain-odbc plain-odbc-with-libs planks plokami pod-utils positional-lambda postoffice
+prepl pretty-function printv priority-queue projectured protobuf prove
+prove-asdf psgraph ptester puri purl qbook qlot qlot-install qlot-test qmynd
+qmynd-test qtools quantity query-fs queue queues queues.priority-cqueue
+queues.priority-queue queues.simple-cqueue queues.simple-queue
+quicklisp-slime-helper quickproject quicksearch quickutil quickutil-client
+quickutil-client-management quickutil-server quickutil-utilities
+quickutil-utilities-test quid-pro-quo quid-pro-quo-tests quine-mccluskey racer
+random random-access-lists ratify reader-interception reader-interception-test
+rectangle-packing recur red-black repair repl-utilities rlc robot rock romreader
+rpc4cl rpc4cl-test rpm rss rt rutils rutilsx s-base64 s-dot sanitize
+sanitize-test sb-cga sb-fastcgi sb-vector-io scribble scribble-test scriptl
+scriptl-examples scriptl-util secret-values secure-random selenium serapeum
+serialization series series-tests shadchen sheeple sheeple-tests shelly
+shelly-test shuffletron softdrink simple-currency skippy software-evolution
+software-evolution-command-line software-evolution-test
+software-evolution-utility south spartns spartns-test spatial-trees
+spatial-trees.nns spatial-trees.nns.test spatial-trees.test spellcheck sphinx
+spinneret standard-cl statistics stem stmx stmx.test string-utils stringprep
+stringprep-test stump-touchy-mode-line submarine surf swap-bytes swap-bytes/test
+synonyms tagger talcl talcl-examples talcl-speed-tests talcl-test tcod
+teepeedee2 teepeedee2-test template temporary-file tensor test-harness
+text-query thnappy thopter time-interval tinaa tinaa-and-cl-markdown tinaa-test
+toms419 toms419-test toms717 toms717-tests toot torta towers track-best
+track-best-tests trees trivial-arguments trivial-backtrace
+trivial-backtrace-test trivial-benchmark trivial-bit-streams trivial-channels
+trivial-download trivial-dump-core trivial-extract trivial-extract-test
+trivial-features trivial-features-tests trivial-garbage trivial-garbage-tests
+trivial-gray-streams trivial-gray-streams-test trivial-http trivial-http-test
+trivial-indent trivial-irc trivial-irc-echobot trivial-lazy trivial-ldap
+trivial-mimes trivial-octet-streams trivial-raw-io trivial-shell
+trivial-shell-test trivial-signal trivial-tco trivial-tco-test trivial-thumbnail
+trivial-timeout trivial-timers trivial-types trivial-utf-8 trivial-utf-8-tests
+tutorial-example twfy ucw ucw-core ucw-core.test ucw.examples ucw.httpd
+ucw.iolib ucw.manual-examples ucw.mod-lisp uiop umlisp umlisp-tests unifgram
+unit-formulas utilities.print-items utilities.print-items-test
+utilities.print-tree verbose vom wilbur wire-world woo wookie wu-decimal
+wu-sugar wuwei wuwei-examples xarray xarray-test xecto xembed xfactory
+xfactory-test xhtmlambda xhtmlgen xhtmlgen-test xkeyboard xkeyboard-test xsubseq
+xsubseq-test zip zlib zsort cl-devil cl-ilu cl-ilut
+
+*** TODO lispy audio
+
+#+BEGIN_SRC
+# for emacspeaks
+
+flite -voice kal16 -t testing
+#+END_SRC
+
+review the following codebases
+
+- pocket sphinx
+- sphinx2
+- sphinx3
+- sphinxbase
+- cl-pulseaudio
+
+*** TODO common lisp only editor
+
+see https://github.com/capitaomorte/sly for a rethinking of SLIME+SWANK. In the
+new Lisp editor there are a few things that are needed out of the box we don't
+have today in anything else.  persistant, cl-ppcre searchable rings, slime eval,
+eval in frame etc. that (possibly) specializes on the place in the 'global-tree'
+of such things.
+
+- when I change the name of a function or its arglist, register a pending request to update all of the calls to the function.
+
+- keep track of all undefined functions etc. within the program even after an individual sexpr is compiled
+
+- keep track of "" matching within and nested strings?
+
+- with-open-file autocompletion (ie, just give me a stream name and complete symbols - can other forms use type inference to determine intermediate symbol names? I generally don't care much what they're called)
+
+- full english / todo editing integrated into the comments
+
+- index all codebases loaded into the lisp image for commands like `who-calls'
+
+- detect invalid lambda-lists
+
+- testing out of the box + stats on what is untested & tested
+
+- apropos (cl-ppcre regex)
+
+- smart updates of packages and .asd files according to your exports at the repl
+
+- better autodocs
+
+- autocompletion everywhere that works across packages (ie, pathnames, names should complete in both repl and buffers)
+
+- structure editing /only/
+
+- multiple repls
+
+- repl into other boxes trivially
+
+- better inspector - if I've a image / video / audio on one of my objects I should be able to see it
+
+- renaming files should update the .asd and also take care of any documentation references.
+
+- smart renaming mechanisms, smart argument list changes- notify me what else needs to be updated when I update a function -- this should carry through to the documentation of the codebase
+
+- 'flavors' of asdf-compiling a system, that is, "fast" "debuggable"
+
+**** TODO removing Emacs
+
+Emacs is currently kept around to perform the following tasks
+
+- reading info files
+
+- reading pdfs
+    
+- Magit
+ 
+At some point in time someone sane will get fed up with git and write a CL-aware alternative, but until then we're stuck with Magit. Or we could just ditch git which performs a /very/ basic task and is a massive pos.
+
+*** TODO removing X
+
+relevent codebases,
+
+https://github.com/pyb/zen
+http://www.cliki.net/CLX-CURSOR
+http://www.cliki.net/CLX-TRUETYPE
+http://xcb.freedesktop.org/XmlXcb/
+[[http://www.cliki.net/Acclaim][drawings directly on the screen using CLX]]
+http://www.cliki.net/CL-VECTORS
+[[http://users.actrix.co.nz/mycroft/event.lisp][CLX events]]
+[[http://common-lisp.net/project/cmucl/doc/clx/][CLX manual]]
+[[http://www.cawtech.demon.co.uk/clx/simple/examples.html][tutorial of using CLX]]
+[[https://github.com/filonenko-mikhail/clx-xkeyboard][If we could get rid of the X keyboard system entirely that would be great.]]
+
+*** TODO adopt all good ideas from related technologies
+**** ankisrs.net
+***** pros
+***** cons
+**** Knewton
+***** pros
+***** cons
+
+Their product is currently not (and will never be?) open to the public. Thus it has no future.
+
+**** Khan Academy
+***** pros   
+***** cons
+
+- there is far too much going on visually.
+
+- I'm not entirely sold on the idea of hints - generally speaking, you either
+  understand something, or not. It's not as if seeing a 'hint' (part of the
+  solution) is going to jump start your brain into understanding. If I don't
+  understand show exactly how the solution was derived and call it "show
+  solution". Renaming it to 'hint' is dishonest.
+
+- It's rather irritating that I can't sign up for a course / lesson / path and resume where I left off.
+     
+- Not personalized enough - when it knows the language I use and other such settings.
+     
+- resource intensive - slow, causes chrome to crash
+     
+- The concepts they teach are all relatively sophomoric. 
+     
+- doesn't allow for mastery, as in, it's a technology that punishes experts.
+     
+- there isn't a clear flow when practicing skills
+     
+- Overload of points and notifications / badges, and it's not clear what they represent, or what their value is.
+     
+- the community page is far too cluttered
+     
+- on the 'mission' page there is far too much going on. You really only need one progress bar.
+     
+- Logos suck
+     
+- There isn't a GO button, or any clear way to quickly set off from what you were last learning.
+     
+- Okay, yes, the UI is friendly, but it's also insulting to my intelligence. Where are my options, settings etc?
+     
+- HTML5 back button doesn't work like you would expect
+     
+- slow
+     
+- Problems should fit on the screen
+
+- I can scroll down when I'm in the middle of solving problems. Irritating, especially since there isn't anything there.
+	  
+- If I get something correct, automatically move me onto the next problem
+     
+- When I get to the end of a task and see the task dashboard, there isn't a 'continue' button. This breaks my flow.
+     
+- the graphs / dashboard visualizations don't fit together to form a coherent whole. How much have I learned of the subject, course, mission? I've nfi. What is the purpose of the metrics you're showing me?
+
+- I want an introduction to the concepts used to structure information within their program, but nothing is available. I know what a coach is irl, but no idea what it means on your system.
+
+- it's not clear where to get started if I want to learn something new or spend my time browsing around - probably b/c the concepts are not clearly defined.
+      
+**** clever
+***** pros
+***** cons
+**** EdX
+***** pros
+***** cons
+**** Coursera
+***** pros
+***** cons
+**** brilliant.org
+***** pros
+***** cons
+**** quizlet
+***** pros
+***** cons
+
+- slow
+
+**** elm-art
+
+http://art2.ph-freiburg.de/Lisp-Course     

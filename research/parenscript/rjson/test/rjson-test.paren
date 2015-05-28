@@ -1,0 +1,25 @@
+(defpackage :rjson-test
+  (:use :parenscript :paren-test :paren-psos :rjson)
+  (:lisp-package :rjson-tests)
+  )
+
+(in-package :rjson-test)
+
+(defsuite "rjson-test")
+(in-suite "rjson-test")
+
+(deftest basics ()
+  (let ((bob (rjson:decode-rjson
+	      #L(ps:lisp (rjson:encode-rjson-to-string
+			  (make-instance 'rjson-tests::person
+					 :first-name "bob" :last-name "seagul"
+					 :email "bseagul@gmail.com"))))))
+    (global::print bob)))
+;    (is (== "seagul" (slot-value 
+					
+
+;  (report (class-precedence-list thing))
+;  (report (class-precedence-list alive))
+;  (report (class-precedence-list person)))
+
+(run-tests "rjson-test")

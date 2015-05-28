@@ -1,0 +1,95 @@
+(in-package :paren-events)
+
+;;; Basic functions for handling events
+#+nil
+(progn
+  (defvar *to-purge* (array))
+  
+  (defvar *is-ie* (and (slot-value js-global:document :attach-event)
+		       (not (slot-value js-global:document :add-event-listener))))
+  
+  (defvar *is-gecko* (and (not *is-ie*)
+			  (slot-value js-global::navigator :taint-enabled)
+			  (not (not (slot-value js-global:document :get-box-object-for)))))
+
+  (defvar *win-prop* (if *is-ie* "parentWindow" "defaultView")))
+
+
+
+;;; PSOS Event Handling ;;;
+(defvar *event-table* (create))
+
+;; event types
+(defclass event ()
+  ((origin :accessor event-origin :initarg :origin)
+   (description :accessor event-description :initarg :description))
+  (:documentation "Primitive event class for event observation.  Custom
+event classes are created that subclass the abstract event class.  These are dispatched
+by calling (make-instance some-event-class (create :origin origin ...))."))
+
+(defclass dom-event (event)
+  ((dom-event-object :accessor dom-event-object :initarg :dom-event-object))
+  (:documentation "Events that originate from the DOM"))
+
+(defclass event-emitter ()
+  ((event-handlers :accessor event-handlers :initarg :event-handlers))
+  (:documentation "Subclasses of this can be used in conjunction with EVENT-FIRED and
+REGISTER-EVENT-HANLDER."))
+
+(defgeneric event-fired (within-obj ev)
+  (:documentation "Called when an event was fired within the given object.
+For example, if a button is clicked within a page, then the event will eventually fire
+for the page object with the given event."))
+
+(defgeneric register-event-handler (on-object event-class handler-fun)
+  (:documentation "When an event fires in ON-OBJECT of the given EVENT-CLASS
+HANDLER-FUN will be called with the event as a single argument."))
+
+(defmethod initialize-instance :after ((ev event))
+;  (log "event fired:")
+;  (log (event-origin ev))
+  (event-fired (event-origin ev) ev))
+
+(defmethod register-event-handler ((on-obj event-emitter) event-class handler-func)
+  (let ((obj-observers
+	 (defaultf (slot-value on-obj 'event-handlers) (array))))
+    (methcall :push obj-observers
+	      (create 'handler-func handler-func
+		      'event-class event-class))))
+
+(defmethod register-dom-event-handler (on-obj event-str handler-func)
+  (methcall :add js-global::-q-event on-obj event-str handler-func))
+
+(defun stop-dom-event (ev)
+  "Stops the event from propagating and prevents default behavior."
+  (let ((ev (or ev (slot-value js-global:document :event))))
+    ;; stop propagation
+    (cond 
+      ((slot-value ev :stop-propagation) (methcall :stop-propagation ev))
+      (t     (setf (slot-value ev :cancel-bubble) t)))
+    
+    ;; prevent default behavior
+    (cond 
+      ((slot-value ev :prevent-default) (methcall :prevent-default ev))
+      (t         (setf (slot-value ev :return-value) false)))))
+    
+
+
+
+(defun event-handler-fits? (handler ev)
+  "Can the given handler object accept the given event?
+
+True if handler.event-class is a subclass of the class of the given event."
+  (return (psos::is-subclass-of
+	   (slot-value handler 'event-class)  (class-of ev))))
+
+(defmethod event-fired ((within-obj event-emitter) ev)
+  (let ((handlers (and (slot-value within-obj 'event-handlers)
+                       (methcall :filter (slot-value within-obj 'event-handlers)
+				 (lambda (handler)
+				   (return (event-handler-fits? handler ev)))))))
+    (when handlers
+      (dolist (handler handlers)
+        (methcall 'handler-func handler ev))))
+  (call-next-method))
+

@@ -1,0 +1,14 @@
+(defpackage :arith
+  (:use :parenscript :paren-test)
+  )
+
+(in-package :arith)
+
+(defsuite "arith-test")
+(in-suite "arith-test")
+
+(deftest five-is-five ()
+  (is (== 5 5))
+  (is (== 5 4)))
+
+(run-tests "arith-test")

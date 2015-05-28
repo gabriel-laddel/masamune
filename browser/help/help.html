@@ -1,0 +1,58 @@
+<html xmlns='http://www.w3.org/1999/xhtml'><head><title>Browser User Manual</title><link rel='stylesheet' type='text/css' href='file:///root/algol/conkeror/help/manual.css' /></head><body><h1>User Manual</h1><hr /><h2>Introduction</h2><p>
+      Conkeror is a Mozilla-based web browser whose design is inspired by
+      <a href='http://www.gnu.org/software/emacs'>GNU
+      Emacs</a>.
+    </p><p>
+      You can learn Conkeror's key bindings
+      by <a href='file:///root/algol/conkeror/help/tutorial.html'>reading the
+      tutorial</a>. The keyboard shortcut to visit the tutorial
+      is <span class='key'>C-h t</span>. That is, first
+      press <span class='key'>Ctrl-h</span>, then release those keys, and
+      press <span class='key'>t</span>.
+    </p><hr /><h2>Overview of the Keys</h2><h3>Browsing</h3><table><thead><tr><th><b>key</b></th><th><b>M-x command</b></th><th><b>meaning</b></th></tr>
+      </thead><tbody><tr><td><span class='key'>g</span></td><td>find-url</td><td>open new URL</td></tr><tr><td><span class='key'>B</span></td><td>back</td><td>&nbsp;</td></tr><tr><td><span class='key'>F</span></td><td>forward</td><td>&nbsp;</td></tr><tr><td><span class='key'>r</span></td><td>reload</td><td>&nbsp;</td></tr><tr><td><span class='key'>C-g</span></td><td>abort</td><td>stop</td></tr><tr><td><span class='key'>C-h i</span></td><td>help-page</td><td>Show this page.</td></tr><tr><td><span class='key'>C-h t</span></td><td>tutorial</td><td>Show the Conkeror tutorial.</td></tr></tbody></table><h3>Movement</h3><table><tr><td><span class='key'>C-a</span></td><td>beginning of line</td></tr><tr><td><span class='key'>C-e</span></td><td>end of line</td></tr><tr><td><span class='key'>C-f</span></td><td>Forward a column</td></tr><tr><td><span class='key'>C-b</span></td><td>backward a column</td></tr><tr><td><span class='key'>C-n</span></td><td>Forward a line</td></tr><tr><td><span class='key'>C-p</span></td><td>backward a line</td></tr><tr><td><span class='key'>C-v</span></td><td>Page down</td></tr><tr><td><span class='key'>M-v</span></td><td>Page up</td></tr><tr><td><span class='key'>M-&lt;</span></td><td>Beginning of document</td></tr><tr><td><span class='key'>M-&gt;</span></td><td>End of document</td></tr><tr><td><span class='key'>C-s</span></td><td>Open i-search forward</td></tr><tr><td><span class='key'>C-r</span></td><td>Open i-search backward</td></tr></table><h3>I-Search</h3><table><tr><td><span class='key'>C-s</span></td><td>Search forward</td></tr><tr><td><span class='key'>C-r</span></td><td>Search backward</td></tr><tr><td><span class='key'>C-g</span></td><td>Quit i-search (jump back to where i-search started)</td></tr><tr><td><span class='key'>backspace</span></td><td>Undo search</td></tr><tr><td>any modifier plus a key, RET or TAB</td><td>Close i-search</td></tr></table><h3>Webjumps</h3><p>
+      Webjumps are similar to, but potentially more powerful than Firefox's
+      bookmark keywords.  You type a webjump name into the location prompt,
+      followed by one or more search terms.  Conkeror substitutes your search
+      terms into an url associated with the webjump.
+    </p><p>
+      Conkeror has a few webjumps already, but you can find many more, and share
+      your own at <a href='http://conkeror.org/Webjumps'>the
+      webjumps page of the conkeror wiki</a>.
+    </p><table><tr><td>conkerorwiki</td><td>Search conkeror.org</td></tr><tr><td>answers</td><td>search answers.com</td></tr><tr><td>bugzilla</td><td>search mozilla bugzilla</td></tr><tr><td>clhs</td><td>search the Common Lisp Hyper Spec</td></tr><tr><td>cliki</td><td>search the Common Lisp wiki</td></tr><tr><td>creativecommons</td><td>search creativecommons.org</td></tr><tr><td>dictionary</td><td>Search dictionary.reference.com</td></tr><tr><td>duckduckgo</td><td>Search with duckduckgo</td></tr><tr><td>ebay</td><td>search ebay.com</td></tr><tr><td>google</td><td>Search with google</td></tr><tr><td>image</td><td>Search google images</td></tr><tr><td>kuro5hin</td><td>search kuro5hin.com</td></tr><tr><td>lucky</td><td>Google "I'm feeling lucky" search</td></tr><tr><td>maps</td><td>Search Google Maps</td></tr><tr><td>ratpoisonwiki</td><td>search the ratpoison wiki</td></tr><tr><td>savannah</td><td>search savannah.gnu.org</td></tr><tr><td>scholar</td><td>search google scholar</td></tr><tr><td>slang</td><td>Search urbandictionary.com</td></tr><tr><td>slashdot</td><td>search slashdot.com</td></tr><tr><td>sourceforge</td><td>search sourceforge.net</td></tr><tr><td>stumpwmwiki</td><td>search the StumpWM wiki</td></tr><tr><td>wikipedia</td><td>Search wikipedia.org</td></tr><tr><td>wiktionary</td><td>Search wiktionary.org</td></tr><tr><td>yahoo</td><td>search yahoo</td></tr></table><p>
+      delicious webjumps can be added by putting the following in your rc file:
+    </p><pre>add_delicious_webjumps("myusername");</pre><p>
+      this will create the following webjumps:
+    </p><table><tr><td>adelicious</td><td>Add a delicious bookmark.</td></tr><tr><td>delicious</td><td>View your delicious bookmarks</td></tr><tr><td>sdelicious</td><td>Search your delicious bookmarks</td></tr><tr><td>sadelicious</td><td>Search all delicious bookmarks</td></tr></table><p>
+      lastfm webjumps can be added by putting the following in your rc file:
+    </p><pre>define_lastfm_webjumps("myusername");</pre><p>
+      this will create the following webjumps:
+    </p><table><tr><td>lastfm</td><td>&nbsp;</td></tr><tr><td>lastfm-user</td><td>&nbsp;</td></tr><tr><td>lastfm-music</td><td>&nbsp;</td></tr><tr><td>lastfm-group</td><td>&nbsp;</td></tr><tr><td>lastfm-tag</td><td>&nbsp;</td></tr><tr><td>lastfm-label</td><td>&nbsp;</td></tr><tr><td>lastfm-event</td><td>&nbsp;</td></tr></table><p>
+      You can easily add your own custom webjumps as such:
+    </p><pre>define_webjump("reddit", "http://www.reddit.com/search?q=%s");</pre><p>
+      The above will define the "reddit" webjump which
+      searches <a href='http://www.reddit.org'>reddit</a>
+      threads. The "%s" in the URL will be replaced by the search term you enter
+      after the webjump name. I.e. entering "reddit haskell compiler" in the
+      minibuffer will redirect you to the search results for reddit threads
+      matching "haskell compiler" as a search string.
+    </p><h3>Buffer Management</h3><table><tr><td><span class='key'>C-u g</span></td><td>Open an URL in a new buffer</td></tr><tr><td><span class='key'>C-x b</span></td><td>Select a buffer based on it's name.</td></tr><tr><td><span class='key'>M-p</span></td><td>previous buffer</td></tr><tr><td><span class='key'>M-n</span></td><td>Next buffer</td></tr><tr><td><span class='key'>C-x k</span></td><td>kill buffer</td></tr><tr><td><span class='key'>C-x 5 f</span> or <span class='key'>C-u C-u g</span></td><td>Open an URL in a new window</td></tr><tr><td><span class='key'>C-x 5 0</span></td><td>Close the current window (and all buffers in it)</td></tr><tr><td><span class='key'>C-x C-c</span></td><td>Quit conkeror</td></tr></table><hr /><h2>Universal Argument</h2><p>
+      Conkeror support the universal
+      argument, <span class='key'>C-u</span>. It's a prefix binding that changes
+      how a command behaves. In Conkeror, <span class='key'>C-u</span> has two
+      main effects. The first effect is that the command will be executed
+      multiple times. For example, typing <span class='key'>C-u C-n</span> will
+      cause conkeror to scroll down 4 lines. <span class='key'>C-u 12 C-n</span>
+      will cause conkeror to scroll down 12 lines.  The second effect is to open
+      in a new buffer or a new window. <span class='key'>C-u g conkeror.org
+      RET</span> This opens the conkeror project web page in a new
+      buffer. <span class='key'>C-u C-u n 12 RET</span> will open link no. 12 in
+      a new window.
+    </p><p>
+      There are some commands where the effect is ambiguous. Does
+      <code>C-u B</code> go back four pages in the history or does it go back
+      one and open the result in a new buffer? We are working on adding a second
+      universal argument that would allow you to do both.
+    </p>
+
+    <hr /><h2>Conkeror Resources</h2><ul><li><a href='http://conkeror.org/'>Conkeror homepage</a></li></ul></body></html>

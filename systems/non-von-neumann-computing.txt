@@ -1,0 +1,118 @@
+On June 30, 1945, John von Numann published The First Draft of the EDVAC. This
+publication contained the first formalized description of a stored-program
+computer. Since then, research into fundamentally different computing
+architectures has been replaced by a straightforwards exploitation of Moore's
+law, packing ever more processors on a chip (multicore!). This will give out at
+some point soon.[0] Fundamental improvements are needed in computer
+architectures if we want faster computers. JVN was aware of the fundamental
+issues with his scheme in the 40s and was working, up until his death in 1957,
+on a new computer that worked in a way similar to the human brain.[1]
+
+Where does this fit in today's landscape? Quantum computing, a la D-wave is a
+scam[2], quantum computers are not likely to happen any time soon. Programming
+current machines is complete and utter hell[3] and at some point soon it will
+make sense to redesign computing from the silicon up.
+
+The few people attacking this problem seem to agree that CPU and RAM merge, but
+outside of that I'm unsure of the similarities between memristors, async Muller
+C-gates and "Memprocessors". AFAIK, there are no serious design documents
+publicly available. Someone should, at some point, review the following
+material, separate the content from nonsense and make a interactive design
+'document' on top of CLIM as a basis for exploring these ideas.
+	  
+Loper-OS
+================================================================================
+
+My notes from http://www.loper-os.org/?p=1361 I've cut and pasted the interesting
+bits.
+
+- fexper compilation problems disappear when programming dataflow CPU
+   - start here: http://fexpr.blogspot.com/2011/04/fexpr.html
+   - call by name decoupled from the macro mechanism
+
+- memory is split into cells formind dependency graphs, 'cpus' walk the
+  graphs.
+
+- von neumann bottleneck vanishes since everything is executed in parallel
+
+- should be thought of as a collection of circuits rather than procedures. think
+  ‘fpga’ but of arbitrary size. (in practice, fpga with swappable bitstream
+  pages.)
+
+- the terminal you are now typing into. on a true dataflow box, it would simply
+  be the end of a circuit (screen memory) directly linked to a circuit with the
+  keyboard matrix decoder on the other end of it.
+
+- lose the concept of ‘interrupts’ or ‘processes’. a dataflow box doesn’t need a
+  scheduler, or an interrupt controller.
+
+    Reader: "huh. how do you manage when multiple inputs are trying to write to
+    the same output?"
+
+    Stan: "inputs cannot try anything. outputs can depend on one or more
+    inputs. with the logic function (e.g. AND, OR) specified. inputs can only
+    sit there and be depended on (or not.)"
+
+- build on async Muller C-gates
+
+- if you want real efficiency, you can’t even use standard RAM. so it gets
+dismissed as nuttery, on the rare occasions it comes up.  reader: not even
+DDR4. memory bus becomes the bottleneck, can only address one machine word (or,
+if you pay through the nose for ‘dual port’, two) at a time.
+
+- LUTs for the logic, programmable crossbar interconnects for the routing, and
+  small giblets of memory scattered throughout. could use conventional DRAM, and
+  even magnetic disk, but these would have to be used as transparent swaps
+
+Relevent reading material from Stan's blog and #bitcoin-assets logs:
+  
+http://www.terna.org/enewsletter/Apr-Jun%202010/VLSI.pdf
+http://dxdy.ru/topic1670-150.html
+http://ultrastudio.org/en/C_gate
+http://www.amazon.com/Architecture-Computers-Mcgraw-Hill-Supercomputing-Processing/dp/0070355967
+http://dspace.mit.edu/handle/1721.1/6334
+
+HP Labs & Memristors
+================================================================================
+
+http://www.hpl.hp.com/techreports/2013/HPL-2013-48.pdf
+http://www.cpmt.org/scv/meetings/chua.pdf
+http://www.ee.berkeley.edu/~chua/papers/Chua90.pdf 
+
+Misc Related research
+================================================================================
+
+http://en.wikipedia.org/wiki/Dataflow_architecture 
+
+- "Memcomputing NP-complete problems in polynomial time using polynomial resources"
+
+  http://arxiv.org/abs/1411.4798
+
+  A description of what they call a "Memprocessor", eg, RAM and CPU
+  merged. Apparently their scheme can be built from everyday electronic
+  items. More interesting is the claim of NP-complete problems in polynomial
+  time using polynomial resources
+
+- http://courses.cs.washington.edu/courses/csep548/05sp/gurd-cacm85-prototype.pdf 
+
+- http://arxiv.org/pdf/1205.6129.pdf
+
+- https://www.ece.ucsb.edu/~strukov/papers/2011/IOPNanotechnology2011.pdf 
+
+- http://www.sbmac.org.br/eventos/cnmac/xxxiii_cnmac/pdf/57.pdf
+
+- http://www.scribd.com/doc/117674100/Memristor-Report 
+
+[0] http://www.edn.com/design/systems-design/4368705/The-future-of-computers--Part-1-Multicore-and-the-Memory-Wall
+
+[1] The computer and the brain, JVN 
+    http://www.amazon.com/The-Computer-Brain-Silliman-Memorial/dp/0300084730
+
+[2] http://www.scottaaronson.com/blog/?p=431
+    http://www.scottaaronson.com/blog/?p=225
+    http://www.scottaaronson.com/blog/?p=223
+    http://www.scottaaronson.com/blog/?p=954
+    http://www.scottaaronson.com/blog/?p=1687
+    http://www.scottaaronson.com/blog/?p=1643
+
+[3] richard.esplins.org/static/downloads/unix-haters-handbook.pdf

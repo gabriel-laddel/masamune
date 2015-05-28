@@ -1,0 +1,5 @@
+((:HTML :XMLNS "http://www.w3.org/1999/xhtml")
+ (:HEAD (:TITLE "Browser Tutorial: Back and Forward") 
+	((:LINK :REL "stylesheet" :TYPE "text/css" :HREF "file:///root/algol/conkeror/help/manual.css")))
+ (:BODY (:H3 "Back and Forward")
+	(:P "If you got to this section by following a link, you can get back to where you came from by pressing " ((:CODE :CLASS "key") "B") " for Back. The complement of " ((:CODE :CLASS "key") "B") " is " ((:CODE :CLASS "key") "F") " for Forward.  When you have attained mastery over these keys, continue with the tutorial.")))

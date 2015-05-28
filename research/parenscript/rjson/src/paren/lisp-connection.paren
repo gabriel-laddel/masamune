@@ -1,0 +1,34 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; RJSON decoder for Parenscript/Javascript
+(defpackage :rjson
+  (:use :parenscript :paren-psos)
+  (:export #:decode-rjson #:rjtype))
+
+(in-package :rjson)
+
+(defvar *type-table* (create))
+
+(defun rjtype (type construct-fn alloc-fn init-fn)
+  "Defines an RJSON type for use in decoding."
+  (setf (slot-value *type-table* type)
+	(create 'construct construct-fn
+		'alloc alloc-fn
+		'init init-fn)))
+
+(defun decode-rjson (rjson-text)
+  (let ((xref-table (create)))
+    (let ((global::rjalloc
+	   (lambda (tag type)
+	     (return (setf (slot-value xref-table tag)
+			   (funcall (slot-value *type-table* type 'alloc))))))
+	  (global::rjconstruct
+	   (lambda (type arg-obj)
+	     (return (funcall (slot-value *type-table* type 'construct) arg-obj))))
+	  (global::rjinit
+	   (lambda (tag init-obj)
+	     (return (setf (slot-value xref-table tag)
+			   (funcall (slot-value *type-table* type 'init) init-obj)))))
+	  (global::rjdecl
+	   (lambda (tag value) (return (setf (slot-value xref-table tag) value))))
+	  (global::rjref (lambda (tag) (return (slot-value xref-table tag)))))
+      (return (eval (+ "(" rjson-text ")"))))))

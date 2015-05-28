@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ItemLookupResponse xmlns="http://webservices.amazon.com/AWSECommerceService/2006-10-31">
+  <OperationRequest>
+    <HTTPHeaders>
+      <Header Name="UserAgent" Value="Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)"/>
+    </HTTPHeaders>
+    <RequestId>0ZTQ1B2PX4YPEKQMW8Y0</RequestId>
+    <Arguments>
+      <Argument Name="Service" Value="AWSECommerceService"/>
+      <Argument Name="AssociateTag" Value="[Your Associate ID Here]"/>
+      <Argument Name="AWSAccessKeyId" Value="[Your Access Key ID Here]"/>
+      <Argument Name="ItemId" Value="B00008OE6I"/>
+      <Argument Name="ResponseGroup" Value="Medium"/>
+      <Argument Name="Operation" Value="ItemLookup"/>
+    </Arguments>
+  </OperationRequest>
+  <Items>
+    <Request>
+      <IsValid>True</IsValid>
+      <ItemLookupRequest>
+        <ItemId>B00008OE6I</ItemId>
+        <ResponseGroup>Medium</ResponseGroup>
+      </ItemLookupRequest>
+    </Request>
+    <Item>
+      <ASIN>B00008OE6I</ASIN>
+      <DetailPageURL>http://www.amazon.com/gp/redirect.html?location=/exec/obidos/ASIN/B00008OE6I/[Your Associate ID Here]%3FAWSAccessKeyId=[Your Access Key ID Here]%26camp=2025%26link_code=xm2</DetailPageURL>
+      <SalesRank>5,611</SalesRank>
+      <SmallImage>
+        <URL>http://images.amazon.com/images/P/B00008OE6I.01._SCTHUMBZZZ_.jpg</URL>
+        <Height>41</Height>
+        <Width>60</Width>
+      </SmallImage>
+      <MediumImage>
+        <URL>http://images.amazon.com/images/P/B00008OE6I.01._SCMZZZZZZZ_.jpg</URL>
+        <Height>101</Height>
+        <Width>150</Width>
+      </MediumImage>
+      <LargeImage>
+        <URL>http://images.amazon.com/images/P/B00008OE6I.01._SCLZZZZZZZ_.jpg</URL>
+        <Height>335</Height>
+        <Width>500</Width>
+      </LargeImage>
+      <ItemAttributes>
+        <Feature>4.0 megapixel sensor captures enough detail to create photo-quality prints up to 11 x 14</Feature>
+        <Feature>3x optical zoom and 3.6x digital zoom (10.8x total)</Feature>
+        <Feature>Stainless steel shell; up to 3 minutes of video with sound</Feature>
+        <Feature>Compatible with CompactFlash Type I cards; 32 MB card included</Feature>
+        <Feature>Powered by rechargeable lithium-ion battery (NB-1LH ); connects to PCs and Macs via USB 1.1</Feature>
+        <Height Units="inches">2.24</Height>
+        <Length Units="inches">1.09</Length>
+        <ListPrice>
+          <Amount>44999</Amount>
+          <CurrencyCode>USD</CurrencyCode>
+          <FormattedPrice>$449.99</FormattedPrice>
+        </ListPrice>
+        <Manufacturer>Canon Cameras US</Manufacturer>
+        <NumberOfItems>1</NumberOfItems>
+        <ProductGroup>Photography</ProductGroup>
+        <Title>Canon PowerShot S400 4MP Digital Camera w/ 3x Optical Zoom</Title>
+        <UPC>013803023961</UPC>
+        <Weight Units="pounds">0.41</Weight>
+        <Width Units="inches">3.43</Width>
+      </ItemAttributes>
+      <OfferSummary>
+        <LowestUsedPrice>
+          <Amount>30000</Amount>
+          <CurrencyCode>USD</CurrencyCode>
+          <FormattedPrice>$300.00</FormattedPrice>
+        </LowestUsedPrice>
+        <LowestRefurbishedPrice>
+          <Amount>32500</Amount>
+          <CurrencyCode>USD</CurrencyCode>
+          <FormattedPrice>$325.00</FormattedPrice>
+        </LowestRefurbishedPrice>
+        <TotalNew>0</TotalNew>
+        <TotalUsed>5</TotalUsed>
+        <TotalCollectible>0</TotalCollectible>
+        <TotalRefurbished>1</TotalRefurbished>
+      </OfferSummary>
+<!--
+      <EditorialReviews>
+        <EditorialReview>Canon's PowerShot range of cameras has always been strong, and the PowerShot 400 continues that tradition. The 4 Megapixel Canon PowerShot S400 digital camera is capable of taking still images at 2,272 x 1,704 pixels--enough for a good quality A4 print. Resolutions go down to 640 x 480 for images you might only want to look at digitally. You can also capture video at 320 x 240 and 160 x 120 pixels.  <p>   The camera is very small indeed--smaller than earlier PowerShot models, and is easily pocket sized. There is what at first might seem a bewildering array of buttons around the casing, but in fact these provide excellent one-button-press access to most of the most used features, such as the 3x optical zoom which goes up to 11x when combined with digital zoom features, the macro mode, settings for the flash and self timer. For more advanced features like changing the shutter speed, which it is great to be able to do on a digital camera; you do need to delve into the LED a little further, though.  <p>   Images are stored on CompactFlash card--the largest image can be a couple of MB in size so you'll need to think big when it comes to CF card size with this camera. The battery is removable, and a spare to carry in the pocket might be a good idea.  <p>   Canon supplies a range of desktop software for viewing, editing and making use of your digital images. As with previous PowerShot cameras, one of the tools works with the Stitch Assist mode on the camera itself in the production of panorama shots. Digital cameras get more advanced all the time, but we dare to say that the PowerShot S400 is probably the best pocket sized digital camera we've seen. <I>--Sandra Vogel, Amazon.co.uk</I></EditorialReview>
+      </EditorialReviews>
+      <EditorialReviews>
+        <EditorialReview>The newest Digital Elph in the PowerShot line, the PowerShot S400 is both elegant and powerful. It has a stylish two-tone metallic exterior that is complemented by a 4.0 Megapixel sensor, a 3x Canon Zoom lens and a number of advanced features. Take it anywhere, it's ready to go!See it, use it, love it. Canon engineers turn streamlined into spectacular with PowerShot S400 Digital ELPH, creating a stunning 4.0 megapixel digital camera that's all about breathtaking performance and headturning good looks. Leave it to Canon to bring you the exclusive DiGiC Imaging Processor. Cutting-edge technology delivers enhanced picture quality, faster processing speed and improved autofocus accuracy. All with decreased power consumption. Imagine DiGiC as your very own 24/7 photo whiz, and you'll get the idea. Right from the start - even if this is your first digital camera - you can look forward to exceptionally brilliant images. Pictures that capture the "WOW" of life without missing a beat. Think of PowerShot S400 Digital ELPH as a stylish, clever companion you always want to have around.High Resolution Stylish Body - 4.0 Megapixel CCDThe PowerShot S400 has a 4.0 Megapixel CCD Sensor, which provides enough resolution to do virtually anything with your photos. Whether you're printing out poster size prints, or sharing your photos over the web, the S400 provides the resolution you need.</EditorialReview>
+      </EditorialReviews>
+
+ -->
+    </Item>
+  </Items>
+</ItemLookupResponse>

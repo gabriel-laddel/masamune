@@ -1,0 +1,204 @@
+
+#+paren-packages
+(defpackage #:paren-util
+  (:nicknames #:paren-util #:suave-util)
+  (:use :parenscript)
+  
+  (:lisp-package  :org.iodb.paren-util)
+  (:export
+   #:to-array
+   #:merge-into
+   #:lispy-apply
+   #:lispy-map
+   #:collect
+   #:every
+   #:some
+   #:remove-duplicates
+   #:funcall
+   #:methcall
+   #:lexicographic-compare))
+
+#+paren-packages
+(in-package :paren-util)
+
+;(defmacro global (symbol-like)
+;  "Use this to call a reference global variable."
+;  (let ((string (typecase symbol-like
+;		  (string symbol-like)
+;		  (symbol (symbol-name symbol-like))
+;		  (t (error "Expected string or symbole but got ~S" symbol-like)))))
+;    `',(intern string :js-global)))
+
+#L(defmacro in-package (package-designator)
+    `(eval-when (:compile-toplevel)
+       (setf cl:*package* (find-package ,package-designator))))
+
+#L(defmacro use-package (package-designator &optional into-package)
+    (let ((all-args (cons package-designator (if into-package (cons into-package nil) nil))))
+      `(eval-when (:compile-toplevel)
+	 (use-package ,@all-args))))
+
+(in-package :paren-util)
+
+#L(defmacro funcall (fun &rest args)
+    `(,fun ,@args))
+
+#L(defmacro methcall (method this-obj &rest args)
+    `((slot-value ,this-obj ,method) ,@args))
+
+#L(defmacro methcall* (methods this-obj &rest args)
+    `((slot-value ,this-obj ,@methods) ,@args))
+
+#L(defmacro with-arguments-array ((args-var) &body body)
+    `(let ((,args-var (to-array js-global::arguments)))
+       ,@body))
+
+#L(defmacro defaultf (place default-val)
+    `(setf ,place (if (ps:!== ,place ps:undefined)
+		      ,place
+		      ,default-val)))
+
+
+(defun to-array (array-like)
+  (let ((result-arr (array)))
+    (dolist (arg array-like)
+      (methcall 'js-global::push result-arr arg))
+    (return result-arr)))
+
+(defun lispy-map (func arg1)
+  (with-arguments-array (arguments-arr)
+    (let ((result-arr (array))
+	  (ith-from-each-arg (lambda (i)
+			       (return
+				 (methcall 'js-global::map
+					   (methcall 'js-global::slice arguments-arr 1)
+					(lambda (arg) (return (slot-value arg i))))))))
+      (dotimes (index (slot-value arg1 'js-global::length))
+	(methcall
+	 'js-global::push
+	 result-arr
+	 (methcall 'js-global::apply func nil (ith-from-each-arg index))))
+      (return result-arr))))
+
+(defun merge-into (receiving-obj &rest donating-objs)
+  (dolist (other-obj donating-objs)
+    (for-in (prop other-obj)
+	    (setf (slot-value receiving-obj prop)
+		  (aref other-obj prop))))
+  (return receiving-obj))
+
+(defun length (arr)
+  (return (slot-value arr 'js-global::length)))
+
+(defun subseq (arr start &optional end)
+  (return (methcall 'js-global::splice arr start (or end (length arr)))))
+  
+
+(defun lispy-apply (func &rest rest)
+  "Similar to lisp's apply method.  Takes a predicate, an object that serves as the 'this'
+object for each function application, and then several arguments.  The last argument is
+appended to the ..."
+  (let ((std-args (methcall 'js-global::splice rest
+			    0 
+			    (- (slot-value rest 'js-global::length)
+			       1)))
+	(last (aref rest (- (slot-value rest 'js-global::length) 1))))
+    (return
+      (methcall 'js-global::apply func
+		this
+		(if last 
+		    (methcall 'js-global::concat std-args last)
+		    std-args)))))
+
+(defun collect (fun arr)
+  (let ((passing-members (array)))
+    (dolist (member arr)
+      (if (fun member)
+	  (methcall 'js-global::push passing-members member)))
+    (return passing-members)))
+
+(defun every (fun arr)
+  (dolist (member arr)
+    (if (not (fun member))
+	(return false)))
+  (return true))
+
+(defun some (fun arr)
+  (dolist (item arr)
+    (let ((result (fun item)))
+      (when result
+	(return result))))
+  (return false))
+
+(defaultf (slot-value js-global::-Array 'js-global::prototype 'js-global::filter)
+    (lambda (fun)
+      (return (collect fun this))))
+
+(defaultf js-global::-Array.prototype.every
+    (lambda (fun)
+      (return (every fun this))))
+
+(defaultf js-global::-Array.prototype.some
+    (lambda (fun)
+      (return (some fun this))))
+
+(defun eql (a b)
+  (return (== a b)))
+
+; this isn't pretty but it works
+(defun remove-duplicates (in-arr &optional (equality-lambda eql))
+  "Removes duplicates in the given array using the given equality function, which defaults
+to a strict === comparison."
+  (let ((working-array in-arr)
+	(out-arr (array)))
+    (while t
+      (if (== 0 (slot-value working-array 'js-global::length))
+	  (break)
+	  (let ((latest-unique-item (slot-value working-array 0)))
+	    (methcall 'js-global::push out-arr latest-unique-item)
+	    (setf working-array 
+		  (methcall 'js-global::filter working-array 
+			    (lambda (test-item)
+			      (return (not (equality-lambda
+					    test-item latest-unique-item)))))))))
+    (return out-arr)))
+
+(defun lexicographic-compare (a b)
+  "Compares to strings lexicographically, returning negative if a < b, 0 if a = b, and positive
+if a > b.  Ignores case and treats `9' < `80'."
+  ;; at this point I have forgotten what a true lexicographic compare is and I'm pretty sure
+  ;; that this isn't it
+  (let ((str-a (methcall 'js-global::to-lower-case a))
+	(str-b (methcall 'js-global::to-lower-case b)))
+    (let ((rv (if (< str-a str-b) -1 (if (> str-a str-b) 1 0))))
+      (return rv))))
+
+(defun ajax-request (url &key on-success on-failure on-loading on-loaded on-interactive (method :get))
+  (let* ((ready-state nil)
+	 (transport (or (and (slot-value js-global:window :-x-m-l-http-request)
+			     (new (js-global::-x-m-l-http-request)))
+			(and (slot-value js-global:window :-active-x-object)
+			     (or (new (js-global::-active-x-object "Msxml2.XMLHTTP"))
+				 (new (js-global::-active-x-object "Microsoft.XMLHTTP"))))))
+	 (method (methcall :to-upper-case method))
+	 (on-rsc-fn (lambda ()
+		      (setf ready-state (slot-value transport :ready-state))
+		      (when (=== 4 ready-state)
+			(funcall on-success (slot-value transport :response-text) transport)))))
+    (setf (slot-value transport :onreadystatechange) on-rsc-fn)
+    (methcall :open transport method url t)
+    (methcall :send transport nil)))
+    
+(defun object-to-keyargs (obj)
+  (let ((arr (array)))
+    (for-in (key obj)
+	    (methcall :push arr key)
+	    (methcall :push arr (slot-value obj key)))
+    (return arr)))
+
+(defun escape-html (str)
+  ;; stolen from prototype
+  (let ((div (methcall :create-element js-global:document "div"))
+	(text (methcall :create-text-node js-global:document str)))
+    (methcall :append-child div text)
+    (return (slot-value div :inner-h-t-m-l))))

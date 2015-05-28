@@ -1,0 +1,106 @@
+<html xmlns='http://www.w3.org/1999/xhtml'><head><title>Browser Tutorial</title><link rel='stylesheet' type='text/css' href='file:///root/algol/conkeror/help/manual.css' /></head><body><h1>Browser Tutorial</h1><p> If you're not comfortable with a QWERTY keyboard, you can rotate through keyboard layouts with F1.</p><p>
+  The key sequence to exit conkeror (the web browser you're currently using) is <code class='key'>C-x C-c</code>.
+</p><p><code class='key'>C-g</code> is the abort key.  It is used to cancel a command
+  from the minibuffer, or stop a web page from loading.
+</p><p><code class='key'>Space</code> and <code class='key'>Backspace</code> scroll a page down and
+  a page up, respectively.
+</p><h3>Basic Navigation</h3><p>
+  To browse to an URL in a new content buffer, type <code class='key'>C-x
+  C-f</code>.  This key sequence works from anywhere in Conkeror.
+  Additionally, if you are already in a content buffer (as opposed to a
+  buffer showing download progress or help), you can navigate the current
+  buffer to a new url with the <code class='key'>g</code> (find-url) key.
+  The mnemonic is "go".  The key sequence <code class='key'>C-x C-v</code>
+  (find-alternate-url) is also available in content buffers.  It is
+  identical to <code class='key'>g</code> except that the prompt will be
+  pre-filled with the current URL for you to edit.
+</p><p>
+  The <code class='key'>B</code> key (note uppercase) is bound to
+  the <code>back</code> command.  Practice basic navigation by
+  typing <code class='key'>g</code> and entering the text "about:" in
+  the url prompt.  To come back to this tutorial from the about: page,
+  type <code class='key'>B</code>.
+</p><h3>Hinting</h3><p>
+  The system for interacting with the elements of a document is called
+  the hinting system.  With the hinting system, you can do things like
+  follow hyperlinks, copy URLs, focus form fields, and more.  Let's
+  use the hinting system to follow a hyperlink.  You will receive
+  instructions about how to return here after you follow the
+  hyperlink.  If the numbered list and hyperlink following this
+  paragraph are not in view, scroll so that they are.
+</p><ol><li>Press <code class='key'>f</code>.  (mnemonic: follow)</li><li>The hyperlink should be hilighted, with a number on the left
+  side.  Type that number and hit enter.</li></ol><a href='file:///root/algol/conkeror/help/back-forward.html'>This is a
+hyperlink.</a><p>
+  As a matter of fact, in addition to following links by number, you can
+  also follow them by a substring of the link text.  You could select the
+  link above by typing <code class='key'>f t h i s</code>.  When more than
+  one link with similar text is in view, hinting will narrow down the
+  choices as you type.  You can always specify the one you want by
+  disambiguating the sequence with the hint number.
+</p><p>
+  But hinting is for more than just hyperlinks.  Conkeror provides
+  several <em>hint classes</em> for operating on different types of
+  elements.  The hint class is specified by typing the corresponding
+  key sequence of the class before the key sequence of the command.
+  It was not necessary to specify a hint class for following the
+  hyperlink above because links are the default hint class for the
+  follow command.  The following table lists the most common hint
+  classes.
+</p>
+
+<table><tr><td><em>key</em></td><td><em>hint class</em></td><td><em>mnemonic</em></td></tr><tr><td><code class='key'>n</code></td><td>links and form elements</td><td>li<b>n</b>k</td></tr><tr><td><code class='key'>i</code></td><td>images</td><td><b>i</b>mage</td></tr><tr><td><code class='key'>m</code></td><td>frameset frames and top window</td><td>fra<b>m</b>e</td></tr><tr><td><code class='key'>* *</code></td><td>dom nodes</td><td>wildcard</td></tr></table><p>
+  In the hinting system, hint number zero (0) is special.  It refers to the
+  current URL in the buffer.
+</p><p>
+  The <code class='key'>c</code> key is bound to the copy command.  Its
+  default hint class is links.  To copy the URL of the page you are
+  currently browsing, type <code class='key'>c 0</code>.  To copy the url of
+  a frame or iframe, type <code class='key'>m c</code>.  If there is more
+  than one frame visible, you will be prompted for a number, just as with
+  hyperlinks.
+</p><p>
+  When none of the conventional hint classes cover the element that
+  you want to operate on, you can use the dom-nodes hint class, to
+  choose from among all visible dom nodes.  This hint class is bound
+  to <code class='key'>* *</code>.  Try copying the text of this
+  paragraph now by typing <code class='key'>* * c</code> followed by
+  the hint number for this paragraph.
+</p><h3>Finding Text (Isearch)</h3><p><code class='key'>C-s</code> invokes interactive text search mode, isearch
+  for short.  <code class='key'>C-r</code> invokes reverse isearch.  In this
+  mode, just type the text you want to find into the minibuffer and Conkeror
+  will search the document as you type.  To jump to the next match,
+  hit <code class='key'>C-s</code> again.  To jump to the previous match,
+  hit <code class='key'>C-r</code>.  To conclude your search,
+  hit <code class='key'>return</code>, or to abort it,
+  press <code class='key'>escape</code> or <code class='key'>C-g</code>.  If
+  you have previously concluded an isearch, you can use the
+  keys <code class='key'>S</code> and <code class='key'>R</code> to jump to
+  next and previous matches without going back into isearch mode.  This is
+  called non-interactive resume.  To resume your last successful isearch in
+  interactive mode, hit <code class='key'>C-s</code>
+  or <code class='key'>C-r</code> twice.
+</p><h3>Copying Text</h3><p>
+  Apart from <code class='key'>* * c</code> described above, there are other
+  ways to copy text for times when what you want to copy does not neatly
+  fill one dom node.  The process is straight-forward.  First, use isearch
+  (<code class='key'>C-s</code>) and search for the start of the text you
+  want to copy.  When you have brought the search to the start of the text
+  you want to copy, hit <code class='key'>return</code> to conclude the
+  search.  Although no cursor is visible, there is an invisible cursor where
+  the search concluded.  Hold the <code class='key'>shift</code> key and use
+  the arrow keys to make a selection.  When you have selected the text you
+  want to copy, release all keys and hit <code class='key'>M-w</code> to
+  copy the text to the clipboard.
+</p><p><b>Tip:</b> Although isearch is usually the quickest way to position the
+  cursor, there are other ways.  One of them is to use the <em>focus
+  link</em> browser-object command (<code class='key'>n ;</code>).  When you
+  focus a link, the invisible cursor will be left at the first character of
+  the link text, and you can use shifted arrow keys to make a selection from
+  that point.  If the methods outlined so far are unsuitable for a situation
+  you encounter, then you can use <code>M-x caret-mode</code> to get a small
+  but visible blinking cursor that you can move to where you need it.
+  Call <code>M-x caret-mode</code> again to toggle it off.
+</p>
+
+<h3>More information on the browser</h3><p>
+  Now that you've completed the tutorial, you should have the basic skills to navigate the web.  There is however, much more to learn about conkeror. You can start with the User Manual, accessible via <code class='key'>C-h i</code>. The manual is somewhat incomplete and should be supplemented with online resources such as the <a href='http://conkeror.org/QuickStart'>QuickStart</a> and <a href='http://conkeror.org/'>Conkeror Wiki.</a> You can always return to this tutorial via <code class='key'>C-h t</code></p><h1>Continuing the Masamune Tutorial</h1><p><code class='key'>C-t ?</code> will display a partial list of the window manager's current keybindings. Focus Emacs via <code class='key'>C-t e</code> and visit the file <a href='file:///root/quicklisp/local-projects/masamune/introduction.lisp'>~/quicklisp/local-projects/masamune/introduction.lisp</a> using <code class='key'>C-x C-f</code> (Emacs and the browser share many of the same keybindings).</p></body></html>

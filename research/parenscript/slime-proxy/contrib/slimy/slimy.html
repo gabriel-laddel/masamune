@@ -1,0 +1,133 @@
+
+<!--
+  based on sample.html from web-socket-js
+  original Copyright: Hiroshi Ichikawa <http://gimite.net/en/>
+  License: New BSD License
+-->
+
+<html><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>slime proxy test</title>
+  
+  <!-- Include these three JS files: -->
+  <script type="text/javascript" src="web-socket-js/swfobject.js"></script>
+  <script type="text/javascript" src="web-socket-js/web_socket.js"></script>
+  <script type="text/javascript" src="Function.introspect.js"></script>
+
+  <script type="text/javascript">
+    
+    // Set URL of your WebSocketMain.swf here:
+    WebSocket.__swfLocation = "web-socket-js/WebSocketMain.swf";
+    WebSocket.__debug = true;
+    // for newer versions of web-socket-js
+    WEB_SOCKET_SWF_LOCATION = "web-socket-js/WebSocketMain.swf";
+    // Set this to dump debug message from Flash to console.log:
+    WEB_SOCKET_DEBUG = true;
+
+    var ws;
+    var count = 0;
+    var topLevel = this;
+    var active;
+    function topLevelEval1(form) {
+       var result = {};
+    var ok = window.eval(form,"",1,result);
+    if (ok) {
+    return result; } else { throw result;}
+}
+    function topLevelEval(form) {
+      return window.eval(form);
+}
+    function init() {
+
+      // Connect to Web Socket.
+      // Change host/port here to your own Web Socket server.
+      ws = new WebSocket("ws://127.0.0.1:12344/swank");
+
+      // Set event handlers.
+      ws.onopen = function() {
+        output("onopen");
+      };
+      ws.onmessage = function(e) {
+    clearOutput();
+        // e.data contains received string.
+        output("onmessage: " + e.data);
+//        ws.send("client eval :" + e.data);
+    try {
+    var j = JSON.parse(e.data);
+        if (j["FORM"]) {
+          var r = topLevelEval(j["FORM"]);
+          output("eval->: " + JSON.stringify(j));
+          if (active) {
+            ws.send(JSON.stringify({"OK":true, "RESULT" : r,"ID":j["ID"]})) ;
+          }
+          output("eval2->: " + JSON.stringify(r));
+        } else if (j["ACTIVATE"]) {
+          active = j["ACTIVE"];
+        } else if (j["MESSAGE"]) {
+          output("message:"+ j["MESSAGE"]);
+        }
+      }
+      catch (e) {
+        if (j["FORM"]) {
+          if (active) {
+             ws.send("" + JSON.stringify({"OK":false,"RESULT":null,"ERROR":e,"ID":j["ID"]}));
+          }
+        output("eval failed : "+e);
+    }
+      }
+
+      };
+      ws.onclose = function(e) {
+        output("onclose (" + e.code + "/" + e.reason+")" );
+      };
+
+
+      ws.onerror = function() {
+        output("onerror");
+      };
+
+    }
+    
+    function onSubmit() {
+      var input = document.getElementById("input");
+      ws.send(input.value);
+      output("send: " + input.value);
+      input.value = "";
+      input.focus();
+    }
+    
+    function onCloseClick() {
+      ws.close();
+    }
+
+    function clearOutput() {
+    var log = document.getElementById("log");
+  //  log.innerHTML = "";
+    }
+    function output(str) {
+      var log = document.getElementById("log");
+      var escaped = str.replace(/&/g, "&amp;").replace(/</g, "&lt;").
+        replace(/>/g, "&gt;").replace(/"/g, "&quot;"); // "
+       log.innerHTML = escaped + "<br>" + log.innerHTML;
+      //log.innerHTML = escaped + " " + count++;
+    }
+    function msg(a) {
+    if (active) {
+        output('===== ' + a);
+    } else {
+        ws.send('' + a);
+    };
+    return ('' + a);
+};
+
+  </script>
+</head><body onload="init();">
+  <form onsubmit="onSubmit(); return false;">
+    <input type="text" id="input">
+    <input type="submit" value="Send">
+    <button onclick="onCloseClick(); return false;">close</button>
+  </form>
+  <canvas id="canvas" width="300" height="300"></canvas>
+  <div id="log"></div>
+  <div id="messages"></div>
+</body></html>

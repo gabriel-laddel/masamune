@@ -1,0 +1,7 @@
+body {background-repeat:repeat;}
+.title {margin-top:50px; margin-bottom:50px;}
+#postamble p, #preamble p { font-size: 90%; margin: .2em; color: white;}
+blockquote {border: 1px solid black; padding-right: 10px; padding-left: 10px;}
+#content { margin-left: auto; margin-right:auto;  margin-top:0px; text-align:left; width:70%;}
+#navigation { width: 12%; margin-left: auto; margin-right:auto; border: 1px solid black; padding:40px; margin-top:40px; margin-bottom:40px; background:white; text-align:right;}
+#text-table-of-contents {margin-bottom: 40px;}

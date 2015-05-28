@@ -1,0 +1,172 @@
+(in-package :parenscript-user)
+
+(defpackage :paren-test
+  (:use :parenscript)
+  (:export
+   #:*suite*
+   #:is
+   #:deftest
+   #:defsuite #:in-suite
+   #:run-tests
+   )
+  (:lisp-package :paren-test))
+
+(in-package :paren-test)
+
+(defvar *suite-map* (create))
+(defvar *suite* nil)
+(defvar *running-suite* nil)
+(defvar *suite-results* nil)
+(defvar *test-result* nil)
+
+(defun find (item sequence &key key test)
+  (dolist (seq-item sequence)
+    (dolist (seq-item sequence)
+      (let ((seq-key (if key (key seq-item) seq-item)))
+	(when (if test (test item seq-key) (== item seq-key ))
+      (return seq-item))))))
+
+(defun remove (item sequence &key key test)
+  (let ((result (array)))
+    (dolist (seq-item sequence)
+      (let ((seq-key (if key (key seq-item) seq-item)))
+	(when (if test (not (test item seq-key)) (!= item seq-key))
+	  (:.push result seq-item))))
+    (return result)))
+
+(defun count (item sequence &key key test)
+  (let ((num 0))
+  (dolist (seq-item sequence)
+    (when key (setf seq-item (key seq-item)))
+    (when (if test (test item seq-item) (== item seq-item))
+      (setf num (+ num 1))))
+  (return num)))
+
+(defun complement (fun)
+  (return (lambda ()
+	    (return (not (:.apply fun this global::arguments))))))
+
+(defun report (stuff)
+  (log stuff))
+  ;(global::print stuff))
+
+;;;; ONTOLOGY ;;;;
+;; Standard Javascript objects
+; Suite : name, tests
+; Test  : name, suite, test-function
+; Suite Results: array of Test Results
+; Test Result : test, success-p, messages
+
+(defun make-suite (name)
+  (let ((obj (create :name name :tests (array))))
+    (return obj)))
+
+(defun make-test (name fun &optional (suite *suite*))
+  (let ((test
+	 (create :name name :test-function fun :suite suite)))
+    (:.push (slot-value suite :tests) test)
+    (return test)))
+
+(defun make-suite-results (suite)
+  (return (create :suite suite :test-results (array))))
+
+(defun make-test-result (test success-p messages)
+  (return (create :test test :success-p success-p :messages messages)))
+
+(defun enter-suite (name)
+  (let ((suite (slot-value *suite-map* name)))
+    (when (not suite) nil) ;; error)
+    (setf *suite* suite)))
+
+(defun find-suite (suite-designator)
+  (return
+    (if (== (typeof suite-designator) "string")
+	(slot-value *suite-map* suite-designator)
+	suite-designator)))
+
+(defun run-tests (suite)
+  (setf suite (find-suite suite))
+  (report (+ "Running suite `" (slot-value suite :name) "'"))
+  (setf *running-suite* suite)
+  (setf *suite-results* (make-suite-results suite))
+  (dolist (test (slot-value suite :tests))
+    (setf *test* test)
+    (setf *test-result* (make-test-result *test* t (array)))
+    (:.push (slot-value *suite-results* :test-results)
+	    *test-result*)
+    ((slot-value test :test-function)))
+  (print-suite-results *suite-results*))
+
+(defun print-suite-results (results)
+  (let ((success-count
+	 (count t (slot-value results :test-results)
+		:key (lambda (x) (return (slot-value x :success-p)))))
+	(failure-count
+	 (count nil (slot-value results :test-results)
+		:key (lambda (x) (return (slot-value x :success-p))))))
+    (report (+ success-count " tests passed."))
+    (report (+ failure-count " tests failed.
+"))
+  (when (< 0 failure-count)
+    (report "Failures:")
+    (dolist (failure (remove t (slot-value results :test-results)
+			     :key (lambda (x) (return (slot-value x :success-p)))))
+      (report ".")
+      (print-test-result failure)))))
+;    (dolist (failure (slot-value results :failures))
+;      (print-failure failure))))
+
+(defun print-test-result (failure)
+  (report (slot-value failure :test :name))
+  (report "===============")
+  (dolist (msg (slot-value failure :messages))
+    (report msg)))
+
+;(defun report-success (&optional (test *test*))
+;  (when (and (== -1 (:.index-of (slot-value *test-results* :successes) test))
+;	     (== -1 (:.index-of (slot-value *test-results* :failures) test)))
+;    (:.push (slot-value *test-results* :successes)
+;	    test)))
+
+(defun report-failure (&optional message (test *test*))
+  (setf (slot-value *test-result* :success-p) nil)
+;  (report (+ "Failure -- " message))
+  (when message
+    (:.push (slot-value *test-result* :messages) message))
+  (return *test-result*))
+
+;; macros
+
+(defmacro defsuite (name)
+  `(setf (slot-value *suite-map* ,name) (make-suite ,name)))
+
+(defmacro in-suite (name)
+  `(enter-suite ,name))
+
+(defmacro deftest (name args &body body)
+  (let ((name-string (#Lparenscript:symbol-to-js-string name)))
+  `(make-test ,name-string 
+    (lambda ,args ,@body))))
+
+(defmacro is-bin-op (lform rform op)
+  (let ((result-var 'result3)
+	(lvar 'l3)
+	(rvar 'r3)
+	(form-str (format nil "(~A ~A ~A)" op lform rform)))
+    `(let ((,lvar ,lform)
+	   (,rvar ,rform)
+	   (,result-var (,op ,lvar ,rvar)))
+      (when (not ,result-var)
+	(report-failure
+	 (+ "In binary op " ,form-str " Left and RIGHT not EQL: " ,lvar " != " ,rvar))))))
+
+(defmacro is (truth-form)
+  (cond
+    ((and (#Lcl:listp truth-form) (#Lcl:member (#Lcl:car truth-form)
+					       '(== ===)))
+     `(is-bin-op ,(#Lcl:cadr truth-form) ,(#Lcl:caddr truth-form) ,(#Lcl:car truth-form)))
+    (t
+     (let ((result-var 'result3))
+       `(let ((,result-var ,truth-form))
+	 (when (not ,result-var)
+	   (report-failure "General failure")))))))

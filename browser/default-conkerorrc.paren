@@ -1,0 +1,250 @@
+(require "new-tabs.js")
+(require "clicks-in-new-buffer.js")
+
+(setf view_source_use_external_editor t
+      editor_shell_command "emacsclient"
+      homepage "file:///root/algol/conkeror/help/tutorial.html"
+      minibuffer_auto_complete_default t
+      url_completion_use_history t
+      download_buffer_automatic_open_target -o-p-e-n_-n-e-w_-b-u-f-f-e-r_-b-a-c-k-g-r-o-u-n-d
+      url_completion_use_bookmarks t
+      hints_display_url_panel t
+      clicks_in_new_buffer_target -o-p-e-n_-n-e-w_-b-u-f-f-e-r_-b-a-c-k-g-r-o-u-n-d) 
+
+(add_hook "mode_line_hook" (mode_line_adder loading_count_widget) t) 
+(remove_hook "mode_line_hook" (mode_line_adder clock_widget)) 
+
+(interactive "copy-url" "Copy the current buffer's URL to the clipboard"
+	     (lambda (-i)
+	       ;; XXX something is wrong with let let bindings, hence setf.
+	       (setf text (@ -i window buffers current document location href))
+	       (write-to-clipboard text)
+	       ((@ -i window minibuffer message) (+ "copied: " text))))
+
+(interactive "reload-config" "reload conkerorrc"
+	     (lambda (-i) (load_rc) ((@ -i window minibuffer message) "config reloaded"))) 
+
+(interactive "view-current-buffer-archive" "Visit this url's Waybackmachine archive in the current buffer"
+	     (lambda (-i) (load_url_in_current_buffer 
+		      (@ -i window buffers current document location href) (new (interactive_context))))) 
+
+(interactive "extensions" "Open the extensions manager in a new tab."
+	     (lambda () (load_url_in_new_buffer "chrome://mozapps/content/extensions/extensions.xul?type=extensions"
+					   (new (interactive_context))))) 
+
+(interactive "console" "Opens the XUL console in a new tab."
+	     (lambda () (load_url_in_new_buffer "chrome://global/content/console.xul"
+					   (new (interactive_context))))) 
+
+(define_key default_global_keymap "C-c u" "copy-url") 
+(define_key default_global_keymap "C-c r" "reload-config") 
+(define_key default_global_keymap "C-x f" "follow-new-buffer-background") 
+(define_key content_buffer_normal_keymap "C-f" "forward") 
+(define_key content_buffer_normal_keymap "C-b" "back") 
+(define_key content_buffer_normal_keymap "M-y" "search-clipboard-contents") 
+(define_key content_buffer_normal_keymap "M-Y" "search-clipboard-contents-doublequoted")
+
+;;; REPL connection 
+;;; ============================================================================
+
+(defvar port 4258)
+(defvar serv)
+(defvar context-window-type)
+(defvar -cc (@ -components classes)) 
+(defvar -ci (@ -components interfaces))
+(defvar conkeror (chain (aref -cc "@conkeror.mozdev.org/application;1")
+			(get-service) wrapped-j-s-object))
+(defvar loader (chain (aref -cc "@mozilla.org/moz/jssubscript-loader;1")
+		      (get-service (@ -ci moz-i-j-s-sub-script-loader))))
+(defvar srv-pref (aref -cc "@mozilla.org/preferences-service;1"))
+(defvar srv-observer (aref -cc "@mozilla.org/observer-service;1"))
+
+(defun lg (msg)
+  "Log is a reserved symbol - and translates to Math.log"
+  (dump (+ msg #\Newline)))
+
+(defun -r-e-p-l ()
+  ;; "FIX #37 (https://github.com/bard/mozrepl/issues/37) needed by toolkit >= 17.0
+  ;; http://blog.mozilla.org/addons/2012/08/20/exposing-objects-to-content-safely/"
+  (setf (@ this __exposed-props__)
+	(or (@ this __exposed-props__)
+	    (_generate-exposed-props this.__proto__)))
+  this)
+((@ loader load-sub-script) "file:///root/quicklisp/local-projects/masamune/browser/repl.js"
+			    (@ -r-e-p-l prototype))
+
+(defun _generate-exposed-props (object)
+  (let* ((props (create)))
+    (chain -object (keys object) (filter (lambda (k) (!== (aref k 0) "_")))
+	   (for-each (lambda (k) (setf (aref props k) "r"))))
+    props))
+
+(defvar sessions
+  (create _list (list)
+	  add (lambda (session) ((@ this _list push) session))
+	  remove (lambda (session)
+		   (defvar index ((@ this _list index-of) session))
+		   (if (!= index (- 1))
+		       ((@ this _list splice) index 1)
+		       nil))
+	  get (lambda (index) (return (aref (@ this _list) index)))
+	  quit (lambda () ((@ this _list for-each) (lambda (session) (@ session quit)))
+		 ((@ this _list splice) 0 (@ this _list length)))))
+
+(defun start (port)
+  (try (progn (setf serv (chain (aref -cc "@mozilla.org/network/server-socket;1")
+				(create-instance (@ -ci ns-i-server-socket))))
+	      ((@ serv init) port t (- 1))
+	      ((@ serv async-listen) this)
+	      (lg (+ "REPL Listening at: 127.0.0.1: " port)))
+       (:catch (e) (lg (+ "REPL: error " e)))))
+
+(ps::inline-js "
+function onSocketAccepted(serv, transport) {
+    try {
+        var outstream = transport.openOutputStream(Ci.nsITransport.OPEN_BLOCKING , 0, 0);
+        var outstreamutf8 = Cc['@mozilla.org/intl/converter-output-stream;1']
+            .createInstance(Ci.nsIConverterOutputStream);
+        outstreamutf8.init(outstream, 'UTF-8', 0, 0);
+
+        var instream = transport.openInputStream(0, 0, 0);
+        var instreamutf8 = Cc['@mozilla.org/intl/converter-input-stream;1']
+            .createInstance(Ci.nsIConverterInputStream);
+        instreamutf8.init(instream, 'UTF-8', 1024, 0);
+    } catch(e) {
+        lg('E, MOZREPL : Error : ' + e);
+    }
+
+    var context = Cc['@mozilla.org/appshell/window-mediator;1']
+        .getService(Ci.nsIWindowMediator)
+        .getMostRecentWindow('');
+
+    if(context === null) {
+        context = Cc['@mozilla.org/appshell/appShellService;1']
+            .getService(Ci.nsIAppShellService)
+            .hiddenDOMWindow.wrappedJSObject;
+    }
+
+    var session = new REPL();
+    session.onOutput = function(string) {
+        outstreamutf8.writeString(string);
+    };
+    session.onQuit = function() {
+        lg('I, MOZREPL : Client closed connection : ' + transport.host + ':' + transport.port);        
+        instream.close();
+        outstream.close();
+        sessions.remove(session);
+    };
+    session.init(context);
+
+    lg('I, MOZREPL : Client connected : ' + transport.host + ':' + transport.port +
+        ' : ' + (context instanceof Ci.nsIDOMWindow ?
+                 context.document.location.href : context));
+
+    var pump = Cc['@mozilla.org/network/input-stream-pump;1']
+        .createInstance(Ci.nsIInputStreamPump);
+    pump.init(instream, -1, -1, 0, 0, false);
+    pump.asyncRead({
+        onStartRequest: function(request, context) {},
+        onStopRequest: function(request, context, status) {
+                session.quit();
+            },
+        onDataAvailable: function(request, context, inputStream, offset, count) {
+            var str = {}
+            instreamutf8.readString(count, str)
+            session.receive(str.value);
+            }
+        }, null);
+
+    sessions.add(session);
+}")
+
+;; (defun on-socket-accepted (serv transport)
+;;   ;; XXX 2015-04-23T22:51:03+00:00 Gabriel Laddel
+;;   ;; 
+;;   ;; onSocketAccepted and onStopListening are "magic" function calls for
+;;   ;; XULrunner. DO NOT DELETE OR RENAME THEM
+;;   ;; 
+;;   ;; https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/Interface/nsIServerSocketListener
+;;   (try (let* ((outstream ((@ transport open-output-stream)
+;; 			  (@ -ci ns-i-transport -o-p-e-n_-b-l-o-c-k-i-n-g) 0 0))
+;; 	      (outstreamutf8 (chain (aref -cc "@mozilla.org/intl/converter-output-stream;1") 
+;; 				    (create-instance (@ -ci ns-i-converter-output-stream)))))
+;; 	 ((@ outstreamutf8 init) outstream "UTF-8" 0 0)
+;; 	 (let* ((instream ((@ transport open-input-stream) 0 0 0))
+;; 		(instreamutf8 (chain (aref -cc "@mozilla.org/intl/converter-input-stream;1")
+;; 				     (create-instance (@ -ci ns-i-converter-input-stream)))))
+;; 	   ((@ instreamutf8 init) instream "UTF-8" 1024 0)))
+;;        (:catch (e) (lg (+ "REPL ERROR: " e))))
+;;   (let* ((context (or (chain (aref -cc "@mozilla.org/appshell/window-mediator;1")
+;; 			     (get-service (@ -ci ns-i-window-mediator)) (get-most-recent-window ""))
+;; 		      (chain (aref -cc "@mozilla.org/appshell/appShellService;1")
+;; 			     (get-service (@ -ci ns-i-app-shell-service)) hidden-d-o-m-window wrapped-j-s-object)))
+;; 	 (session (new (-r-e-p-l))))
+;;     ((@ session init) context)
+;;     (setf (@ session on-output) (lambda (string) ((@ outstreamutf8 write-string) string))
+;; 	  (@ session on-quit) (lambda () (lg (+ "REPL, Client closed connection: " 
+;; 					   (@ transport host) ":" (@ transport port)))
+;; 				((@ instream close))
+;; 				((@ outstream close))
+;; 				((@ sessions remove) session))) 
+;;     (lg (+ "REPL: client connected: " (@ transport host) ":" (@ transport port)
+;; 	   ":" context))
+;;     (let* ((pump (chain (aref -cc "@mozilla.org/network/input-stream-pump;1")
+;; 			(create-instance (@ -ci ns-i-input-stream-pump)))))
+;;       ((@ pump init) instream (- 1) (- 1) 0 0 f)
+;;       ((@ pump async-read)
+;;        (create on-start-request (lambda (request context) (lg "REPL start request"))
+;; 	       on-stop-request (lambda (request context status) (lg "REPL stop request")
+;; 				 ((@ session quit)))
+;; 	       on-data-available (lambda (request context input-stream offset count)
+;; 				   (defvar str (create))
+;; 				   ((@ instreamutf8 read-string) count str)
+;; 				   ((@ session receive) (@ str value))))
+;;        nil))
+;;     ((@ sessions add) session)))
+
+(defun send-buffers ()
+  (let* ((window-enum (chain (aref -cc "@mozilla.org/appshell/window-mediator;1")
+			     (get-service (@ -ci ns-i-window-mediator))
+			     (get-enumerator "")))
+	 (single-x-window (chain window-enum (get-next)))
+	 (buffers (@ single-x-window buffers buffer_history)))
+    (loop with out = "(:buffers ("
+	  for i from 0 below (length buffers)
+	  for buffer = (aref buffers i)
+	  do (incf out (+ "(:uri \"" (@ buffer document location href) "\" :scroll-y " (@ buffer scroll-y) ")"))
+	  finally (dump (+ #\Newline out "))" #\Newline)))))
+
+(defun stop ()
+  (lg "REPL: closing")
+  ((@ serv close))
+  ((@ sessions quit))
+  (setf serv nil))
+
+(defun is-active ()
+  (when serv true))
+
+(defun on-stop-listening (serv status))
+
+(defun observe (subject topic data)
+  ;; XXX 2015-04-24T21:21:56+00:00 Gabriel Laddel
+  ;; observe is a magic function
+  (cond ((string= topic "profile-after-change")
+	 (chain serv-observer (add-observer this "network:offline-status-changed" f))
+	 (when (chain srv-pref (get-branch "network.") (get-bool-pref "online"))
+	   (this start)))
+	((string= topic "network:offline-status-changed")
+	 (cond ((string= data "online") ((@ this start) port))
+	       ((string= data "offline") (when (is-active) ((@ this stop))))))
+	((string= topic "quit-application-granted")
+	 ((@ this stop)))))
+
+(defun set-context-window-type (window-type)
+  (setf context-window-type window-type))
+
+(start port)
+(add_hook "buffer_loaded_hook" #'send-buffers nil t)
+(add_hook "buffer_scroll_hook" #'send-buffers nil t)
+(add_hook "kill_buffer_hook"   #'send-buffers nil t)
+(add_hook "select_buffer_hook" #'send-buffers nil t)

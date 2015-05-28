@@ -1,0 +1,16 @@
+;; -*- mode: imath -*-
+;; This buffer is for notes you don't want to save, and for Lisp evaluation.
+;; If you want to create a file, visit that file with C-x C-f,
+;; then enter the text in that file's own buffer.
+{maxima zeta(s)=sum(1/n^s,n,1,inf) maxima}&{latex  \zeta\left(s\right)=\sum_{n=1}^{\infty }{\ifracd{1}{n^{s}}} latex}
+のグラフを描いてみよう。
+{maxima wxdraw2d(yrange=[-5,5],explicit(zeta(x),x,-5,10)) maxima}
+式の形からしても{maxima s>1 maxima}&{latex  s>1 latex}の範囲では単調減少しているように見える。
+{maxima s<1 maxima}&{latex  s<1 latex}ではどうなっているのか、詳細を見てみると、、、
+
+{maxima wxdraw2d(yrange=[-5,5],explicit(zeta(x),x,-10,2)) maxima}
+本当に拡大してみるとなにか波だっているように見える。
+{maxima wxdraw2d(yrange=[-0.1,0.1],explicit(zeta(x),x,-10,0)) maxima}
+ゼータ関数を微分してみる。項別微分が出来るので、
+{maxima 'diff(zeta(s),s)=sum(diff(1/n^s,s),n,1,inf) maxima}&{latex  \ifracd{d}{d\,s}\,\zeta\left(s\right)=-\sum_{n=1}^{\infty }{\ifrac{\log n}{n^{s}}} latex}
+となる。

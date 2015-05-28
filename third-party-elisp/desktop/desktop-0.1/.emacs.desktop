@@ -1,0 +1,117 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Mon Jun  2 05:16:39 2014
+;; Desktop file format version 206
+;; Emacs version 24.4.50.1
+
+;; Global section:
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name nil)
+(setq tags-table-list nil)
+(setq search-ring '("desktop" "dek" "bound" "function" "kill-curren" "next-line-fre" "edebug" "edbug" "tzg-url" "tx" "minor" "mode" "minor-mod" "system-ap" "rys" "sysem"))
+(setq regexp-search-ring '("gqq" "g" "\\.\\(GIF\\|JP\\(?:E?G\\)\\|P\\(?:BM\\|GM\\|N[GM]\\|PM\\)\\|SVG\\|TIFF?\\|X\\(?:[BP]M\\)\\|gif\\|jp\\(?:e?g\\)\\|p\\(?:bm\\|gm\\|n[gm]\\|pm\\)\\|svg\\|tiff?\\|x\\(?:[bp]m\\)\\)\\'" "balance-frma" "../../" "../" "(ag"))
+(setq register-alist (list (list :review-temp-buffers "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 23622 (get-buffer "scratch.lisp")))) mk)) (list :ibuffer-fullscreen "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 44810 (get-buffer "masamune.el")))) mk)) (list :prior-daily-agenda "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 44810 (get-buffer "masamune.el")))) mk)) (list ':desktop-dump13 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1276 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump12 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1276 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump11 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump10 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump9 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump8 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump7 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump6 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump5 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list :magit-fullscreen "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 58 (get-buffer "system-apropos.lisp")))) mk)) (list ':desktop-dump4 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 43326 (get-buffer "masamune.el")))) mk)) (list ':desktop-dump3 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 44016 (get-buffer "masamune.el")))) mk)) (list ':desktop-dump2 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 43794 (get-buffer "masamune.el")))) mk)) (list ':desktop-dump1 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 1 (get-buffer "*masamune*")))) mk)) (list ':desktop-dump0 "Unprintable entity" (let ((mk (make-marker))) (add-hook 'desktop-delay-hook (list 'lambda '() (list 'set-marker mk 44766 (get-buffer "masamune.el")))) mk))))
+(setq file-name-history '("/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/quicklisp/local-projects/masamune/system-apropos.lisp" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/scratch.lisp" "/home/francis/.emacs" "/home/francis/.notes" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "~/quicklisp/local-projects/advice-giver/" "/home/francis/.notes" "/home/francis/scratch.lisp" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/quicklisp/local-projects/masamune/system-apropos.lisp" "/home/francis/.emacs" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/quicklisp/local-projects/masamune/readme.org" "~/quicklisp/local-projects/masamune/" "/home/francis/quicklisp/local-projects/masamune/system.org" "~/quicklisp/local-projects/advice-giver/" "/home/francis/quicklisp/local-projects/advice-giver/ag-speak.el" "/home/francis/quicklisp/local-projects/advice-giver/system.org" "~/quicklisp/local-projects/advice-giver/" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/scratch.lisp" "~/quicklisp/local-projects/masamune/" "/home/francis/quicklisp/local-projects/masamune/system.org" "/home/francis/quicklisp/local-projects/masamune/readme.org" "/home/francis/quicklisp/local-projects/masamune/masamune.el" "/home/francis/quicklisp/local-projects/masamune/system-apropos.lisp" "/home/francis/quicklisp/local-projects/masamune/masamune.asd" "/home/francis/.emacs" "/home/francis/quicklisp/local-projects/masamune/system.org" "/home/francis/.notes" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/quicklisp/local-projects/masamune/system.org" "~/quicklisp/local-projects/masamune/" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/.emacs" "~/quicklisp/local-projects/masamune/research/" "~/quicklisp/local-projects/advice-giver/" "~/quicklisp/local-projects/masamune/" "~/quicklisp/local-projects/advice-giver/" "~/quicklisp/local-projects/masamune/" "/home/francis/.emacs" "~/quicklisp/local-projects/masamune/" "~/quicklisp/local-projects/masamune/'" "~/quicklisp/local-projects/advice-giver/" "/home/francis/quicklisp/local-projects/masamune/readme.org" "~/quicklisp/local-projects/masamune/system.org" "/home/francis/quicklisp/local-projects/masamune/emacs.lisp" "~/quicklisp/local-projects/masamune/" "~/quicklisp/local-projects/masamune/research/" "~/quicklisp/local-projects/masamune/" "~/lisp/emacs/" "~/quicklisp/local-projects/masamune/research/" "~/quicklisp/local-projects/masamune/" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/quicklisp/local-projects/masamune/.gitignore" "~/quicklisp/local-projects/masamune/research/" "~/quicklisp/local-projects/masamune/" "~/Downloads/" "~/quicklisp/local-projects/masamune/" "~/lisp/" "~/lisp/lice/" "~/lisp/emacs/src/" "/home/francis/lisp/emacs/configure" "/home/francis/.notes" "~/quicklisp/dists/quicklisp/software/cffi_0.12.0/doc/" "~/lisp/emacs/src/" "~/lisp/emacs/" "/usr/local/share/" "/usr/bin/install" "/home/francis/quicklisp/local-projects/advice-giver/network.lisp" "~/quicklisp/local-projects/masamune/emacs.lisp" "/home/francis/lisp/emacs/Makefile" "/home/francis/lisp/emacs/Makefile.in" "~/lisp/emacs/" "~/lisp/emacs/.gitignore" "/home/francis/lisp/emacs/autogen.sh" "~/lisp/emacs/install.org" "~/lisp/emacs/" "/home/francis/lisp/emacs/configure" "/home/francis/lisp/emacs/INSTALL.REPO" "/home/francis/lisp/emacs/INSTALL" "~/lisp/emacs/" "/home/francis/.notes" "/home/francis/quicklisp/local-projects/masamune/masamune.el" "/home/francis/.emacs" "~/lisp/emacs/" "~/lisp/emacs/etc/" "~/lisp/emacs/" "/home/francis/lisp/rs-emacs" "~/quicklisp/local-projects/" "/home/francis/.notes" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/quicklisp/local-projects/masamune/masamune.el" "/home/francis/quicklisp/local-projects/masamune/.git/COMMIT_EDITMSG" "/home/francis/quicklisp/local-projects/masamune/masamune.lisp" "/home/francis/quicklisp/local-projects/masamune/package.lisp" "/home/francis/quicklisp/local-projects/advice-giver/network.lisp" "/home/francis/.emacs"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/francis/.emacs.d/elpa/desktop-0.1/desktop.el"
+  "desktop.el"
+  'emacs-lisp-mode
+  '(visual-line-mode eldoc-mode elisp-slime-nav-mode flx-ido-mode highlight-symbol-mode paredit-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode)
+  22765
+  '(1551 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . prefer-utf-8-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/home/francis/.emacs"
+  ".emacs"
+  'emacs-lisp-mode
+  '(visual-line-mode eldoc-mode elisp-slime-nav-mode flx-ido-mode highlight-symbol-mode paredit-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode)
+  10157
+  '(10157 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/home/francis/scratch.lisp"
+  "scratch.lisp"
+  'emacs-lisp-mode
+  '(visual-line-mode eldoc-mode elisp-slime-nav-mode flx-ido-mode highlight-symbol-mode paredit-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode)
+  23622
+  '(22373 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/home/francis/quicklisp/local-projects/masamune/masamune.el"
+  "masamune.el"
+  'emacs-lisp-mode
+  '(visual-line-mode eldoc-mode elisp-slime-nav-mode flx-ido-mode highlight-symbol-mode paredit-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode)
+  44810
+  '(44904 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  nil
+  "*info*"
+  'Info-mode
+  '(visual-line-mode flx-ido-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode)
+  560556
+  '(524417 nil)
+  t
+  '("/usr/local/share/info/elisp" "Function Cells" ((history ("/usr/local/share/info/elisp" "Functions" 525137) ("/usr/local/share/info/elisp" "Top" 2878) ("/usr/local/share/info/elisp" "Modes" 1213929) ("/usr/local/share/info/elisp" "Minor Modes" 1267452) ("/usr/local/share/info/elisp" "Minor Mode Conventions" 1267670) ("/usr/local/share/info/elisp" "Minor Modes" 1267457) ("/usr/local/share/info/elisp" "Modes" 1213934) ("/usr/local/share/info/elisp" "Top" 3695) ("dir" "Top" 1042))))
+  '((tab-width . 8) (buffer-file-coding-system . utf-8-unix) (case-fold-search . t) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/home/francis/quicklisp/local-projects/masamune/system-apropos.lisp"
+  "system-apropos.lisp"
+  'lisp-mode
+  '(visual-line-mode eldoc-mode flx-ido-mode highlight-symbol-mode paredit-mode rainbow-delimiters-mode slime-mode global-auto-revert-mode rcirc-track-minor-mode)
+  58
+  '(922 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/usr/local/share/emacs/24.4.50/lisp/emacs-lisp/cl-macs.el.gz"
+  "cl-macs.el.gz"
+  'emacs-lisp-mode
+  '(visual-line-mode eldoc-mode elisp-slime-nav-mode flx-ido-mode highlight-symbol-mode paredit-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode)
+  26429
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . utf-8-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/home/francis/quicklisp/local-projects/advice-giver/ag.el"
+  "ag.el"
+  'emacs-lisp-mode
+  '(visual-line-mode eldoc-mode elisp-slime-nav-mode flx-ido-mode highlight-symbol-mode paredit-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode)
+  1534
+  '(2598 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . prefer-utf-8-unix) (truncate-lines)))
+
+(desktop-create-buffer 206
+  "/home/francis/lisp/org/agenda.org"
+  "agenda.org"
+  'org-mode
+  '(abbrev-mode visual-line-mode flx-ido-mode rainbow-delimiters-mode global-auto-revert-mode rcirc-track-minor-mode flyspell-mode)
+  1
+  '(nil nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix) (truncate-lines)))
+

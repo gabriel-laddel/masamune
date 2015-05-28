@@ -1,0 +1,1759 @@
+;; -*- emacs-lisp -*- vim:filetype=lisp
+;;*****************************************************************************
+;;*    Rosenmueller            format.tst                                     *
+;;*****************************************************************************
+;; adapted for Emacs by A. Politz
+;; ~< -------------------------------------------------------------------------
+(require 'cl-format)
+
+(ert-deftest format-000 ()
+  (should (equal (cl-format nil "foo bar")
+                 "foo bar")))
+
+(ert-deftest format-001 ()
+  (should (equal (cl-format nil "~10<foo~;bar~>")
+                 "foo    bar")))
+(ert-deftest format-002 ()
+  (should (equal (cl-format nil "~10:<foo~;bar~>")
+                 "  foo  bar")))
+
+(ert-deftest format-003 ()
+  (should (equal (cl-format nil "~10@<foo~;bar~>")
+                 "foo  bar  ")))
+
+(ert-deftest format-004 ()
+  (should (equal (cl-format nil "~10:@<foo~;bar~>")
+;;; #+(or XCL CLISP ALLEGRO OpenMCL LISPWORKS)
+                 "  foo bar ")))
+;; #+(or AKCL ECL CMU SBCL) " foo bar  "
+;; #-(or XCL CLISP AKCL ECL ALLEGRO CMU SBCL OpenMCL LISPWORKS) UNKNOWN
+(ert-deftest format-005 ()
+  (should (equal (cl-format nil "~10<foobar~>")
+                 "    foobar")))
+
+(ert-deftest format-006 ()
+  (should (equal (cl-format nil "~10:<foobar~>")
+                 "    foobar")))
+
+(ert-deftest format-007 ()
+  (should (equal (cl-format nil "~10@<foobar~>")
+                 "foobar    ")))
+
+(ert-deftest format-008 ()
+  (should (equal (cl-format nil "~10:@<foobar~>")
+                 "  foobar  ")))
+
+;; ~< ~s ~^ -----------------------------------------------------------------
+(ert-deftest format-009 ()
+  
+  (should (equal (cl-format nil "~15<~s~>" 'foo)
+                 "            foo")))
+
+
+(ert-deftest format-010 ()
+  (should (equal (cl-format nil "~15<~s~;~^~s~>" 'foo)
+                 "            foo")))
+
+(ert-deftest format-011 ()
+  (should (equal (cl-format nil "~15<~s~;~^~s~;~^~s~>" 'foo)
+                 "            foo")))
+
+(ert-deftest format-012 ()
+  (should (equal (cl-format nil "~15<~s~;~^~s~>" 'foo 'bar)
+                 "foo         bar")))
+
+(ert-deftest format-013 ()
+  (should (equal (cl-format nil "~15<~s~;~^~s~;~^~s~>" 'foo 'bar)
+                 "foo         bar")))
+
+(ert-deftest format-014 ()
+  (should (equal (cl-format nil "~15<~s~;~^~s~;~^~s~>" 'foo 'bar 'baz)
+                 "foo   bar   baz")))
+
+(ert-deftest format-015 ()
+  (should (equal (cl-format nil "~12<~s~;~^~s~;~^~s~>" 'foo 'bar 'baz)
+;;; #+(or CLISP ALLEGRO OpenMCL LISPWORKS)
+                 "foo  bar baz")))
+
+  ;; #+(or GCL CMU SBCL) "foo bar  baz"
+  ;; #-(or CLISP GCL ALLEGRO CMU SBCL OpenMCL LISPWORKS) UNKNOWN
+
+(ert-deftest format-016 ()
+  (should (equal (cl-format nil "~%;; ~<~%;; ~1:; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~;~
+ ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~;~
+ ~s~; ~s~; ~s~; ~s~;~>~%"               ; 2!
+                            'AAAAAAA 'BBBBBB 'CCCCCCCCCCCC
+                            'DDDDDDDDDDDDDD 'EEEE 'FFFFFFFFF 'GGGGGGGG
+                            'HHHHH 'IIII 'J 'KK 'LLL 'MMMM 'NNNNNN
+                            'OOOOOOOOOO 'PPPPPPPPPPPPPPP 'QQQQQQQ
+                            'RRRRRRRRRRRR 'S 'TTT 'UUUUUUUUU 'VVVVVVV
+                            'WWWWWWWWWW 'XXXXX 'YYYYYY 'ZZZZZZZZ)
+;;; #+XCL
+;;; "
+;;; ;;  AAAAAAA  BBBBBB CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE FFFFFFFFF GGGGGGGG
+;;; ;;  HHHHH  IIII  JKK LLL MMMM NNNNNN OOOOOOOOOO PPPPPPPPPPPPPPP QQQQQQQ
+;;; ;;  RRRRRRRRRRRR    S    TTT   UUUUUUUUU   VVVVVVV   WWWWWWWWWW   XXXXX
+;;; "
+;;;23456789;123456789;123456789;123456789;123456789;123456789;123456789;12
+;;; #-XCL
+                 "
+;; 
+;;  AAAAAAA BBBBBB CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE FFFFFFFFF GGGGGGGG HHHHH IIII JKK LLL MMMM NNNNNN OOOOOOOOOO PPPPPPPPPPPPPPP QQQQQQQ RRRRRRRRRRRR S TTTUUUUUUUUU VVVVVVV WWWWWWWWWW XXXXX
+")))
+
+
+(ert-deftest format-017 ()
+  (should (equal (cl-format nil "~%;; ~<~%;; ~1,50:; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~;~
+ ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~; ~s~;~
+ ~s~; ~s~; ~s~; ~s~;~>~%"               ; 2!
+                            'AAAAAAA 'BBBBBB 'CCCCCCCCCCCC 'DDDDDDDDDDDDDD 'EEEE 'FFFFFFFFF 'GGGGGGGG
+                            'HHHHH 'IIII 'J 'KK 'LLL 'MMMM 'NNNNNN 'OOOOOOOOOO 'PPPPPPPPPPPPPPP
+                            'QQQQQQQ
+                            'RRRRRRRRRRRR 'S 'TTT 'UUUUUUUUU 'VVVVVVV 'WWWWWWWWWW 'XXXXX 'YYYYYY
+                            'ZZZZZZZZ)
+;;; #+XCL
+;;; "
+;;; ;;  AAAAAAA  BBBBBB  CCCCCCCCCCCC  DDDDDDDDDDDDDD
+;;; ;;  EEEE  FFFFFFFFF  GGGGGGGG  HHHHH IIII JKK LLL
+;;; ;;  MMMM    NNNNNN   OOOOOOOOOO   PPPPPPPPPPPPPPP
+;;; ;;  QQQQQQQ  RRRRRRRRRRRR  S TTTUUUUUUUUU VVVVVVV
+;;; ;;  WWWWWWWWWW                              XXXXX
+;;; "
+;;;23456789;123456789;123456789;123456789;123456789;
+;;; #-XCL
+                 "
+;; 
+;;  AAAAAAA BBBBBB CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE FFFFFFFFF GGGGGGGG HHHHH IIII JKK LLL MMMM NNNNNN OOOOOOOOOO PPPPPPPPPPPPPPP QQQQQQQ RRRRRRRRRRRR S TTTUUUUUUUUU VVVVVVV WWWWWWWWWW XXXXX
+")))
+
+
+(labels ((format-blocksatz (stream parts prefix &optional line-length start-p end-p)
+           (if (null stream)
+               (with-output-to-string
+                 (format-blocksatz standard-output parts prefix line-length start-p end-p))
+             (unless (endp parts)
+               (setq line-length (or line-length ;; #|(sys::line-length stream)|#
+                                     72))
+               (when start-p (cl-format stream prefix))
+               (loop do
+;;; Hier ist parts /= NIL
+                     (let ((pos (current-column))
+;;; #+CMU lisp::charpos
+;;; #+SBCL sb-kernel:charpos
+;;; #+OpenMCL ccl::column
+;;; #+LISPWORKS stream:stream-line-column
+                           (parts-now '()))
+                       (let ((pos-now pos))
+                         (loop do
+                               (when (endp parts) (return))
+                               (let* ((part (first parts))
+                                      (part-length (length part)))
+                                 (unless (null parts-now)
+                                   (when (> (+ pos-now part-length) line-length)
+                                     (return)
+                                     ) )
+                                 (pop parts)
+                                 (push part parts-now)
+                                 (incf pos-now part-length)
+                                 ) ) )
+;;; Hier ist parts-now /= NIL
+                       (apply #'cl-format
+                              stream
+                              (if (and (endp parts) (not end-p))
+                                  (apply 'concatenate 'string
+                                         (make-list (length parts-now) "~a"))
+                                (concatenate 'string
+                                             "~"
+                                             (prin1-to-string (max 0 (- line-length pos)))
+                                             (if (= (length parts-now) 1) "@" "")
+                                             "<"
+                                             (apply #'concatenate 'string
+                                                    "~a"
+                                                    (make-list (1- (length parts-now)) "~;~a")
+                                                    )
+                                             "~>"
+                                             ))
+                              (nreverse parts-now)))
+                     (when (endp parts) (return))
+                     (cl-format stream prefix))))))
+       
+
+  (ert-deftest format-018 ()
+    (should (equal (format-blocksatz nil
+                                     (mapcar #'(lambda (x) (cl-format nil " ~a" x))
+                                             '(AAAAAAA BBBBBB CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE FFFFFFFFF
+                                                       GGGGGGGG HHHHH IIII J KK LLL MMMM NNNNNN OOOOOOOOOO
+                                                       PPPPPPPPPPPPPPP QQQQQQQ RRRRRRRRRRRR S TTT UUUUUUUUU VVVVVVV
+                                                       WWWWWWWWWW XXXXX YYYYYY ZZZZZZZZ)
+                                             )
+                                     "~%;; "
+                                     nil t nil
+                                     )
+;;; #+(or CLISP ALLEGRO LISPWORKS)
+                   "
+;;  AAAAAAA  BBBBBB  CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE FFFFFFFFF GGGGGGGG
+;;  HHHHH  IIII  J KK LLL MMMM NNNNNN OOOOOOOOOO PPPPPPPPPPPPPPP QQQQQQQ
+;;  RRRRRRRRRRRR   S  TTT  UUUUUUUUU  VVVVVVV  WWWWWWWWWW  XXXXX  YYYYYY
+;;  ZZZZZZZZ")))
+  ;; #+(or CMU SBCL)
+  ;; "
+  ;; ;;  AAAAAAA BBBBBB CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE  FFFFFFFFF  GGGGGGGG
+  ;; ;;  HHHHH IIII J KK LLL MMMM NNNNNN OOOOOOOOOO  PPPPPPPPPPPPPPP  QQQQQQQ
+  ;; ;;  RRRRRRRRRRRR  S  TTT  UUUUUUUUU  VVVVVVV  WWWWWWWWWW  XXXXX   YYYYYY
+  ;; ;;  ZZZZZZZZ"
+  ;; #-(or CLISP ALLEGRO CMU SBCL LISPWORKS) UNKNOWN
+                                        ;123456789;123456789;123456789;123456789;123456789;123456789;123456789;12
+
+  (ert-deftest format-019 ()
+    (should (equal (format-blocksatz nil
+                                     (mapcar #'(lambda (x) (cl-format nil " ~a" x))
+                                             '(AAAAAAA BBBBBB CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE FFFFFFFFF
+                                                       GGGGGGGG HHHHH IIII J KK LLL MMMM NNNNNN OOOOOOOOOO
+                                                       PPPPPPPPPPPPPPP QQQQQQQ RRRRRRRRRRRR S TTT UUUUUUUUU VVVVVVV
+                                                       WWWWWWWWWW XXXXX YYYYYY ZZZZZZZZ)
+                                             )
+                                     "~%;; "
+                                     50 t t
+                                     )
+;;; #+(or CLISP ALLEGRO LISPWORKS)
+                   "
+;;  AAAAAAA   BBBBBB  CCCCCCCCCCCC  DDDDDDDDDDDDDD
+;;  EEEE  FFFFFFFFF  GGGGGGGG  HHHHH IIII J KK LLL
+;;  MMMM NNNNNN OOOOOOOOOO PPPPPPPPPPPPPPP QQQQQQQ
+;;  RRRRRRRRRRRR    S    TTT   UUUUUUUUU   VVVVVVV
+;;  WWWWWWWWWW      XXXXX      YYYYYY     ZZZZZZZZ"))))
+  ;; #+(or CMU SBCL)
+  ;; "
+  ;; ;;  AAAAAAA  BBBBBB  CCCCCCCCCCCC   DDDDDDDDDDDDDD
+  ;; ;;  EEEE FFFFFFFFF GGGGGGGG HHHHH IIII  J  KK  LLL
+  ;; ;;  MMMM NNNNNN OOOOOOOOOO PPPPPPPPPPPPPPP QQQQQQQ
+  ;; ;;  RRRRRRRRRRRR   S   TTT    UUUUUUUUU    VVVVVVV
+  ;; ;;  WWWWWWWWWW     XXXXX      YYYYYY      ZZZZZZZZ"
+  ;; #-(or CLISP ALLEGRO CMU SBCL LISPWORKS) UNKNOWN
+                                        ;123456789;123456789;123456789;123456789;123456789;
+
+;;; unklare Bedeutung (Fehler in Sprachbeschreibung?)
+;;; (cl-format nil "~%;; ~{~<~%;; ~1:; ~s~>~^,~}.~%" liste) ""
+;;; (cl-format nil "~%;; ~{~<~%;; ~1,50:; ~s~>~^,~}.~%" liste) ""
+
+(ert-deftest format-020 ()
+  (should (equal (cl-format nil "~%;; ~{~<~%;; ~1,50:; ~s~>~^,~}.~%"
+                            '(AAAAAAA BBBBBB CCCCCCCCCCCC DDDDDDDDDDDDDD EEEE FFFFFFFFF
+                                      GGGGGGGG HHHHH IIII J KK LLL MMMM NNNNNN OOOOOOOOOO
+                                      PPPPPPPPPPPPPPP QQQQQQQ RRRRRRRRRRRR S TTT UUUUUUUUU VVVVVVV
+                                      WWWWWWWWWW XXXXX YYYYYY ZZZZZZZZ)) 
+                 "
+;;  AAAAAAA, BBBBBB, CCCCCCCCCCCC, DDDDDDDDDDDDDD,
+;;  EEEE, FFFFFFFFF, GGGGGGGG, HHHHH, IIII, J, KK,
+;;  LLL, MMMM, NNNNNN, OOOOOOOOOO,
+;;  PPPPPPPPPPPPPPP, QQQQQQQ, RRRRRRRRRRRR, S,
+;;  TTT, UUUUUUUUU, VVVVVVV, WWWWWWWWWW, XXXXX,
+;;  YYYYYY, ZZZZZZZZ.
+")))
+
+
+;; ~f -------------------------------------------------------------------------
+;; Format F
+
+(ert-deftest format-021 ()
+  
+  (flet ((foo (x)
+           (cl-format nil "~6,2f|~6,2,1,'*f|~6,2,,'?f|~6f|~,2f|~f" x x x x
+                      x x)))
+
+    (should (equal (foo 3.14159)
+;;;       "  3.14| 31.42|  3.14|3.1416|3.14|3.141590116672995328"
+                   "  3.14| 31.42|  3.14|3.1416|3.14|3.14159"))
+
+    (should (equal (foo -3.14159)
+;;;       " -3.14|-31.42| -3.14|-3.142|-3.14|-3.141590116672995328"
+                   " -3.14|-31.42| -3.14|-3.142|-3.14|-3.14159"))
+
+    (should (equal (foo 100.0)
+                   "100.00|******|100.00| 100.0|100.00|100.0"))
+
+    (should (equal (foo 1234.0)
+                   "1234.00|******|??????|1234.0|1234.00|1234.0"))
+
+    (should (equal (foo 0.006)
+                   "  0.01|  0.06|  0.01| 0.006|0.01|0.006"))))
+
+(ert-deftest format-022 ()
+  (should (equal (cl-format nil "~5,2,-13f" 1.1e13)
+                 " 1.10")))
+
+
+(ert-deftest format-023 ()
+  (should (equal (cl-format nil "~9,0,6f" 3.14159)
+                 " 3141590.")))
+
+
+    ;; ANSI CL is not clear here whether the width is ignored or not,
+    ;; but it makes more sense to print non-numeric arguments properly aligned.
+(ert-deftest format-024 ()
+  (should (equal (cl-format nil "~5d" (quote A))
+;;; #-(or CMU SBCL)
+                 "    A")))
+;; #+(or CMU SBCL) "A"
+
+(ert-deftest format-025 ()
+  (should (equal (cl-format nil "~5,3f" (quote A))
+;;; #-(or CMU SBCL)
+                 "    A")))
+;; #+(or CMU SBCL) "A    "
+
+    ;; (ert-deftest format-026 ()
+    ;;   (should (equal (cl-format nil "~5,3F" #C(1.2 0.3))
+    ;;                  "#C(1.2 0.3)")))
+
+(ert-deftest format-027 ()
+  (should (equal (cl-format nil "~5,3f" (/ (float 2) 3))
+                 "0.667")))
+
+
+(ert-deftest format-028 ()
+  (should (equal (cl-format nil "~1f" 10)
+                 "10.")))
+
+
+(ert-deftest format-029 ()
+  (should (equal (cl-format nil "~0f" 10)
+                 "10.")))
+
+
+(ert-deftest format-030 ()
+  (should (equal (cl-format nil "~1,,,'xf" -10)
+                 "x")))
+
+
+(ert-deftest format-031 ()
+  (should (equal (cl-format nil "~2f" 1234567.1234)
+                 "1234567.")))
+
+
+;; ~e -------------------------------------------------------------------------
+;; Format E
+
+(ert-deftest format-032 ()
+  (flet ((foo (x)
+           (cl-format nil
+            "~9,2,1,,'*e|~10,3,2,2,'?,,'$e|~9,3,2,-2,'%@e|~9,2e"
+            x x x x)))
+            
+    (should (equal (foo 3.14159)
+                   "  3.14e+0| 31.42$-01|+.003e+03|  3.14e+0"))
+
+    (should (equal (foo -3.14159)
+                   " -3.14e+0|-31.42$-01|-.003e+03| -3.14e+0"))
+
+    (should (equal (foo 1100.0)
+                   "  1.10e+3| 11.00$+02|+.001e+06|  1.10e+3"))
+
+    (should (equal (foo 1100.0E0)
+;;; #+XCL "  1.10D+3| 11.00$+02|+.001D+06|  1.10D+3"
+;;; #+(or CLISP AKCL)
+                   "  1.10e+3| 11.00$+02|+.001e+06|  1.10e+3"))
+    ;; #+(or ALLEGRO CMU SBCL) "  1.10d+3| 11.00$+02|+.001d+06|  1.10d+3"
+    ;; #-(or XCL CLISP AKCL ALLEGRO CMU SBCL) UNKNOWN
+
+    (should (equal (foo 1.1E13)
+                   "*********| 11.00$+12|+.001e+16| 1.10e+13"))))
+
+
+  ;; ERROR beim read der zahl (foo 1.1L120)
+
+(ert-deftest format-033 ()
+  (should (equal (cl-format nil "_~10,4e_" 1.2)
+                 "_ 1.2000e+0_")))
+
+
+(ert-deftest format-034 ()
+  (should (equal (cl-format nil "~9,2,1e" 0.0314159)
+                 "  3.14e-2")))
+
+
+  ;; http://sourceforge.net/tracker/index.php?func=detail&aid=1790496&group_id=1355&atid=101355
+(ert-deftest format-035 ()
+  (should (equal (cl-format nil "~ve" 21 46e7)
+                 "               4.6e+8")))
+
+(ert-deftest format-036 ()
+  (should (equal (cl-format nil "~21e" 466e17)
+                 "             4.66e+19")))
+
+
+  ;; this code generates the following 12 tests
+  ;; not long, see http://clisp.podval.org/impnotes/num-concepts.html#long-float-wider-than-bignum
+(ert-deftest format-037 ()
+  (dolist (lm '("least" "most"))
+    (dolist (pn '("positive" "negative"))
+      (dolist (ty '("float")) ; "long"
+        (let* ((s (concat lm "-" pn "-" ty))
+               (v (symbol-value (intern s)))
+               (e (cl-format nil "~e" v)))
+          (should (eql v (ignore-errors
+                           (car (read-from-string e))))))))))
+
+
+;; ~% ~d ~e (v) ---------------------------------------------------------------
+(ert-deftest format-038 ()
+  
+  (should
+   (equal
+    (let (x)
+      (dotimes (k 13 x)
+        (setq x (cons (cl-format nil "~%Scale factor ~2d: |~13,6,2,ve|"
+                                 (- k 5) (- k 5) 3.14159) x))))
+                 '("
+Scale factor  7: | 3141590.e-06|" "
+Scale factor  6: | 314159.0e-05|" "
+Scale factor  5: | 31415.90e-04|" "
+Scale factor  4: | 3141.590e-03|" "
+Scale factor  3: | 314.1590e-02|" "
+Scale factor  2: | 31.41590e-01|" "
+Scale factor  1: | 3.141590e+00|" "
+Scale factor  0: | 0.314159e+01|" "
+Scale factor -1: | 0.031416e+02|" "
+Scale factor -2: | 0.003142e+03|" "
+Scale factor -3: | 0.000314e+04|" "
+Scale factor -4: | 0.000031e+05|" "
+Scale factor -5: | 0.000003e+06|"))))
+
+
+
+(ert-deftest format-039 ()
+  (should (equal (cl-format nil "~g" 1e22) "10000000000000000000000.    ")))
+
+
+(ert-deftest format-040 ()
+  (should (equal (cl-format nil "~g" 1e23) "100000000000000000000000.    ")))
+
+
+(ert-deftest format-041 ()
+  (should (equal (cl-format nil "~g" 1e24) "1000000000000000000000000.    ")))
+
+
+(ert-deftest format-042 ()
+  (should (equal (cl-format nil "~f" 1e22) "10000000000000000000000.0")))
+
+
+(ert-deftest format-043 ()
+  (should (equal (cl-format nil "~f" 1e23) "100000000000000000000000.0")))
+
+
+(ert-deftest format-044 ()
+  (should (equal (cl-format nil "~f" 1e24) "1000000000000000000000000.0")))
+
+
+
+(ert-deftest format-045 ()
+  (should (equal (cl-format nil "~e" 1e22) "1.0e+22")))
+
+
+(ert-deftest format-046 ()
+  (should (equal (cl-format nil "~e" 1e23) "1.0e+23")))
+
+
+(ert-deftest format-047 ()
+  (should (equal (cl-format nil "~e" 1e24) "1.0e+24")))
+
+
+(ert-deftest format-048 ()
+  (should (equal (loop for i from 0 to 50
+                       for x = (expt 10.0 i)
+                       for s = (cl-format nil "~g" x)
+                       when (char-equal ?0 (aref s (1+ (position ?\. s))))
+                       collect x)
+                 nil)))
+
+
+  ;; http://sourceforge.net/tracker/index.php?func=detail&aid=1928759&group_id=1355&atid=101355
+(ert-deftest format-049 ()
+  (should (equal (cl-format nil "~8e" .8999999e0)  "  9.0e-1")))
+
+
+(ert-deftest format-050 ()
+  (should (equal (cl-format nil "~8e" .999999e0)   "  1.0e+0")))
+
+
+(ert-deftest format-051 ()
+  (should (equal (cl-format nil "~8e" .999999e9)   "  1.0e+9")))
+
+
+(ert-deftest format-052 ()
+  (should (equal (cl-format nil "~8e" .999999e10)  " 1.0e+10")))
+
+
+(ert-deftest format-053 ()
+  (should (equal (cl-format nil "~8e" .999999e-10) " 1.0e-10")))
+
+
+(ert-deftest format-054 ()
+  (should (equal (cl-format nil "~8e" .999999e-9)  "  1.0e-9")))
+
+
+;; ~g -------------------------------------------------------------------------
+
+
+(ert-deftest format-055 ()
+  (flet ((foo (x)
+           (cl-format nil "~9,2,1,,'*g|~9,3,2,3,'?,,'$g|~9,3,2,0,'%g|~9,2g"
+                      x x x x)))
+    (should (equal (foo 0.0314159)
+                   "  3.14e-2|314.2$-04|0.314e-01|  3.14e-2"))
+
+    (should (equal (foo 0.314159)
+                   "  0.31   |0.314    |0.314    | 0.31    "))
+
+    (should (equal (foo 3.14159)
+                   "   3.1   | 3.14    | 3.14    |  3.1    "))
+
+    (should (equal (foo 31.4159)
+                   "   31.   | 31.4    | 31.4    |  31.    "))
+
+    (should (equal (foo 314.159)
+                   "  3.14e+2| 314.    | 314.    |  3.14e+2"))
+
+    (should (equal (foo 3141.59)
+                   "  3.14e+3|314.2$+01|0.314e+04|  3.14e+3"))
+
+    (should (equal (foo 3141.59e0)
+;;; #+XCL "  3.14D+3|314.2$+01|0.314D+04|  3.14D+3"
+;;; #+(or CLISP AKCL)
+                   "  3.14e+3|314.2$+01|0.314e+04|  3.14e+3"))
+    ;; #+(or ALLEGRO CMU SBCL) "  3.14d+3|314.2$+01|0.314d+04|  3.14d+3"
+    ;; #-(or XCL CLISP AKCL ALLEGRO CMU SBCL) UNKNOWN
+
+    (should (equal (foo 3.14E12)
+                   "*********|314.0$+10|0.314e+13| 3.14e+12"))))
+
+
+                                        ;(foo 3.14L120 und L1200) fehler in numerik
+
+;; ~a -------------------------------------------------------------------------
+
+(ert-deftest format-056 ()
+  (should (equal (cl-format nil "foo")
+                 "foo")))
+
+
+(ert-deftest format-057 ()
+  (should (equal (cl-format nil "format-a:--~a--ende" (quote AB\c))
+                 "format-a:--ABc--ende")))
+
+
+(ert-deftest format-058 ()
+  (let ((y "elephant"))
+
+    (should (equal (cl-format nil "Look at the ~a!" y)
+                   "Look at the elephant!"))))
+
+
+(ert-deftest format-059 ()
+  (should (equal (cl-format nil "format-%:--~%--1-newline-*")
+                 "format-%:--
+--1-newline-*")))
+
+
+(ert-deftest format-060 ()
+  (should (equal (cl-format nil "format-%:--~3%--3-newline-*")
+                 "format-%:--
+
+
+--3-newline-*")))
+
+
+(ert-deftest format-061 ()
+  (should (equal (cl-format nil "format-a:--~5a--ende-*" (quote AB\;))
+                 "format-a:--AB;  --ende-*")))
+
+
+(ert-deftest format-062 ()
+  (should (equal (cl-format nil "format-a:--~5,2a--ende-*" (quote AB\;))
+                 "format-a:--AB;  --ende-*")))
+
+
+(ert-deftest format-063 ()
+  (should (equal (cl-format nil "format-a:--~5,2,3a--ende-*" (quote AB\;))
+                 "format-a:--AB;   --ende-*")))
+
+
+(ert-deftest format-064 ()
+  (should (equal (cl-format nil "format-a:--~5,2,3,'*a--ende-*" (quote AB\;))
+                 "format-a:--AB;***--ende-*")))
+
+
+(ert-deftest format-065 ()
+  (should (equal (cl-format nil "format-a:--~@a--ende-*" (quote AB\;))
+                 "format-a:--AB;--ende-*")))
+
+
+(ert-deftest format-066 ()
+  (should (equal (cl-format nil "format-a:--~5@a--ende-*" (quote AB\;))
+                 "format-a:--  AB;--ende-*")))
+
+
+(ert-deftest format-067 ()
+  (should (equal (cl-format nil "format-a:--~5,2@a--ende-*" (quote AB\;))
+                 "format-a:--  AB;--ende-*")))
+
+
+(ert-deftest format-068 ()
+  (should (equal (cl-format nil "format-a:--~5,2,3@a--ende-*" (quote AB\;))
+                 "format-a:--   AB;--ende-*")))
+
+
+(ert-deftest format-069 ()
+  (should (equal (cl-format nil "format-a:--~5,2,3,'*@a--ende-*" (quote AB\;))
+                 "format-a:--***AB;--ende-*")))
+
+
+(ert-deftest format-070 ()
+  (should (equal (cl-format nil "format-a:--~:a--ende-*" (quote (AB\; nil XYZ)))
+                 "format-a:--(AB; nil XYZ)--ende-*")))
+
+
+
+(ert-deftest format-071 ()
+  (should (equal (cl-format nil "format-s:--~s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;--ende-*")))
+
+(ert-deftest format-072 ()
+  (should (equal (cl-format nil "format-s:--~4s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;--ende-*")))
+
+
+(ert-deftest format-073 ()
+  (should (equal (cl-format nil "format-s:--~4,2s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;--ende-*")))
+
+
+(ert-deftest format-074 ()
+  (should (equal (cl-format nil "format-s:--~4,2,3s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;   --ende-*")))
+
+
+(ert-deftest format-075 ()
+  (should (equal (cl-format nil "format-s:--~4,2,3,'*s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;***--ende-*")))
+
+
+(ert-deftest format-076 ()
+  (should (equal (cl-format nil "format-s:--~@s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;--ende-*")))
+
+(ert-deftest format-077 ()
+  (should (equal (cl-format nil "format-s:--~4@s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;--ende-*")))
+
+
+(ert-deftest format-078 ()
+  (should (equal (cl-format nil "format-s:--~4,2@s--ende-*" (quote AB\;))
+                 "format-s:--AB\\;--ende-*")))
+
+
+(ert-deftest format-079 ()
+  (should (equal (cl-format nil "format-s:--~4,2,3@s--ende-*" (quote AB\;))
+                 "format-s:--   AB\\;--ende-*")))
+
+
+(ert-deftest format-080 ()
+  (should (equal (cl-format nil "format-s:--~4,2,3,'*@s--ende-*" (quote AB\;))
+                 "format-s:--***AB\\;--ende-*")))
+
+
+(ert-deftest format-081 ()
+  (should (equal (cl-format nil "format-s:--~:s--ende-*" (quote (AB\; nil XYZ)))
+                 "format-s:--(AB\\; nil XYZ)--ende-*")))
+
+;; #-(or XCL CLISP AKCL ALLEGRO CMU SBCL LISPWORKS) UNKNOWN
+
+(ert-deftest format-082 ()
+  (let ((x 5))
+
+    (should (equal (cl-format nil "The answer is ~d." x)
+                   "The answer is 5."))
+
+    (should (equal (cl-format nil "The answer is ~3d." x)
+                   "The answer is   5."))
+
+    (should (equal (cl-format nil "The answer is ~3,'0d." x)
+                   "The answer is 005."))
+
+    (should (equal (cl-format nil "The answer is ~:d." (expt 47 x))
+                   "The answer is 229,345,007."))
+
+    (should (equal (cl-format nil "decimal:~d, width=5:~5d-*" 10 10)
+                   "decimal:10, width=5:   10-*"))
+
+    (should (equal (cl-format nil "format-d:--~d--ende-*" 123)
+                   "format-d:--123--ende-*"))
+
+    (should (equal (cl-format nil "format-d:--~10d--ende-*" 123)
+                   "format-d:--       123--ende-*"))
+
+    (should (equal (cl-format nil "format-d:--~10,'?d--ende-*" 123)
+                   "format-d:--???????123--ende-*"))
+
+    (should (equal (cl-format nil "format-d:--~@d--ende-*" 123)
+                   "format-d:--+123--ende-*"))
+
+    (should (equal (cl-format nil "format-d:--~10@d--ende-*" 123)
+                   "format-d:--      +123--ende-*"))
+
+    (should (equal (cl-format nil "format-d:--~10,'?@d--ende-*" 123)
+                   "format-d:--??????+123--ende-*"))))
+
+
+(ert-deftest format-083 ()
+  (should (equal (cl-format nil "format-b:--~b--ende-*" 123)
+                 "format-b:--1111011--ende-*")))
+
+
+(ert-deftest format-084 ()
+  (should (equal (cl-format nil "format-b:--~10b--ende-*" 123)
+                 "format-b:--   1111011--ende-*")))
+
+
+(ert-deftest format-085 ()
+  (should (equal (cl-format nil "format-b:--~10,'?b--ende-*" 123)
+                 "format-b:--???1111011--ende-*")))
+
+
+(ert-deftest format-086 ()
+  (should (equal (cl-format nil "format-b:--~:b--ende-*" 123)
+                 "format-b:--1,111,011--ende-*")))
+
+
+(ert-deftest format-087 ()
+  (should (equal (cl-format nil "format-b:--~10:b--ende-*" 123)
+                 "format-b:-- 1,111,011--ende-*")))
+
+
+(ert-deftest format-088 ()
+  (should (equal (cl-format nil "format-b:--~10,'?:b--ende-*" 123)
+                 "format-b:--?1,111,011--ende-*")))
+
+
+(ert-deftest format-089 ()
+  (should (equal (cl-format nil "format-b:--~10,'?,'.:b--ende-*" 123)
+                 "format-b:--?1.111.011--ende-*")))
+
+
+(ert-deftest format-090 ()
+  (should (equal (cl-format nil "format-b:--~@b--ende-*" 123)
+                 "format-b:--+1111011--ende-*")))
+
+
+(ert-deftest format-091 ()
+  (should (equal (cl-format nil "format-b:--~10@b--ende-*" 123)
+                 "format-b:--  +1111011--ende-*")))
+
+
+(ert-deftest format-092 ()
+  (should (equal (cl-format nil "format-b:--~10,'?@b--ende-*" 123)
+                 "format-b:--??+1111011--ende-*")))
+
+
+(ert-deftest format-093 ()
+  (should (equal (cl-format nil "format-b:--~:@b--ende-*" 123)
+                 "format-b:--+1,111,011--ende-*")))
+
+(ert-deftest format-094 ()
+  (should (equal (cl-format nil "format-o:--~o--ende-*" 123)
+                 "format-o:--173--ende-*")))
+
+
+(ert-deftest format-095 ()
+  (should (equal (cl-format nil "format-o:--~10o--ende-*" 123)
+                 "format-o:--       173--ende-*")))
+
+
+(ert-deftest format-096 ()
+  (should (equal (cl-format nil "format-o:--~10,'?o--ende-*" 123)
+                 "format-o:--???????173--ende-*")))
+
+
+(ert-deftest format-097 ()
+  (should (equal (cl-format nil "format-o:--~@o--ende-*" 123)
+                 "format-o:--+173--ende-*")))
+
+
+(ert-deftest format-098 ()
+  (should (equal (cl-format nil "format-o:--~10@o--ende-*" 123)
+                 "format-o:--      +173--ende-*")))
+
+(ert-deftest format-099 ()
+  (should (equal (cl-format nil "format-x:--~x--ende-*" 123)
+                 "format-x:--7b--ende-*")))
+
+
+(ert-deftest format-100 ()
+  (should (equal (cl-format nil "format-x:--~10x--ende-*" 123)
+                 "format-x:--        7b--ende-*")))
+
+
+(ert-deftest format-101 ()
+  (should (equal (cl-format nil "format-x:--~10,'?x--ende-*" 123)
+                 "format-x:--????????7b--ende-*")))
+
+
+(ert-deftest format-102 ()
+  (should (equal (cl-format nil "format-x:--~10:x--ende-*" 123)
+                 "format-x:--        7b--ende-*")))
+
+
+(ert-deftest format-103 ()
+  (should (equal (cl-format nil "format-x:--~@x--ende-*" 123)
+                 "format-x:--+7b--ende-*")))
+
+
+(ert-deftest format-104 ()
+  (should (equal (cl-format nil "format-x:--~10@x--ende-*" 123)
+                 "format-x:--       +7b--ende-*")))
+
+(ert-deftest format-105 ()
+  (should (equal (cl-format nil "format-r:--~20r--ende-*" 123)
+                 "format-r:--63--ende-*")))
+
+
+(ert-deftest format-106 ()
+  (should (equal (cl-format nil "format-r:--~20,10r--ende-*" 123)
+                 "format-r:--        63--ende-*")))
+
+
+(ert-deftest format-107 ()
+  (should (equal (cl-format nil "format-r:--~20@r--ende-*" 123)
+                 "format-r:--+63--ende-*")))
+
+
+(ert-deftest format-108 ()
+  (should (equal (cl-format nil "format-r:--~r--ende-*" 9)
+                 "format-r:--nine--ende-*")))
+
+
+(ert-deftest format-109 ()
+  (should (equal (cl-format nil "format-r:--~:r--ende-*" 9)
+                 "format-r:--ninth--ende-*")))
+
+
+(ert-deftest format-110 ()
+  (should (equal (cl-format nil "format-r:--~@r--ende-*" 9)
+                 "format-r:--IX--ende-*")))
+
+
+(ert-deftest format-111 ()
+  (should (equal (cl-format nil "format-r:--~:@r--ende-*" 9)
+                 "format-r:--VIIII--ende-*")))
+
+(ert-deftest format-112 ()
+  (should (equal (cl-format nil "format-p:--~d  object~p-*" 1 1)
+                 "format-p:--1  object-*")))
+
+
+(ert-deftest format-113 ()
+  (should (equal (cl-format nil "format-p:--~d  object~p-*" 2 2)
+                 "format-p:--2  objects-*")))
+
+
+(ert-deftest format-114 ()
+  (should (equal (cl-format nil "format-p:--~d  bab~@p-*" 1 1)
+                 "format-p:--1  baby-*")))
+
+
+(ert-deftest format-115 ()
+  (should (equal (cl-format nil "format-p:--~d  bab~@p-*" 2 2)
+                 "format-p:--2  babies-*")))
+
+
+(ert-deftest format-116 ()
+  (should (equal (cl-format nil "format-p:--~d  object~:p-*" 1)
+                 "format-p:--1  object-*")))
+
+
+(ert-deftest format-117 ()
+  (should (equal (cl-format nil "format-p:--~d  object~:p-*" 2)
+                 "format-p:--2  objects-*")))
+
+
+(ert-deftest format-118 ()
+  (should (equal (cl-format nil "format-p:--~d  bab~:@p-*" 1)
+                 "format-p:--1  baby-*")))
+
+(ert-deftest format-119 ()
+  (should (equal (cl-format nil "format-&:--~%~&--1-newline-*")
+                 "format-&:--
+--1-newline-*")))
+
+
+(ert-deftest format-120 ()
+  (should (equal (cl-format nil "format-&:--~%~3&--3-newline-*")
+                 "format-&:--
+
+
+--3-newline-*")))
+
+(ert-deftest format-121 ()
+  (should (equal (cl-format nil "format-tilde:--~~--1-tilde-*")
+                 "format-tilde:--~--1-tilde-*")))
+
+
+(ert-deftest format-122 ()
+  (should (equal (cl-format nil "format-tilde:--~3~--3-tilden-*")
+                 "format-tilde:--~~~--3-tilden-*")))
+
+
+(ert-deftest format-123 ()
+  (should (equal (cl-format nil "format-|:----1-ff-*")
+                 "format-|:----1-ff-*")))
+
+
+(ert-deftest format-124 ()
+  (should (equal (cl-format nil "format-|:----2-ff-*")
+                 "format-|:----2-ff-*")))
+
+
+(ert-deftest format-125 ()
+  (should (equal (cl-format nil
+                  "format-<nl>:~
+	 	        same line no space despite 2*<tab> and sp-*")
+                 "format-<nl>:same line no space despite 2*<tab> and sp-*")))
+
+
+(ert-deftest format-126 ()
+  (should (equal (cl-format nil "format-<nl>:~@
+	                 new beginning of line despite <tab> + sp-*")
+                 "format-<nl>:
+new beginning of line despite <tab> + sp-*")))
+
+
+(ert-deftest format-127 ()
+  (should (equal (cl-format nil "format-<nl>:~:
+	gleiche Zeile aber ein tab vor Anfang-*")
+                 "format-<nl>:	gleiche Zeile aber ein tab vor Anfang-*")))
+
+
+(ert-deftest format-128 ()
+  (should (equal (cl-format nil "format-?:***~a***~?***~a***-*" 1 "+++~s+++~s+++" (quote
+                                                                               (A B)) 2)
+                 "format-?:***1***+++A+++B+++***2***-*")))
+
+
+(ert-deftest format-129 ()
+  (should (equal (cl-format nil "format-?:***~a***~?***~a***-*" 1 "+++++++++++++" nil 2)
+                 "format-?:***1***+++++++++++++***2***-*")))
+
+
+(ert-deftest format-130 ()
+  (should (equal (cl-format nil "~|(AAAAAAAA BBBBBB ccccccc dddddddd~)")
+                 "aaaaaaaa bbbbbb ccccccc dddddddd")))
+
+
+(ert-deftest format-131 ()
+  (should (equal (cl-format nil "~:|(AAAAAAAA BBBBBB ccccccc dddddddd~)")
+                 "Aaaaaaaa Bbbbbb Ccccccc Dddddddd")))
+
+
+(ert-deftest format-132 ()
+  (should (equal (cl-format nil "~@|(AAAAAAAA BBBBBB ccccccc dddddddd~)")
+                 "Aaaaaaaa bbbbbb ccccccc dddddddd")))
+
+
+(ert-deftest format-133 ()
+  (should (equal (cl-format nil "~:@|(AAAAAAAA BBBBBB ccccccc dddddddd~)")
+                 "AAAAAAAA BBBBBB CCCCCCC DDDDDDDD")))
+
+
+(ert-deftest format-134 ()
+  (should (equal (cl-format nil "++~{-=~s=-~}++" (quote (1 2 3)))
+                 "++-=1=--=2=--=3=-++")))
+
+
+(ert-deftest format-135 ()
+  (should (equal (cl-format nil "++~2{-=~s=-~}++" (quote (1 2 3)))
+                 "++-=1=--=2=-++")))
+
+
+(ert-deftest format-136 ()
+  (should (equal (cl-format nil "++~@{-=~s=-~}++" 1 2 3)
+                 "++-=1=--=2=--=3=-++")))
+
+
+(ert-deftest format-137 ()
+  (should (equal (cl-format nil "++~:{-=~s=~s=-~}++" (quote ((1 2) (3 4 5) (6 7))))
+                 "++-=1=2=--=3=4=--=6=7=-++")))
+
+
+(ert-deftest format-138 ()
+  (should (equal (cl-format nil "++~:@{-=~s=~s=-~}++" (quote (1 2)) (quote (3 4 5)) (quote
+                                                                                 (6 7)))
+                 "++-=1=2=--=3=4=--=6=7=-++")))
+
+
+(ert-deftest format-139 ()
+  (should-error (cl-format nil "~{abc~:}"))
+;;; #+XCL "abc"
+;;; #-XCL
+                 ;; error
+                 )
+
+
+(ert-deftest format-140 ()
+  (should-error (cl-format nil "~{~:}" "xyz"))
+;;; #+XCL "xyz"
+;;; #-XCL
+                 ;; error
+                 )
+
+
+(ert-deftest format-141 ()
+  (should (equal (cl-format nil "~1{~:}" "-~s-" (quote (1 2)) 3)
+                 "-1-")))
+
+
+(ert-deftest format-142 ()
+  (should (equal (cl-format nil "123456789012345678901234567890
+~10,4txx~10,4ty~10,4tzzz~10,4tende")
+;;; #+XCL
+;;; "123456789012345678901234567890
+;;;          xx  y   zzz ende"
+;;; #-XCL
+                 "123456789012345678901234567890
+          xx  y   zzz ende")))
+
+
+(ert-deftest format-143 ()
+  (should (equal (cl-format nil "123456789012345678901234567890
+~3,4@txx~3,4@ty~3,4@tzzz~3,4@tende")
+;;; #+XCL
+;;; "123456789012345678901234567890
+;;;    xx      y   zzz     ende"
+;;; #-XCL
+                 "123456789012345678901234567890
+    xx      y   zzz     ende")))
+
+
+(ert-deftest format-144 ()
+  (should (equal (cl-format nil "-~a-~a-~a-~a-" 1 2 3 4 5 6 7 8 9)
+                 "-1-2-3-4-")))
+
+
+(ert-deftest format-145 ()
+  (should (equal (cl-format nil "-~a-~a-~*~a-~a-" 1 2 3 4 5 6 7 8 9)
+                 "-1-2-4-5-")))
+
+
+(ert-deftest format-146 ()
+  (should (equal (cl-format nil "-~a-~a-~3*~a-~a-" 1 2 3 4 5 6 7 8 9)
+                 "-1-2-6-7-")))
+
+
+(ert-deftest format-147 ()
+  (should (equal (cl-format nil "-~a-~a-~:*~a-~a-" 1 2 3 4 5 6 7 8 9)
+                 "-1-2-2-3-")))
+
+
+(ert-deftest format-148 ()
+  (should (equal (cl-format nil "-~a-~a-~2:*~a-~a-" 1 2 3 4 5 6 7 8 9)
+                 "-1-2-1-2-")))
+
+
+(ert-deftest format-149 ()
+  (should (equal (cl-format nil "-~a-~a-~@*~a-~a-" 1 2 3 4 5 6 7 8 9)
+                 "-1-2-1-2-")))
+
+
+(ert-deftest format-150 ()
+  (should (equal (cl-format nil "-~a-~a-~6@*~a-~a-" 1 2 3 4 5 6 7 8 9)
+                 "-1-2-7-8-")))
+
+
+(ert-deftest format-151 ()
+  (should (equal (cl-format nil "~[aa~;bb~;cc~]" 1)
+                 "bb")))
+
+
+(ert-deftest format-152 ()
+  (should (equal (cl-format nil "~[aa~;bb~;cc~]" 10)
+                 "")))
+
+
+(ert-deftest format-153 ()
+  (should (equal (cl-format nil "~2[aa~;bb~;cc~]" 10)
+                 "cc")))
+
+
+(ert-deftest format-154 ()
+  (should (equal (cl-format nil "~@[aaa~]" nil 10)
+                 "")))
+
+
+(ert-deftest format-155 ()
+  (should (equal (cl-format nil "~@[aaa~]" 20 10)
+                 "aaa")))
+
+
+(ert-deftest format-156 ()
+  (should (equal (cl-format nil "~@[aaa~d~]" nil 10)
+                 "")))
+
+
+(ert-deftest format-157 ()
+  (should (equal (cl-format nil "~@[aaa~d~]" 20 10)
+                 "aaa20")))
+
+
+(ert-deftest format-158 ()
+  (should (equal (cl-format nil "~@[aaa~d~]bbb~d" nil 10 30)
+                 "bbb10")))
+
+
+(ert-deftest format-159 ()
+  (should (equal (cl-format nil "~@[aaa~d~]bbb~d" 20 10 30)
+                 "aaa20bbb10")))
+
+
+(ert-deftest format-160 ()
+  (should (equal (cl-format nil "~:[-nil-~;-true-~d~]-ende~d" nil 10 20)
+                 "-nil--ende10")))
+
+
+(ert-deftest format-161 ()
+  (should (equal (cl-format nil "~:[-nil-~;-true-~d~]-ende~d" t 10 20)
+                 "-true-10-ende20")))
+
+
+(ert-deftest format-162 ()
+  (should (equal (cl-format nil "Start test, newline:~%freshline:~&")
+                 "Start test, newline:
+freshline:
+")))
+
+
+(ert-deftest format-163 ()
+  (should (equal (cl-format nil "decimal pad with period:~10,vd-*" ?\. 12)
+                 "decimal pad with period:........12-*")))
+
+
+(ert-deftest format-164 ()
+  (should (equal (cl-format nil "char normal:~c, as # would read:~@c, human read:~:c-*"
+                            ?\s
+                            ?\s ?\s)
+;;; #+(or XCL CMU18 CLISP LISPWORKS)
+                 "char normal: , as # would read:?\\s, human read:SPC-*")))
+
+  ;; #+(or CMU19 SBCL)                "char normal: , as # would read:?\ , human read:Space-*"
+  ;; #+(or AKCL LUCID)                "char normal:Space, as # would read:?\Space, human read:Space-*"
+  ;; #+ALLEGRO                        "char normal: , as # would read:?\space, human read:space-*"
+  ;; #-(or XCL CMU SBCL CLISP AKCL LUCID ALLEGRO LISPWORKS) UNKNOWN
+
+(ert-deftest format-165 ()
+  (should (equal (cl-format nil
+                  "cardinal:~r, roman new:~@r, roman-old:~:@r~
+                <same line I hope>~@
+                new line but at beginning~:
+   same line, but spaced out~@
+		new line and over two tabs-*" 4 4 4)
+                 "cardinal:four, roman new:IV, roman-old:IIII<same line I hope>
+new line but at beginning   same line, but spaced out
+new line and over two tabs-*")))
+
+
+(ert-deftest format-166 ()
+  (let (( n 3))
+
+    (should (equal (cl-format nil "~d item~:p found." n)
+                   "3 items found."))
+
+    (should (equal (cl-format nil "~r dog~:[s are~; is~] here." n (= n 1))
+                   "three dogs are here."))
+
+    (should (equal (cl-format nil "~r dog~:*~[s are~; is~:;s are~] here." n)
+                   "three dogs are here."))
+
+    (should (equal (cl-format nil "Here ~[are~;is~:;are~] ~:*~r pupp~:@p." n)
+                   "Here are three puppies."))
+
+    (should (equal (setq n 1)
+                   1))
+
+    (should (equal (cl-format nil "~d item~:p found." n)
+                   "1 item found."))
+
+    (should (equal (cl-format nil "~r dog~:[s are~; is~] here." n (= n 1))
+                   "one dog is here."))
+
+    (should (equal (cl-format nil "~r dog~:*~[s are~; is~:;s are~] here." n)
+                   "one dog is here."))
+
+    (should (equal (cl-format nil "Here ~[are~;is~:;are~] ~:*~r pupp~:@p." n)
+                   "Here is one puppy."))
+
+    (should (equal (setq n 0)
+                   0))
+
+    (should (equal (cl-format nil "~d item~:p found." n)
+                   "0 items found."))
+
+    (should (equal (cl-format nil "~r dog~:[s are~; is~] here." n (= n 1))
+                   "zero dogs are here."))
+
+    (should (equal (cl-format nil "~r dog~:*~[s are~; is~:;s are~] here." n)
+                   "zero dogs are here."))
+
+    (should (equal (cl-format nil "Here ~[are~;is~:;are~] ~:*~r pupp~:@p." n)
+                   "Here are zero puppies."))
+
+    (should (equal (cl-format nil "~d tr~:@p/~d win~:p" 7 1)
+                   "7 tries/1 win"))
+
+    (should (equal (cl-format nil "~d tr~:@p/~d win~:p" 1 0)
+                   "1 try/0 wins"))
+
+    (should (equal (cl-format nil "~d tr~:@p/~d win~:p" 1 3)
+                   "1 try/3 wins"))))
+  
+(ert-deftest format-167 ()
+  (should (equal (cl-format nil "~? ~d" "<~a ~d>" (quote ("Foo" 5)) 7)
+                 "<Foo 5> 7")))
+
+
+(ert-deftest format-168 ()
+  (should (equal (cl-format nil "~? ~d" "<~a ~d>" (quote (" Foo" 5 14)) 7)
+                 "< Foo 5> 7")))
+
+
+(ert-deftest format-169 ()
+  (should (equal (cl-format nil "~@? ~d" "<~a ~d>" "Foo" 5 7)
+                 "<Foo 5> 7")))
+
+
+(ert-deftest format-170 ()
+  (should (equal (cl-format nil "~@? ~d" "<~a ~d>" "Foo" 5 14 7)
+                 "<Foo 5> 14")))
+
+
+(ert-deftest format-171 ()
+  (should (equal (cl-format nil "~@r ~|(~@r~)" 14 14)
+                 "XIV xiv")))
+
+
+(ert-deftest format-172 ()
+  (flet ((foo (n)
+           (cl-format nil "~@|(~r~) error~:p detected." n)))
+    (should (equal (foo 0)
+                   "Zero errors detected."))
+    (should (equal (foo 1)
+                   "One error detected."))
+    (should (equal (foo 23)
+                   "Twenty-three errors detected."))))
+
+
+
+(ert-deftest format-173 ()
+  (let ((*PRINT-LEVEL* nil)
+        (*PRINT-LENGTH* 5))
+
+    (should (equal (cl-format nil
+                    "~@[ print level = ~d~]~@[ print length = ~d~]"
+                    *PRINT-LEVEL* *PRINT-LENGTH*)
+                   " print length = 5"))))
+
+
+    
+
+(ert-deftest format-174 ()
+  (let ((foo
+         "Items:~#[none~; ~s~; ~s and ~s~
+          ~:;~@{~#[~; and~] ~s~^,~}~]."))
+
+    (should (equal (cl-format nil foo)
+                   "Items:none."))
+
+    (should (equal (cl-format nil foo (quote foo))
+                   "Items: foo."))
+
+    (should (equal (cl-format nil foo (quote foo) (quote bar))
+                   "Items: foo and bar."))
+
+    (should (equal (cl-format nil foo (quote foo) (quote bar) (quote baz))
+                   "Items: foo, bar, and baz."))
+
+    (should (equal (cl-format nil foo (quote foo) (quote bar) (quote baz) (quote quux))
+                   "Items: foo, bar, baz, and quux."))))
+
+
+(ert-deftest format-175 ()
+  (should (equal (cl-format nil "The winners are:~{ ~s~}." (quote (fred harry jill)))
+                 "The winners are: fred harry jill.")))
+
+
+(ert-deftest format-176 ()
+  (should (equal (cl-format nil "Pairs:~{ <~s,~s>~}." (quote (a 1 b 2 c 3)))
+                 "Pairs: <a,1> <b,2> <c,3>.")))
+
+
+(ert-deftest format-177 ()
+  (should (equal (cl-format nil "Pairs:~:{ <~s,~s>~}." (quote ((a 1) (b 2) (c 3))))
+                 "Pairs: <a,1> <b,2> <c,3>.")))
+
+
+(ert-deftest format-178 ()
+  (should (equal (cl-format nil "Pairs:~@{ <~s,~s>~}." (quote a) 1 (quote b) 2 (quote c)
+                            3)
+                 "Pairs: <a,1> <b,2> <c,3>.")))
+
+
+(ert-deftest format-179 ()
+  (should (equal (cl-format nil "Pairs:~:@{ <~s,~s>~}." (quote (a 1)) (quote (b 2)) (quote
+                                                                                 (c 3)))
+                 "Pairs: <a,1> <b,2> <c,3>.")))
+
+
+    
+(ert-deftest format-180 ()
+  (let ((donestr "done.~^ ~d warning~:p.~^ ~d error~:p."))
+         
+
+    (should (equal (cl-format nil donestr)
+                   "done."))
+
+    (should (equal (cl-format nil donestr 3)
+                   "done. 3 warnings."))
+
+    (should (equal (cl-format nil donestr 1 5)
+                   "done. 1 warning. 5 errors."))
+
+    (let ((tellstr "~@|(~@[~r~]~^ ~a.~)"))
+           
+
+      (should (equal (cl-format nil tellstr 23)
+                     "Twenty-three"))
+
+      (should (equal (cl-format nil tellstr nil "losers")
+                     " Losers."))
+
+      (should (equal (cl-format nil tellstr 23 "losers")
+                     "Twenty-three losers.")))))
+
+
+(ert-deftest format-181 ()
+  (should (equal (cl-format nil "**~c**" ?\s)
+;;; #+(or XCL CMU SBCL CLISP ALLEGRO LISPWORKS)
+                 "** **")))
+
+  ;; #+(or AKCL LUCID)            "**Space**"
+  ;; #-(or XCL CMU SBCL CLISP AKCL LUCID ALLEGRO LISPWORKS) UNKNOWN
+
+(ert-deftest format-182 ()
+  (should (equal (cl-format nil "**~:c**" ?\s)
+                 "**SPC**")))
+
+
+(ert-deftest format-183 ()
+  (should (equal (cl-format nil "**~:@c**" ?\s)
+                 "**SPC**")))
+
+
+(ert-deftest format-184 ()
+  (should (equal (cl-format nil "**~@c**" ?\s)
+;;; #+(or CMU19 SBCL) "**?\ **"
+;;; #-(or CMU19 SBCL)
+                 "**?\\s**")))
+
+
+(ert-deftest format-185 ()
+  (should (equal (cl-format nil "**~c**" ?a)
+                 "**a**")))
+
+
+(ert-deftest format-186 ()
+  (should (equal (cl-format nil "**~:c**" ?a)
+                 "**a**")))
+
+
+(ert-deftest format-187 ()
+  (should (equal (cl-format nil "**~:@c**" ?a)
+                 "**a**")))
+
+
+(ert-deftest format-188 ()
+  (should (equal (cl-format nil "**~@c**" ?a)
+                 "**?a**")))
+
+
+  ;; #+XCL (CL-FORMAT NIL "**~c**" (CODE-CHAR 26))
+  ;; #+XCL "****"
+  ;; #+CLISP
+(ert-deftest format-189 ()
+  (should (equal (cl-format nil "**~c**" 27)
+;;; #+CLISP
+                 "****")))
+
+
+  ;; #+XCL (CL-FORMAT NIL "**~:c**" (CODE-CHAR 26))
+  ;; #+XCL "**Z**"
+  ;; #+CLISP
+(ert-deftest format-190 ()
+  (should (equal (cl-format nil "**~:c**" 27)
+;;; #+CLISP
+                 "**ESC**")))
+
+
+  ;; #+XCL (CL-FORMAT NIL "**~:@c**" (CODE-CHAR 26))
+  ;; #+XCL "**^Z**"
+  ;; #+CLISP
+(ert-deftest format-191 ()
+  (should (equal (cl-format nil "**~:@c**" 27)
+;;; #+CLISP
+                 "**ESC**")))
+
+
+  ;; #+XCL (CL-FORMAT NIL "**~@c**" (CODE-CHAR 26))
+  ;; #+XCL "**?\**"
+  ;; #+CLISP
+(ert-deftest format-192 ()
+  (should (equal (cl-format nil "**~@c**" 27)
+;;; #+CLISP
+                 "**?\\e**")))
+
+
+(ert-deftest format-193 ()
+  :expected-result :failed ;; ~i not implemented -ap
+  (should (equal (string= (cl-format nil "~10i")
+                          (with-output-to-string
+                            (funcall (cl-formatter "~10I") standard-output)))
+                 t)))
+
+
+;; Test elastic-newline as a FORMAT directive.
+;; not implemented -ap
+(when nil
+  ;; #+CLISP
+(ert-deftest format-194 ()
+  (should (equal (cl-format nil "~&abc~.")
+;;; #+CLISP
+                 "abc
+")))
+
+
+  ;; #+CLISP
+(ert-deftest format-195 ()
+  (should (equal (with-output-to-string (s) (funcall (formatter "~&abc~.") s))
+;;; #+CLISP
+                 "abc
+")))
+
+
+  ;; #+CLISP
+(ert-deftest format-196 ()
+  (should (equal (cl-format nil "~&abc~.~%")
+;;; #+CLISP
+                 "abc
+")))
+
+
+  ;; #+CLISP
+(ert-deftest format-197 ()
+  (should (equal (cl-format nil "~&abc~3.")
+;;; #+CLISP
+                 "abc
+
+
+")))
+
+
+  ;; #+CLISP
+(ert-deftest format-198 ()
+  (should (equal (cl-format nil "~&abc~0.")
+;;; #+CLISP
+                 "abc")))
+
+
+  ;; Test elastic-newline on string-output-stream.
+
+  ;; #+CLISP
+(ert-deftest format-199 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~."))
+;;; #+CLISP
+                 "abc
+")))
+
+
+  ;; #+CLISP
+(ert-deftest format-200 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~.")
+                                        (cl-format stream "def"))
+;;; #+CLISP
+                 "abc
+def")))
+
+
+  ;; #+CLISP
+(ert-deftest format-201 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~.")
+                                        (cl-format stream "~%def"))
+;;; #+CLISP
+                 "abc
+def")))
+
+
+  ;; #+CLISP
+(ert-deftest format-202 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~.")
+                                        (cl-format stream "~&def"))
+;;; #+CLISP
+                 "abc
+def")))
+
+
+  ;; #+CLISP
+(ert-deftest format-203 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~.~.")
+                                        (cl-format stream "~&~&def"))
+;;; #+CLISP
+                 "abc
+def")))
+
+
+  ;; #+CLISP
+(ert-deftest format-204 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~%~.")
+                                        (cl-format stream "~&def"))
+;;; #+CLISP
+                 "abc
+
+def")))
+
+
+  ;; #+CLISP
+(ert-deftest format-205 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~.")
+                                        (cl-format stream "~&~%def"))
+;;; #+CLISP
+                 "abc
+
+def")))
+
+
+  ;; #+CLISP
+(ert-deftest format-206 ()
+  (should (equal (with-output-to-string (stream)
+                                        (cl-format stream "~&abc~%~.")
+                                        (cl-format stream "~&~%def"))
+;;; #+CLISP
+                 "abc
+
+
+def")))
+
+;; Test elastic-newline also on Gray streams.
+;; #+CLISP
+
+  (ert-deftest format-207 ()
+  (should (equal (progn
+                   (defclass gray-string-output-stream (fundamental-character-output-stream)
+                     ((accumulator :type string)))
+                   (defmethod initialize-instance :after ((s gray-string-output-stream) &rest args)
+                     (setf (slot-value s 'accumulator)
+                           (make-array 0 :element-type 'character :adjustable t :fill-pointer 0)))
+                   (defmethod stream-write-char ((s gray-string-output-stream) ch)
+                     (vector-push-extend ch (slot-value s 'accumulator)))
+                   (defmethod stream-line-column ((s gray-string-output-stream))
+                     (let* ((a (slot-value s 'accumulator))
+                            (j (length a))
+                            (i (1+ (or (position ?\n a :from-end t) -1))))
+                       (string-width a :start i :end j)))
+                   (list
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~.")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~.")
+                      (cl-format stream "def")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~.")
+                      (cl-format stream "~%def")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~.")
+                      (cl-format stream "~&def")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~.~.")
+                      (cl-format stream "~&~&def")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~%~.")
+                      (cl-format stream "~&def")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~.")
+                      (cl-format stream "~&~%def")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))
+                    (let ((stream (make-instance 'gray-string-output-stream)))
+                      (cl-format stream "~&abc~%~.")
+                      (cl-format stream "~&~%def")
+                      (close stream)
+                      (coerce (slot-value stream 'accumulator) 'simple-string))))
+;;; #+CLISP
+                 ("abc
+"
+                  "abc
+def"
+                  "abc
+def"
+                  "abc
+def"
+                  "abc
+def"
+                  "abc
+
+def"
+                  "abc
+
+def"
+                  "abc
+
+
+def"))))
+  ) ;; when nil
+
+;; added by ap
+
+  
+(ert-deftest format-list-iterator ()
+  (should (equal (cl-format nil "~{~a ~a|~}" '(1 2 3 4))
+                 "1 2|3 4|"))
+  (should (equal (cl-format nil "~:{~a ~a|~}" '((1 2) (4 5)))
+                 "1 2|4 5|"))
+  (should (equal (cl-format nil "~@{~a ~a|~}" 1 2 3 4)
+                 "1 2|3 4|"))
+  (should (equal (cl-format nil "~:@{~a ~a|~}" '(1 2) '(3 4))
+                 "1 2|3 4|")))
+
+(ert-deftest format-vector-iterator ()
+  (should (equal (cl-format nil "~{~a ~a|~}" [1 2 3 4])
+                 "1 2|3 4|"))
+  (should (equal (cl-format nil "~:{~a ~a|~}" [[1 2] [4 5]])
+                 "1 2|4 5|"))
+  (should (equal (cl-format nil "~:@{~a ~a|~}" [1 2] [3 4])
+                 "1 2|3 4|")))
+
+(ert-deftest format-hash-iterator ()
+  (let ((ht (make-hash-table)))
+    (dotimes (i 2)
+      (puthash (+ ?a i) (string (+ ?a i)) ht))
+    (should (let ((res (cl-format nil "~:{~a => ~a\n~}" ht)))
+              (or (equal res "97 => a\n98 => b\n")
+                  (equal res "98 => b\n97 => a\n"))))))
+
+(ert-deftest format-alist-iterator ()
+  (let ((alist '((a . 1) (b . 2) (c . 3))))
+    (should (equal (cl-format nil "~%~:{~a => ~a\n~}" alist)
+            "
+a => 1
+b => 2
+c => 3
+"))))
+
+(ert-deftest format-pcl-empty ()
+  (should (equal
+           (cl-format nil
+            "~{~#[<empty>~;~a~;~a and ~a~:;~@{~a~#[~;, and ~:;, ~]~}~]~:}"
+            '())
+           "<empty>")))
+
+(ert-deftest format-output-buffer ()
+  (let ((buf (generate-new-buffer "ert"))
+        (msg "Hello World !"))
+    (unwind-protect
+        (progn
+          (should-not (cl-format buf msg))
+          (should (equal msg
+                         (with-current-buffer buf
+                           (buffer-string)))))
+      (and (buffer-live-p buf)
+           (kill-buffer buf)))))
+
+(ert-deftest format-output-buffer-marker ()
+  (let* ((buf (generate-new-buffer "ert"))
+         (msg1 "Hello World !")
+         (msg2 "How are you today ?")
+         (marker (with-current-buffer buf
+                   (insert msg1)
+                   (insert "\n")
+                   (point-marker))))
+    (unwind-protect
+        (progn
+          (should-not (cl-format marker msg2))
+          (should (equal (concat msg1 "\n" msg2)
+                         (with-current-buffer buf
+                           (buffer-string)))))
+      (set-marker marker nil)
+      (and (buffer-live-p buf)
+           (kill-buffer buf)))))
+
+;; Test define-cl-format-directive macro
+(ert-deftest format-define-default-value ()
+  (let ((cl-format-directives))
+    (should-error (macroexpand-all '(define-cl-format-directive ?? ((args 0)))))
+    (should-error (macroexpand-all '(define-cl-format-directive ?? (args (at 0)))))
+    (should-error (macroexpand-all '(define-cl-format-directive ?? (args at (colon 0)))))
+    (should (macroexpand-all '(define-cl-format-directive ?? (args at colon (parm1 0) (parm2 1)))))
+    (should-error (macroexpand-all '(define-cl-format-directive ?? (args at colon (parm1 0) (parm2 1)
+                                                                         &contained contained))))
+    (should-error (macroexpand-all '(define-cl-format-directive ?? (args at colon (parm1 0) (parm2 1)
+                                                                         &contained-end contained))))
+    (should-error (macroexpand-all '(define-cl-format-directive ?? (args at colon (parm1 0) (parm2 1)
+                                                                         &separator contained))))
+    (should-error (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                 &contained (c 0)))))
+    (should (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                 &contained c))))
+    (should-error (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                 &contained c
+                                                 &separator (s 1)))))
+    (should (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                 &contained c &separator s))))
+    (should-error (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                   &contained c
+                                                   &separator s &end-separator (es 1)))))
+    (should (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                 &contained c &separator s &end-separator es))))
+    (should-error (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                   &contained c
+                                                   &separator s &end-separator es
+                                                   &stash (stash 2)))))
+    (should (macroexpand-all '(define-cl-format-directive (??) (args at colon (parm1 0) (parm2 1)
+                                                 &contained c &separator s &end-separator es
+                                                 &stash stash))))))
+
+
+(ert-deftest format-rounding ()
+  (dotimes (i 16)
+    (should
+     (equal
+      (length (cl-format nil "~v$" i pi))
+      (+ i 2)))
+    (should
+     (equal (cl-format nil "~#$" pi) "3.1"))))
+    
+;; Local Variables:
+;; no-byte-compile: t
+;; End:

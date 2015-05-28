@@ -1,0 +1,82 @@
+(defpackage :events-test
+  (:use :parenscript :paren-test :paren-psos :paren-events)
+  )
+
+(in-package :events-test)
+
+(defsuite "events-test")
+(in-suite "events-test")
+
+(deftest is-five ()
+  (is (== 5 5)))
+
+(defvar *init-order* (array))
+
+(defclass container (event-emitter) 
+  ((parent :initarg :parent :accessor container-parent)))
+
+(defclass big-container (container) ())
+(defclass small-container (container) ())
+(defclass button (container) ())
+
+(defclass click-event (event) ())
+
+(defvar *click-fired* nil)
+(defvar *toplevel-fired* nil)
+(defvar *middle-breaks* nil)
+
+(defmethod event-fired ((but button) (ev click-event))
+  (setf *click-fired* t)
+  (call-next-method))
+
+(defmethod event-fired ((cont container) (ev click-event))
+  (when (container-parent cont)
+    (event-fired (container-parent cont) ev))
+  (call-next-method))
+
+(defmethod event-fired ((thing big-container) (ev click-event))
+  (setf *toplevel-fired* t)
+  (call-next-method))
+
+(defmethod event-fired ((thing small-container) (ev click-event))
+  (when (not *middle-breaks*)
+    (call-next-method)))
+    
+
+(deftest button-event-happens ()
+  (let ((but (make-instance button)))
+    (setf *click-fired* nil)
+    (is (== nil *click-fired*))
+    (make-instance click-event :origin but)
+    (is (== t *click-fired*))))
+
+(deftest event-bubbling ()
+  (let ((toplevel (make-instance big-container))
+	(middle-level (make-instance small-container :parent toplevel))
+	(but (make-instance button :parent middle-level)))
+    (setf *click-fired* nil)
+    (setf *toplevel-fired* nil)
+    (is (== nil *click-fired*))
+    (is (== nil *toplevel-fired*))
+    (make-instance click-event :origin but)
+    (is (== t *click-fired*))
+    (is (== t *toplevel-fired*))))
+
+(deftest event-bubbling-break ()
+  (let ((toplevel (make-instance big-container))
+	(middle-level (make-instance small-container :parent toplevel))
+	(but (make-instance button :parent middle-level)))
+    (setf *click-fired* nil)
+    (setf *toplevel-fired* nil)
+    (setf *middle-breaks* t)
+
+    (is (== nil *click-fired*))
+    (is (== nil *toplevel-fired*))
+    (make-instance click-event :origin but)
+
+    (setf *middle-breaks* nil)
+
+    (is (== t *click-fired*))
+    (is (== nil *toplevel-fired*))))
+
+(run-tests "events-test")

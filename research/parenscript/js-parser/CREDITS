@@ -1,0 +1,13 @@
+James Wright is the author of jwacs; he did the lexer, the Lispworks parser and
+most of the source transformations, as well as all of the static analysis and
+example code.
+
+Greg Smolyn has contributed a great deal of code.  He added support for cl-yacc
+and did most of the other work getting jwacs to compile under SBCL.  He also did
+some extensive grammar changes to make the grammar unambiguous, and added
+support for loops (by writing the loop-transformation and adding loop methods to
+the cps-transformation.  He also wrote the ugly-printer and uniquification
+transformation, and the initial error-reporting support in the lexer.
+
+Red Daly took the parser code from jwacs and turned it into its own project,
+to be used by other packages as they need.

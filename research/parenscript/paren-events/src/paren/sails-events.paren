@@ -1,0 +1,53 @@
+(defpackage sails-events
+  (:use :parenscript :paren-psos :sails))
+
+(in-package :sails-events)
+
+;;; Event Handling ;;;
+(defvar *event-table* (create))
+
+(defclass event ()
+  ((origin :accessor event-origin)
+   (description :accessor event-description))
+
+  (:documentation "Primitive event class for event observation.  Custom
+event classes are created that subclass the abstract event class.  These are dispatched
+by calling (make-instance some-event-class (create :origin origin ...))."))
+
+(defclass event-emitter () ()
+  (:documentation "Subclasses of this can emit events."))
+
+(defmethod initialize-instance :after ((ev event))
+  (event-fired (get-origin ev) ev))
+
+(defmethod register-event-handler ((on-obj event-emitter) event-class handler-func)
+  (let ((obj-observers (defaultf on-obj.event-handlers (array))))
+    (obj-observers.push (create :func handler-func
+                                :event-class event-class))))
+
+(defun event-handler-fits? (handler ev)
+  "Can the given handler object accept the given event?
+
+True if handler.event-class is a subclass of the class of the given event."
+  (return (is-subclass-of handler.event-class (class-of ev))))
+
+(defgeneric event-fired (within-obj ev)
+  (:documentation "Called when an event was fired within the given object.
+For example, if a button is clicked within a page, then the event will eventually fire
+for the page object with the given event."))
+
+(defmethod event-fired ((within-obj event-emitter) ev)
+  (let ((handlers (and within-obj.event-handlers
+                       (within-obj.event-handlers.filter
+                        (lambda (handler)
+                          (return (event-handler-fits? handler ev)))))))
+    (when handlers
+      (dolist (handler handlers)
+        (handler.func ev))))
+  (call-next-method))
+
+(defmethod event-fired ((within-obj sail-controller) ev)
+  (call-next-method)
+  (let ((parent (parent-sail within-obj)))
+    (when parent
+      (event-fired parent ev))))
