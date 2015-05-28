@@ -44,6 +44,20 @@
 				*startup-message* "Please wait for Masamune to start - this might take a minute")
 			      '(run-or-raise "emacs --debug-init" (quote (:class "Emacs")))))))
 
+(defun move-sbcl-sources ()
+  (let* ((sbcl-sources (find-if (lambda (p) (let* ((namestring (namestring p)))
+					 (and (scan "sbcl" namestring)
+					      (not (scan "binary" namestring))))) 
+				(cl-fad:list-directory "/usr/portage/distfiles")))
+	 (temp-pathname (merge-pathnames #P"/tmp/" (filename sbcl-sources))))
+    (cl-fad:copy-file sbcl-sources temp-pathname)
+    (rp (format nil "cd /tmp/ && bunzip2 -f -c * | tar xvf ~A" (filename temp-pathname)))
+    (cl-fad:copy-file (find-if (lambda (p) (and (scan "sbcl" (namestring p))
+					   (not (scan ".tar.bz2" (namestring p)))))
+			       (cl-fad:list-directory "/tmp/"))
+		      "/usr/lib64/sbcl/")))
+
+(move-sbcl-sources)
 (write-dotfiles)
 (lg "wrote dotfiles")
 
