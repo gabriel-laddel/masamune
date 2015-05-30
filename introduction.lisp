@@ -442,6 +442,28 @@ C-c C-c")
 ;;;
 ;;; You can get the macsyma language AST (in sexprs) using e.g.,
 ;;; (macsyma-read-string "diff(sin(x^%e)*arctan(%pi/x),x);")
+;;;
+;;; Some fun Maxima code to play with
+;;; 
+;;; load("dynamics");
+;;; f: 0.6*x*(1+2*x)+0.8*y*(x-1)-y^2-0.9$
+;;; g: 0.1*x*(1-6*x+4*y)+0.1*y*(1+9*y)-0.4$
+;;; evolution2d([f,g], [x,y], [-0.5,0], 50000, [style,dots]);
+;;; 
+;;; load("diag")$
+;;; (%i30) b2:matrix([0,1,0], [0,0,1], [-1,-3,-3])$
+;;; (%i31) mat_function(exp,t*b2);
+;;; 
+;;; 
+;;; expr1: 2*x^2 + y*x + z;
+;;; expr2: 3*x + 5*y - z - 1;
+;;; expr3: z^2 + x - y^2 + 5;
+;;; eliminate ([expr3, expr2, expr1], [y, z]);
+;;; 
+;;; trigreduce(-sin(x)^2+3*cos(x)^2+x*tan(x^2) / arctan(y/2));
+;;; 
+;;; diff (jacobi_sn (u, m), m);
+;;; diff (elliptic_f (phi, m), m);
 ;;; 
 ;;; GnuPlot
 ;;; -------
