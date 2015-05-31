@@ -772,7 +772,6 @@ will correctly strip the trailing . from a pathname"
 			 new-type)))))
 
 (defmethod filename ((pathname pathname))
-  (assert (not (directory-pathname-p pathname)))
   (llast (split "/" (namestring pathname))))
 
 (defmethod alter-pathname-filename ((pathname pathname) (new-filename string) 

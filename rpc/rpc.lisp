@@ -21,7 +21,7 @@
 (in-package #:mm)
 
 (defun export-defun-or-macro (defun-sexp)
-  "currently dependent on *socket being named thusly"
+  "currently dependent on *socket* named as such"
   (destructuring-bind (name lambda-list maybe-docstring) 
       (take 3 (rest defun-sexp))
     (if (member '&rest lambda-list)

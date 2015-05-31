@@ -28,7 +28,7 @@
       (ignore-errors
        (swank::eval-in-emacs '(progn 
 			       (find-file "~/quicklisp/local-projects/masamune/introduction.lisp")
-			       (end-of-buffer)
+			       (search-forward "Common Lisp")
 			       (delete-other-windows) nil) t))))
 
 (defun start-non-von-neumann-research-module ()

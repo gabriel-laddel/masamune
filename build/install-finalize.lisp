@@ -57,14 +57,18 @@
 				     (not (scan ".tar.bz2" (namestring p)))))
 			 (cl-fad:list-directory "/tmp/"))))))
 
-;; (defun move-maxima-sources ()
-;;   (let* ((outdir "/var/tmp/portage/sci-mathematics/maxima-5.18.1/work/maxima-5.18.1/src/"))
-;;     (unless (probe-file outdir)
-;;       (rp (format nil "mkdir -p ~A" outdir)))
-;;     (rp (format nil "cp -r ~A ~A" "/usr/portage/distfiles/maxima-5.18.1/"
-;; 		outdir))))
+(defun move-maxima-sources ()
+  (let* ((maxima-sources-pathname (find-if (lambda (p) (and (null (pathname-type p))
+						       (search "maxima" (namestring p))
+						       (not (char= #\i (aref (filename p) 0)))))
+					   (ls "/usr/portage/distfiles/")))
+	 (maxima-outpath "/var/tmp/portage/sci-mathematics/maxima-5.18.1/work/"))
+    (unless (probe-file maxima-outpath)
+      (rp "mkdir -p ~A" maxima-outpath))
+    (rp (format nil "cp -R ~A ~A" maxima-sources-pathname maxima-outpath))))
 
 (move-sbcl-sources)
+(move-maxima-sources)
 (write-dotfiles)
 (lg "wrote dotfiles")
 

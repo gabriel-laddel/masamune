@@ -369,7 +369,7 @@
 (load (compile-file #P"~/quicklisp/local-projects/masamune/3d.lisp")) ;; compile this
 (3d:draw-plot) ; then this.
 
-(defparameter plot-type :animated
+(defparameter plot-type :lorenz
   "valid values are :lorenz, t, :animated. No need to stop the render loop, just
 C-c C-c")
 (defparameter axes t)			; valid values are t, nil
@@ -446,13 +446,13 @@ C-c C-c")
 ;;; Some fun Maxima code to play with
 ;;; 
 ;;; load("dynamics");
-;;; f: 0.6*x*(1+2*x)+0.8*y*(x-1)-y^2-0.9$
-;;; g: 0.1*x*(1-6*x+4*y)+0.1*y*(1+9*y)-0.4$
+;;; f: 0.6*x*(1+2*x)+0.8*y*(x-1)-y^2-0.9;
+;;; g: 0.1*x*(1-6*x+4*y)+0.1*y*(1+9*y)-0.4;
 ;;; evolution2d([f,g], [x,y], [-0.5,0], 50000, [style,dots]);
 ;;; 
 ;;; load("diag")$
-;;; (%i30) b2:matrix([0,1,0], [0,0,1], [-1,-3,-3])$
-;;; (%i31) mat_function(exp,t*b2);
+;;; b2:matrix([0,1,0], [0,0,1], [-1,-3,-3])$
+;;; mat_function(exp,t*b2);
 ;;; 
 ;;; 
 ;;; expr1: 2*x^2 + y*x + z;
@@ -464,6 +464,32 @@ C-c C-c")
 ;;; 
 ;;; diff (jacobi_sn (u, m), m);
 ;;; diff (elliptic_f (phi, m), m);
+;;; 
+;;; MEVAL (fbound)
+;;; MEVAL* (fbound)
+;;; MEVAL1 (fbound)
+;;; MEVAL1-EXTEND (fbound)
+;;; MEVAL2 (fbound)
+;;; MEVAL?
+;;; MEVALARGS (fbound)
+;;; MEVALATOMS (fbound)
+;;; MEVALN (fbound)
+;;; MEVALP (fbound)
+;;; MEVALP1 (fbound)
+;;; MEVALP1_TR (fbound)
+;;; MEVALP2 (fbound)
+;;; MEVALP_TR (fbound)
+;;; MEVALSUMARG (fbound)
+;;; MEVALSUMARG-MACRO
+;;; MRATEVAL (fbound)
+;;; TRANSLATE-AND-EVAL-MACSYMA-EXPRESSION (fbound)
+;;; TRANSLATE-TIME-EVALABLES (bound)
+;;; TRANSLATOR-EVAL (fbound)
+;;; TRD-MSYMEVAL (fbound)
+;;; TRD-MSYMEVAL-AUX (fbound)
+;;; UNBOUND-MEVAL-KLUDGE-FIX (bound)
+;;; WARN-MEVAL (fbound)
+;;; TRACE-FSYMEVAL (fbound)NOEVALARGS (bound)
 ;;; 
 ;;; GnuPlot
 ;;; -------
