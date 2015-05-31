@@ -353,7 +353,7 @@
 ;;; and call it at the listener to print out the disassembly
 
 (defun print-draw-circle-disassembly ()
-  (disassemble (lambda () (draw-circle *standard-output* 50 50 30 :ink +blue+))))
+  (disassemble (lambda () (draw-circle* *standard-output* 50 50 30 :ink +blue+))))
 
 ;;; one could even
 ;;; 
