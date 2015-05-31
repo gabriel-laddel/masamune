@@ -10,9 +10,15 @@ can span multiple lines
 !!!
 |#
 
-t  ; atoms denoting true
+t  ; is an atom denoting true
 
-;; the notion of truth in CL is...
+;;; In (common) lisp any value other than `nil' and the empty list () are
+;;; considered to be truthy
+
+(if t 1 2) ; => 1
+(if 12 1 2) ; => 1
+(if () 1 2) ; => 2
+(if nil 1 2) ; => 2
 
 ;;; Primitive datatypes and operators 
 ;;; ============================================================================
@@ -39,7 +45,7 @@ t  ; atoms denoting true
 #C(1 2)                ; complex numbers
 
 ;;; Function application is written (f x y z ...)  where f is a function and x,
-;;; y, z, ... are operands If you want to create a literal list of data, use '
+;;; y, z, ... are operands. If you want to create a literal list of data, use '
 ;;; to stop it from being evaluated - literally, "quote" the data.
 
 '(+ 1 2) ; => (+ 1 2)
@@ -315,8 +321,7 @@ nil                  ; for false
 
 ;;; Mutation
 ;;; ============================================================================
-;;; Use `setf' to assign a new value to an existing variable. This was
-;;; demonstrated earlier in the hash table example.
+;;; Use `setf' to assign a new value to an existing variable. 
 
 (let* ((variable 10))
   (setf variable 2))
@@ -324,7 +329,7 @@ nil                  ; for false
 
 ;;; Good Lisp style is to minimize destructive functions and to avoid
 ;;; mutation when reasonable.
-
+;;; 
 ;;; CLOS (Common Lisp Object System)
 ;;; ============================================================================
 ;;; 
@@ -417,10 +422,6 @@ nil                  ; for false
 
 ;;; Macros 
 ;;; ============================================================================
-;;;
-;;; Macroexpansion trick in emacs - press C-c C-m to macroexpand any arbitary
-;;; sub expression
-;;; 
 ;;; Common Lisp doesn't come with a WHILE loop- let's add one.
 ;;; If we obey our assembler instincts, we wind up with:
 
@@ -447,7 +448,27 @@ nil                  ; for false
   `(loop while ,condition
          do
          (progn
-            ,@body)))
+	   ,@body)))
+
+;;; People often argue that becuase macros generate code they're impossible to
+;;; understand. These people work in impoverished editors.
+;;;
+;;; Compile one of the `while' definitions above and macroexpand the let form
+;;; using C-c C-m
+;;;
+;;; the *slime-macroexpansion* buffer will list a form containing `while'.
+;;; By default C-c C-m is bound to slime-macroexpand-1, which does exactly
+;;; what it sounds like. You can expand arbitrary sub-forms (such as the
+;;; `while') using the same keybinding in the macroexpansion buffer.
+;;;
+;;; Try expanding `while' into `loop' and then into a `block'
+;;;
+;;; M-x slime-macroexpand-all will fully expand the form. 
+
+(let* ((a 0))
+  (while (> 10 a)
+    (format t "the value of a is ~a" a)
+    (incf a)))
 
 ;;; However, with a modern compiler, this is not required; the LOOP
 ;;; form compiles equally well and is easier to read.
@@ -461,16 +482,10 @@ nil                  ; for false
 ;;; variables declared in the macro can collide with variables used in
 ;;; regular code.
 ;;; 
-;;; To really learn common lisp, evaluate the following form
-;;; 
-;;; (mm::really-learn-common-lisp)
+;;; To really learn common lisp, evaluate the following form and read
+;;; one of the books.
 
-(defun really-learn-common-lisp ()
-  ;; assembler?
-  ;; networking? 
-  ;; hashtables etc.
-  ;; format strings
-  )
-
-;;; Creating Lisp projects 
-;;; ============================================================================
+(progn
+  (mmb::open-uri "http://learnlispthehardway.org/book/")
+  (mmb::open-uri "http://www.psg.com/~dlamkins/sl/contents.html")
+  (mmb::open-uri "http://www.gigamonkeys.com/book/" t))

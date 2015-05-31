@@ -49,8 +49,8 @@
 ;;; 
 ;;; 10
 ;;; :keyword
-;;; "string"
 ;;; #\C
+;;; "string"
 ;;;
 ;;; Symbols are unique strings that can be bound to other values. The code
 ;;; 
@@ -97,7 +97,7 @@
 ;;;    arbitrary forms without stopping the program (incremental compilation) it
 ;;;    is possible to jump to the definition of a form, modify it in place and
 ;;;    then return to whatever one was doing. There are *NO* restrictions on
-;;;    what you can modify, but CL will warn you if you're going to changeP
+;;;    what you can modify, but CL will warn you if you're going to change
 ;;;    something in the standard library.
 ;;;
 ;;;    Let's do this now. M-. `apropos' and add the form
