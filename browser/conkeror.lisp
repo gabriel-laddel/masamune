@@ -195,7 +195,7 @@
 (defun read-ps-repl-output ()
   (loop while t 
 	for line = (read-line (socket-stream socket))
-	do (format mm::*swank-connection-hack* "PS> ~A~%" line)))
+	do (format cl-user::*swank-connection-hack* "PS> ~A~%" line)))
 
 (defun start-ps-repl ()
   "currently prints javascript return values to `*standard-output*'"

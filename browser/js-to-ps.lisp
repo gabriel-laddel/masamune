@@ -271,19 +271,19 @@ http://stackoverflow.com/questions/762011/javascript-let-keyword-vs-var-keyword"
 				    (string-stream (mm::slurp-stream js)))))))
     (if outf (write-to-file outf ast :supersede) ast)))
 
-(defmacro ast-q (q type)
-  `(let* ((out))
-     (dolist (tree js-asts)
-       (mm::walk-tree (lambda (k) (when (and (listp k) (eq ,type (car k)))
-			       (push k out)))
-		      tree))
-     ,q))
+;; (defmacro ast-q (q type)
+;;   `(let* ((out))
+;;      (dolist (tree js-asts)
+;;        (mm::walk-tree (lambda (k) (when (and (listp k) (eq ,type (car k)))
+;; 			       (push k out)))
+;; 		      tree))
+;;      ,q))
 
-(defparameter js-asts nil
-  "for asking questions about the parser")
-(defparameter browser-files
-  (mm::remove-if (lambda (p) (or (mm::emacs-backup? p) (not (string= (pathname-type p) "js")))) 
-		 (mm::recursive-contents (mm::qlpp "/masamune/browser/repl/"))))
+;; (defparameter js-asts nil
+;;   "for asking questions about the parser")
+;; (defparameter browser-files
+;;   (mm::remove-if (lambda (p) (or (mm::emacs-backup? p) (not (string= (pathname-type p) "js")))) 
+;; 		 (mm::recursive-contents (mm::qlpp "/masamune/browser/repl/"))))
 
 
 ;; (loop with *print-case* = :downcase

@@ -74,5 +74,5 @@
 	       (:file "systems/summarize-logs")
 	       (:file "browser/conkeror")
 	       ;; (:file "browser/js-to-ps")
-	       (:file "finalize")
-	       (:file "save-state")))
+	       (:file "save-state")
+	       (:file "finalize")))

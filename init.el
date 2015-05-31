@@ -402,18 +402,16 @@
   (if (buffer-around? "*slime-repl sbcl*")
       (with-current-buffer "*slime-repl sbcl*"
 	(save-excursion (end-of-buffer)
-			(insert "(progn (handler-bind
-					((error #'(lambda (c) (declare (ignore c)) (invoke-restart (find-restart 'cl::continue)))))
-					(ql:quickload '(glop cl-opengl)))
-                                       (ql:quickload 'clim-listener)
-				       (ql:quickload 'masamune))")
-			(slime-repl-return))
-	(sleep-for 5)
+			(insert "(progn (setf cl-user::*swank-connection-hack* *standard-output*)
+       (handler-bind
+	((error #'(lambda (c) (declare (ignore c)) (invoke-restart (find-restart 'cl::continue)))))
+	(ql:quickload '(glop cl-opengl)))
+       (ql:quickload 'clim-listener)
+       (handler-bind
+	((error #'(lambda (c) (declare (ignore c)) (invoke-restart (find-restart 'ASDF/LISP-ACTION:TRY-RECOMPILING)))))
+	(ql:quickload 'masamune)))"))
 	(end-of-buffer)
-	(insert "(loop while (not (find-package 'masamune)) do (sleep 1) 
-finally (eval \"(setf mm::*swank-connection-hack* *standard-output*)\"))")
-	(slime-repl-return)
-	(slime-repl-clear-output))
+	(slime-repl-return))
     (run-at-time ".5 seconds" nil 'finalize-boot)))
 
 (defun swank-port ()

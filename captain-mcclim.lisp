@@ -304,7 +304,7 @@ CLIM system, but not a function, thus `top-level-command-loop' defers here"
   (loop for mod-key = (unless (characterp gesture) (keyboard-event-key-name gesture))
 	when (and gesture (not (typep gesture 'pointer-button-press-event)))
 	  do (progn (when *debuggering* 
-		      (format mm::*swank-connection-hack* "~% gesture: ~s" gesture)
+		      (format cl-user::*swank-connection-hack* "~% gesture: ~s" gesture)
 		      (push gesture *event-stream*))
 		    (labels ((nullify-modifier () (setq *modifier* nil)))
 		      (macrolet ((add-char (location) `(setf ,location (append ,location (list gesture))))

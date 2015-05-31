@@ -162,7 +162,12 @@
 
 (awhen (probe-file (ppath "lisp-customizations.lisp")) (load it))
 
-(sleep 4)
+(sleep 10)
 
-(unless (mm::port-in-use-p 4258)
-  (mmb::start-ps-repl))
+(mmb::start-ps-repl)
+
+;; (loop while (not (with-open-file (stream "~/.masamune/browser-output"
+;; 					 :direction :input)
+;; 		   (string= "REPL Listening at: 127.0.0.1: 4258" (read-line stream :eof-error-p nil))))
+;;       do (sleep 1)
+;;       finally )

@@ -311,3 +311,9 @@ Configuration CONFIG should be created by
   (slime-eval-async `(cl::progn (cl::setf (cl::getf mm::state :emacs) 
 					  (quote ,(current-window-configuration-printable)))
 				(mmb::update-browser-state))))
+
+(defvar save-state-timer nil)
+
+(defun start-save-state ()
+  (setf save-state-timer
+	(run-with-idle-timer .1 t #'update-emacs-and-browser-state)))

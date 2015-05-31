@@ -2,10 +2,10 @@
 
 (DEFCONSTANT -PI (- PI))
 (DEFVAR *HABITS* NIL)
-(DEFPARAMETER *SWANK-CONNECTION-HACK*
-  NIL
-  "for some scoping reasons mcclim applications won't have access t
-swank::*emacs-connection* unless referenced through this variable")
+;; (DEFPARAMETER *SWANK-CONNECTION-HACK*
+;;   NIL
+;;   "for some scoping reasons mcclim applications won't have access t
+;; swank::*emacs-connection* unless referenced through this variable")
 (DEFPARAMETER *SYSTEMS*
   '("masamune")
   "list of strings naming dirs in ~/quicklisp/local-projects/. Masamune finds
@@ -16,10 +16,6 @@ swank::*emacs-connection* unless referenced through this variable")
 (DEFVAR *SYSTEM-INFORMATION* NIL)
 (DEFVAR *HACK* NIL "Occasionally I need somewhere to put an intermediate value.")
 (DEFVAR *PROJECT-LOCATION* #P"~/quicklisp/local-projects/masamune/")
-(DEFPARAMETER *SWANK-CONNECTION-HACK*
-  NIL
-  "for some scoping reasons mcclim applications won't have access to
-swank::*emacs-connection* unless referenced through this variable")
 (DEFVAR *HABITS* NIL)
 (DEFPARAMETER *SYSTEMS*
   '("masamune")

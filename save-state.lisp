@@ -179,5 +179,4 @@ its own line"
   		    (setf (getf mm::state :browser)
   			  (read-from-string line)))))))
 
-(ignore-errors 
- (swank::eval-in-emacs '(run-with-idle-timer .1 t #'update-emacs-and-browser-state)))
+(ignore-errors (swank::eval-in-emacs '(start-save-state)))
