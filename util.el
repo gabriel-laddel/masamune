@@ -245,7 +245,7 @@ it is quickload-able. I'm willing to wait for that."
 	(comint-send-input)
 	(sleep-for 2))
       (loop while (not (maxima-buffer-swank-port))
-	    do (sleep 1)
+	    do (sleep-for 1)
 	    finally (slime-connect "127.0.0.1" (maxima-buffer-swank-port) nil nil)))
     (when add-again
       (push 'finalize-boot slime-connected-hook))))
