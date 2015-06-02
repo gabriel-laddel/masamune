@@ -201,9 +201,16 @@ see http://en.wikipedia.org/wiki/ISO_8601 for more info"
   (interactive "nVolume, 70 min, 0 max:")
   (shell-command-to-string (cl-format nil "amixer -c 0 -- sset Master playback -~ddB" n)))
 
-;; (delete-if (lambda (v) (eq 'update-emacs-and-browser-state (aref v 5))) timer-list)
-;; (cancel-timer )
-;; (message "has been ")
+(defun maxima-buffer-swank-port ()
+  ;; `launch-maxima' guarantees that "*Async Shell Command*" will be the maxima
+  ;; buffer
+  (let* ((swank-port-line (with-current-buffer "*Async Shell Command*"
+			    (find-if (lambda (s) (s-contains? " ;; Swank started at port: " s)) 
+				     (s-split "\n" (buffer-string-no-properties)))))
+	 (near-parse (when swank-port-line 
+	 	       (llast 	(s-split " " swank-port-line)))))
+    (when swank-port-line
+      (subseq near-parse 0 (- (length near-parse) 1)))))
 
 (defun launch-maxima ()
   "XXX the maxima init file (for whatever reason) wasn't loading correctly and I
@@ -216,7 +223,7 @@ it is quickload-able. I'm willing to wait for that."
       (delete-if (lambda (s) (eq s 'finalize-boot)) slime-connected-hook)
       (setf add-again 'finalize-boot))
     (cancel-timer save-state-timer)
-    (alert "please wait ~~5 seconds while SLIME connects to Maxima")  
+    (alert "please wait a few seconds while swank connectes to Maxima")  
     (let* ((swank-port 4007))
       (when (buffer-around? "*Async Shell Command*")
 	(with-current-buffer "*Async Shell Command*" (rename-uniquely)))
@@ -237,7 +244,9 @@ it is quickload-able. I'm willing to wait for that."
 	(insert (cat "(swank:create-server :port " swank-port " :style swank:*communication-style* :dont-close t)"))
 	(comint-send-input)
 	(sleep-for 2))
-      (call-interactively 'slime-connect))
+      (loop while (not (maxima-buffer-swank-port))
+	    do (sleep 1)
+	    finally (slime-connect "127.0.0.1" (maxima-buffer-swank-port) nil nil)))
     (when add-again
       (push 'finalize-boot slime-connected-hook))))
 
