@@ -4,8 +4,7 @@
 
 (sb-ext:restrict-compiler-policy 'debug 3)
 
-(ql:quickload 'cl-fad)
-(ql:quickload 'alexandria)
+(ql:quickload '(cl-fad alexandria cl-ppcre))
 
 (defun cat (&rest objs)
   (apply #'concatenate 'string
@@ -45,17 +44,25 @@
 			      '(run-or-raise "emacs --debug-init" (quote (:class "Emacs")))))))
 
 (defun move-sbcl-sources ()
+  "XXX /usr/lib64/sbcl/ contains the sbcl.core file and some contrib modules by
+default that are essential to SBCL - don't overwrite them"
   (let* ((sbcl-sources (find-if (lambda (p) (let* ((namestring (namestring p)))
 					 (and (scan "sbcl" namestring)
 					      (not (scan "binary" namestring))))) 
 				(cl-fad:list-directory "/usr/portage/distfiles")))
 	 (temp-pathname (merge-pathnames #P"/tmp/" (filename sbcl-sources))))
-    (cl-fad:copy-file sbcl-sources temp-pathname)
-    (rp (format nil "cd /tmp/ && bunzip2 -f -c * | tar xvf ~A" (filename temp-pathname)))
-    (rp (format nil "mv ~A /usr/lib64/sbcl/" 
-		(find-if (lambda (p) (and (scan "sbcl" (namestring p))
-				     (not (scan ".tar.bz2" (namestring p)))))
-			 (cl-fad:list-directory "/tmp/"))))))
+    (labels ((sbcl-temp-dir () (find-if (lambda (p) (and (scan "sbcl" (namestring p))
+						    (not (scan ".tar.bz2" (namestring p)))))
+					(cl-fad:list-directory "/tmp/")))
+	     (contrib-dir? (pathname) (string= "contrib" (car (last (cl-ppcre:split "/" (namestring pathname)))))))
+      (unless (probe-file temp-pathname)
+	(cl-fad:copy-file sbcl-sources temp-pathname))
+      (unless (probe-file (sbcl-temp-dir))
+	(rp (format nil "cd /tmp/ && bunzip2 -f -c * | tar xvf ~A" temp-pathname)))
+      (loop for i in (remove-if 'contrib-dir? (cl-fad:list-directory (sbcl-temp-dir)))
+	    do (rp (format nil "mv ~A /usr/lib64/sbcl/" i)))
+      (loop for i in (cl-fad:list-directory (find-if 'contrib-dir? (cl-fad:list-directory (sbcl-temp-dir))))
+	    do (rp (format nil "mv ~A /usr/lib64/sbcl/contrib/" ))))))
 
 (defun move-maxima-sources ()
   (let* ((maxima-sources-pathname (find-if (lambda (p) (and (null (pathname-type p))
