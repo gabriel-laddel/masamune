@@ -196,3 +196,26 @@ add_hook('buffer_loaded_hook', sendBuffers, null, true);
 add_hook('buffer_scroll_hook', sendBuffers, null, true);
 add_hook('kill_buffer_hook', sendBuffers, null, true);
 add_hook('select_buffer_hook', sendBuffers, null, true);
+function getWindows() {
+    var windowEnum = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator).getEnumerator('');
+    var windows = [];
+    while (windowEnum.hasMoreElements()) {
+        windows.push(windowEnum.getNext());
+    };
+    return windows;
+};
+function currentBufferHref() {
+    var windowEnum = Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator).getEnumerator('');
+    var singleXWindow = windowEnum.getNext();
+    var buffer = singleXWindow.buffers.buffer_history[0];
+    return buffer.document.location.href;
+};
+function maybeRemoveWikiPageExtras() {
+    if (currentBufferHref().match('wiki')) {
+        getWindows()[0].buffers.buffer_history[0].document.getElementById('content').style.marginLeft = 0;
+        getWindows()[0].buffers.buffer_history[0].document.getElementById('mw-panel').parentNode.removeChild(getWindows()[0].buffers.buffer_history[0].document.getElementById('mw-panel'));
+        getWindows()[0].buffers.buffer_history[0].document.getElementById('mw-page-base').parentNode.removeChild(getWindows()[0].buffers.buffer_history[0].document.getElementById('mw-page-base'));
+        return getWindows()[0].buffers.buffer_history[0].document.getElementById('mw-head').parentNode.removeChild(getWindows()[0].buffers.buffer_history[0].document.getElementById('mw-head'));
+    };
+};
+add_hook('buffer_dom_content_loaded_hook', maybeRemoveWikiPageExtras, null, true);
