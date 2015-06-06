@@ -247,7 +247,7 @@
  (swank:eval-in-emacs
   '(progn (find-file "~/quicklisp/local-projects/masamune/browser/documentation.lisp"))))
 
-;;; CLIM (~100k vs. ~15MM loc browsers)
+;;; CLIM (is ~100k)
 ;;; ====================================
 ;;; Run (mm::listener)
 ;;;
@@ -357,7 +357,8 @@
 
 ;;; one could even
 ;;; 
-;;; '(disassemble (lambda () ' click on wot identity presentation to supply it as an argument '))'
+;;; '(disassemble (lambda ()' click on wot identity presentation to supply it as an
+;;; argument '))'
 ;;; 
 ;;; 3D
 ;;; ====================================
@@ -386,7 +387,7 @@ C-c C-c")
 	;; (list (lambda (x y) (* (cos x) (+ 3 (* y (cos (/ x 3)) (sin x))))) -3 3 0.1 -2 2 0.1)
 	))
 
-;;; If you would like a better 3D programming experience should read / watch the
+;;; If you would like a better 3D programming experience should consume the
 ;;; following:
 
 (progn
@@ -409,7 +410,7 @@ C-c C-c")
 ;;; cannot be loaded into the regular lisp process atm because it has its own
 ;;; build system. Someone should fix this.
 ;;;
-;;; imaxima usually has LaTeX output, but currently it is borked. Evaluate
+;;; imaxima usually has LaTeX output, but it is currently borked. Evaluate
 ;;; "display2d:true;" at the prompt to get ascii output instead.
 ;;;
 ;;; Stumpwm isn't loaded via quicklisp either, but is instead built, dumped
@@ -421,12 +422,12 @@ C-c C-c")
 ;;; use of its computer algebra facilities in their day-to-day hacking without
 ;;; having to ferry sexprs across processes.
 ;;;
-;;; XXX 2015-05-24T17:29:22+00:00 Gabriel Laddel
-;;; *Don't* M-x launch-maxima. There is a bug that will force you to restart.
-;;; It will be fixed shortly.
-;;; 
-;;; M-x launch-maxima launches a new imaxima, switches to the lisp proc and
-;;; connects to it via SLIME so one can interact with it via Emacs Lisp REPL.
+;;; M-x launch-maxima launches a new maxima process, switches to the lisp proc
+;;; and connects to it via SLIME so one can interact with it via the REPL.
+;;;
+;;; Because bugs, this disables any state recording facilities. M-. etc. all
+;;; work as one would expect. If you need to use the other SBCL process,
+;;; M-x slime-cycle-connections
 ;;; 
 ;;; You can switch between Maxima syntax and the raw Lisp proc using to_lisp();
 ;;; and (to-maxima)
@@ -464,6 +465,9 @@ C-c C-c")
 ;;; 
 ;;; diff (jacobi_sn (u, m), m);
 ;;; diff (elliptic_f (phi, m), m);
+;;;
+;;; If you want to poke around at the Maxima internals to untangle them, the
+;;; following are good starting points.
 ;;; 
 ;;; MEVAL (fbound)
 ;;; MEVAL* (fbound)
@@ -544,55 +548,36 @@ C-c C-c")
 ;;; For a long term vision / direction, visit
 ;;; 
 ;;; (mmb::open-uri "file:///root/quicklisp/local-projects/masamune/arsttep.html" t)
+;;; 
+;;; Misc
+;;; ----
+;;; The files emacs-customizations.el and lisp-customizations.lisp in the root of
+;;; of the project directory are loaded at the end of the init process. Modify
+;;; them instead of your ~/.sbclrc and your ~/.emacs
 ;;;
+;;; Installing Adblock
+;;; ------------------
+;;; Lacking full interoperability with the browser or practical image recognition
+;;; routines, the operator must manually enable a few niceties.
+;;;
+;;; Adblock works, but the installation is wonky.
+;;;
+;;; First one must install versions 1.3.10 and 2.0.1 from Mozilla, then install
+;;; adblock 2.6.5.
+
+(mmb::open-uri
+ "https://addons.mozilla.org/en-us/firefox/addon/adblock-plus/versions/" t)
+
+;;; Finally, 
+;;; M-x extensions > Adblock preferences, subscribe to easylist
+;;; 
+;;; You may have to restart.
+;;; 
+;;; Thanks to Jonas Kalderstam for the tip
+;;; http://cowboyprogrammer.org/getting-adblock-to-work-in-conkeror/
+;;; 
 ;;; Footnotes
 ;;; ============================================================================
 ;;; [1] http://en.wikipedia.org/wiki/List_of_programming_languages
 ;;; [2] Read loper-os.org in its entirety
 ;;;     & file:///root/quicklisp/local-projects/masamune/arsttep.html
-
-
-;;; TODO 2015-05-22T11:39:08+00:00 Gabriel Laddel
-;;; integrate into the lesson.
-
-;; * Setup
-
-;; Lacking full program interoperability and practical image recognition routines, the operator must manually enable a few niceties.  
-
-;; ** emacs/lisp customizations
-
-;; The files =emacs-customizations.el= and =lisp-customizations.lisp= are located in [[file:///root/quicklisp/local-projects/masamune/][~/quicklisp/local-projects/masamune/]] and are loaded at the end of the init process. Modify them instead of =~/.sbclrc= and your =~/.emacs=.
-   
-;; ** Installing adblock
-
-;; Jonas Kalderstam
-
-;; Just a lone cowboy programmer...
-
-;; Conkeror supports firefox addons to varying degrees. I found that a good indicator is if the addon has support for Firefox 3. This means you can use Adblock 2.0. But, the GUI for selecting a filter subscription will not show. Hence the need to install Adblock 1.3 first. To get Adblock up and running in Conkeror, do the following:
-
-;;     In your rc-file, set:
-
-;; session_pref("xpinstall.whitelist.required", false);  
-
-;;     Go to Adblock versions.
-;;     Install 1.3.10.
-;;     Open extensions: M-x extensions.
-;;     Go into preferences for Adblock and subscribe to a list, like
-;;     Easylist. The list might complain about requiring Adblock 2 for some filters, which is fine since we will fix that next.
-;;     Now go back and download/install version 2.0.1.
-;;     Enjoy the web again.
- 
-;; I followed this guide with the modification of installing adblock 2.6.5
-;; after installing versions 1.3.10 and 2.0.1 (which didn't let me subscribe to
-;; filters).
- 
-;; Version info: binary 33.1 of XULrunner to launch Conkeror commit
-;; 48d3ef4369f267faf42451a580b1ac6bcb6a5a18, master branch of the repository
-;; git://repo.or.cz/conkeror.git
- 
-;; to run: ~/path/to/xulrunner/xulrunner ~/path/to/conkeror/application.ini
- 
-;; make sure to subscribe to easylist in 2.6.5 or it won't work
-
-;; Thanks to [[http://cowboyprogrammer.org/getting-adblock-to-work-in-conkeror/][Jonas Kalderstam]] for this tip.
