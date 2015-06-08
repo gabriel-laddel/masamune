@@ -416,5 +416,6 @@ XXX       -  warn other programmers of problematic or misguiding code.
   (define-key comint-mode-map (kbd "C-c n") 'create-new-buffer)
   ;; evaluation order dependent
   (define-key slime-mode-map (kbd "C-x C-e") 'slime-eval-last-expression)
-  (define-key slime-mode-map (kbd "C-c C-m") 'slime-macroexpand-1))
+  (define-key slime-mode-map (kbd "C-c C-m") 'slime-macroexpand-1)
+  (define-key lisp-mode-map (kbd "TAB") 'slime-indent-and-complete-symbol))
 
