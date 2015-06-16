@@ -1,5 +1,4 @@
 ;;; -*- lexical-binding: t -*-
-
 ;;; Emacs lisp 
 ;;; ============================================================================
 
@@ -254,6 +253,15 @@ XXX       -  warn other programmers of problematic or misguiding code.
 	   (delete-other-windows)
 	   (fringe-mode 400))))
 
+(defun slime-visit-at-point ()
+  (interactive)
+  (let* ((url (thing-at-point 'url t))
+	 (filename (thing-at-point 'filename t)))
+    (cond ((and url filename) (error "handle unprecedented case of a url and filename string"))
+	  (filename (find-file filename))
+	  (url (mm:open-uri url t))
+	  (t (error "couldn't determine what I'm supposed to be visiting")))))
+
 (defmacro mm:define-key (key-string fn)
   `(progn (define-key lisp-mode-map       ,(kbd key-string) ,fn)
 	  (define-key slime-repl-mode-map ,(kbd key-string) ,fn)
@@ -289,7 +297,7 @@ XXX       -  warn other programmers of problematic or misguiding code.
   (mm:define-key "M-o r"   'highlight-symbol-query-replace)
   (mm:define-key "C-M-;"   'comment-sexp-forward-dwim)
   (mm:define-key "C-M-k"   'kill-sexp)
-  (mm:define-key "M-o f"     'slime-find-file-at-point)
+  (mm:define-key "M-o f"     'slime-visit-at-point)
   (mm:define-key "C-c C-q" 'mm:cut-string)
   (mm:define-key "C-c a"   'redshank-align-slot-specs-in-form)
   (mm:define-key "M-RET"   'mm:nest-call)
@@ -409,7 +417,7 @@ XXX       -  warn other programmers of problematic or misguiding code.
   (define-key doc-view-mode-map (kbd "s") 'doc-view-previous-page)
   (define-key doc-view-mode-map (kbd "t") 'doc-view-next-page)
   ;; sldb
-  (define-key sldb-mode-map (kbd "M-o f") 'slime-find-file-at-point)
+  (define-key sldb-mode-map (kbd "M-o f") 'slime-visit-at-point)
   ;; js
   (define-key js-mode-map (kbd "C-c n") 'create-new-buffer)
   ;; maxima

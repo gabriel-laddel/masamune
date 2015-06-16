@@ -65,13 +65,59 @@
 
 ;;; output history
 
-;;; quiz application 
+;;; Textbook
 ;;; ============================================================================
 
 (defvar *quiz* nil)
 
+;; (mm::c question () (name description prompt concept))
+;; (mm::c section () (name description prompt concept))
+;; (make-instance 'question :concept "determinant" :prompt ')
+;; (find-if (lambda (pane) (eq 'application-PANE (type-of pane))) (slot-value *quiz* 'clim-internals::named-panes))
+
 (define-command-table application-commands)
 (define-command-table quiz)
+
+(define-application-frame quiz ()
+  ((current-section))
+  (:pointer-documentation nil)
+  (:menu-bar t)
+  (:command-table (quiz :inherit-from (application-commands)
+			:menu (("Problems"          :menu application-commands)
+			       ;; ("Project Euler" :menu project-euler-commands)
+			       )))
+  (:panes (interaction-pane :interactor)
+	  (editor (make-pane 'text-editor :value "test text editor"))
+	  (submit (make-pane 'push-button :label "Submit"))
+	  (solution (make-pane 'push-button :label "Show Solution"))
+	  (back (make-pane 'push-button :label "Back"))
+	  (forwards (make-pane 'push-button :label "Forwards"))
+	  (display-pane :application
+			:scroll-bars t
+			:display-function 'render-question))
+  (:layouts (default (vertically () 
+		       (5/8 display-pane)
+		       (2/8 (horizontally () 
+			      editor
+			      (labelling (:label "")
+				(vertically ()
+				  submit solution back forwards))))
+		       ;; (1/8 interaction-pane)
+		       ))))
+
+(defmacro with-centers (sheet &rest body)
+  "introduces the bindings `center-x', `center-y'"
+  `(destructuring-bind (x0 y0 x1 y1)
+       (LOOP FOR I ACROSS (SLOT-VALUE (SLOT-VALUE ,sheet 'REGION) 'CLIM-INTERNALS::COORDINATES)
+	     COLLECT I)
+     (let* ((center-x (/ (- x1 x0) 2))
+	    (center-y (/ (- y1 y0) 2)))
+       ,@body)))
+
+(defun render-question (frame pane)
+  (declare (ignore frame))
+  (mmg::with-centers pane
+    (draw-text* pane "Currently nothing to render" center-x center-y :align-x :center)))
 
 (define-quiz-command (com-clear-output :name "Clear Output History"
 				       :command-table application-commands
@@ -85,16 +131,9 @@
 			       :provide-output-destination-keyword nil) ()
   (frame-exit *application-frame*))
 
-(define-application-frame quiz ()
-  ((display-pane) (interaction-panne))
-  (:pointer-documentation t)
-  (:menu-bar t)
-  (:command-table (quiz :inherit-from (application-commands)
-			:menu (("Quiz"          :menu application-commands)
-			       ("Project Euler" :menu project-euler-commands))))
-  (:panes (interaction-pane :interactor)
-	  (display-pane :application :scroll-bars t))
-  (:layouts (default (vertically () (7/8 display-pane) (1/8 interaction-pane)))))
+;; (define-quiz-command (com-show-solution))
+;; (define-quiz-command (com-next-section))
+;; (define-quiz-command (com-previous-section))
 
 (defun run-or-focus-quiz ()  
   (if (some (lambda (w) (string= "Quiz" (stumpwm::window-name w))) 

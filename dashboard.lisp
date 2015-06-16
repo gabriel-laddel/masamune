@@ -122,9 +122,10 @@
 (defvar *dashboard* nil)
 
 (define-application-frame dashboard ()
-  ((habit-pane) (calendar-pane) (visualization-pane) (interaction-pane))
+  ;; ((habit-pane) (calendar-pane) (visualization-pane) (interaction-pane))
+  ()
   (:pointer-documentation t)
-  (:menu-bar nil)
+  (:menu-bar t)
   (:panes (interaction-pane :interactor)
 	  ;; XXX 2014-11-08T00:26:47-08:00 Gabriel Laddel
 	  ;; if scrollbars are not used on these panes they'll get resized if anything
@@ -154,17 +155,10 @@
 
 ;;; commands
 
-(define-dashboard-command (com-quit :name "Quit") ()
-  (frame-exit *application-frame*))
-
 (define-dashboard-command (com-init-habit :name t)
   ((habit 'habit))
   (aif (mm::initialization-function habit) (funcall it habit)
     (format (interaction-pane) "it doth not exist!")))
-
-(define-dashboard-command (com-init-focused-habit :name t :keystroke (#\i :control)) ()
-  (if *focused-habit* (funcall (mm::initialization-function *focused-habit*) *focused-habit*)
-    (format (interaction-pane) "no habit currently focused!")))
 
 (define-dashboard-command (com-also-focus-habit)
     ((habit 'habit :gesture :select))
@@ -201,6 +195,17 @@
 ;; The other way to go about this is to build a modified command reader, as in
 ;; the captain-mcclim.lisp file, but that seems wrong.
 
+(define-dashboard-command (com-display-overview :name t :keystroke (#\o :control)) ()
+  (setf *focused-habit* nil)
+  (render-overview *dashboard* (find-pane-named *dashboard* 'visualization-pane)))
+
+(define-dashboard-command (com-quit :name "Quit" :menu t) ()
+  (frame-exit *application-frame*))
+
+(define-dashboard-command (com-init-focused-habit :name t :keystroke (#\i :control) :menu t) ()
+  (if *focused-habit* (funcall (mm::initialization-function *focused-habit*) *focused-habit*)
+    (format (interaction-pane) "no habit currently focused!")))
+
 (define-dashboard-command (com-previous-habit :name t :keystroke (#\p :control)) ()
   (labels ((p () (position *focused-habit* mm::*habits* :test #'eq)))
     (setf *focused-habit*
@@ -208,20 +213,21 @@
 	      (llast mm::*habits*)
 	      (nth (- (p) 1) mm::*habits*)))))
 
-(define-dashboard-command (com-display-overview :name t :keystroke (#\o :control)) ()
-  (setf *focused-habit* nil)
-  (render-overview *dashboard* (find-pane-named *dashboard* 'visualization-pane)))
-
-(define-dashboard-command (com-view-last-note :name t :keystroke (#\m :control)) ()
+(define-dashboard-command (com-view-last-note :name t :keystroke (#\m :control) :menu t) ()
   (cond ((null *focused-habit*) (format *query-io* "no habit currently focused"))
 	((null (mm::latest-note *focused-habit*)) (format *query-io* "this habit doesn't have any notes"))
 	((mm::latest-note *focused-habit*) (message (mm::latest-note *focused-habit*)))))
 
-(define-dashboard-command (com-record-note :name t :keystroke (#\m :meta)) ()
+(define-dashboard-command (com-record-note :name t :keystroke (#\m :meta) :menu t) ()
   (if (null *focused-habit*)
       (format *query-io* "no habit focused, cannot record a note")
       (progn (mm::record-note *focused-habit* (accept 'string :prompt "Record a note"))
 	     (format *query-io* "note recorded sucessfully"))))
+
+(define-dashboard-command (com-kill-dashboard :name t :keystroke (#\k :control) :menu t) ()
+  (when (mm::state-record-exists? :pre-dashboard)
+    (mm::restore-state :pre-dashboard))
+  (stumpwm:kill-window (stumpwm::window-by-name "dashboard")))
 
 (defun render-overview (frame pane)
   ;; TODO 2015-02-08T05:41:59+00:00 Gabriel Laddel
@@ -238,6 +244,7 @@
     (format pane "    Agenda:~% ~{~%    TODO: ~a~}~%~%" (mapcar #'mm::title mm::*agenda*))
     (format pane "    Current System Information:~%")
     (format pane "~{~%~a~}" (split "\\n" (mm::systems-stats-string)))
+    (format pane "~%~%~A" (rp "df -h"))
     (clim:draw-circle* pane 1200 200 173 :filled t :ink clim:+black+)
     (clim:draw-circle* pane 1200 200 170 :filled t :ink clim:+black+ :start-angle 0 :end-angle (* 0.7 tau))
     (clim:draw-circle* pane 1200 200 170 :filled t :ink clim:+white+ :start-angle (* 0.7 tau) :end-angle tau)
@@ -337,6 +344,7 @@
   (run-frame-top-level *dashboard* :name "Dashboard"))
 
 (defun run-or-focus-dashboard ()
+  (mm::record-state :pre-dashboard)
   (stumpwm::select-emacs)
   (stumpwm::fullscreen-emacs)
   (aif (stumpwm::window-by-name "dashboard")

@@ -411,6 +411,7 @@
 	((error #'(lambda (c) (declare (ignore c)) (invoke-restart (find-restart 'ASDF/LISP-ACTION:TRY-RECOMPILING)))))
 	(ql:quickload 'masamune)))"))
 	(end-of-buffer)
+	(slime-repl-return)
 	(slime-repl-return))
     (run-at-time ".5 seconds" nil 'finalize-boot)))
 

@@ -62,7 +62,7 @@ setxkbmap us -variant colemak -option ctrl:nocaps
 
 from the terminal after the graphical env has started.
 
-* Installing the Stage 3 tarball
+** Installing the Stage 3 tarball
 
 Instead of the stage3 tarball supplied by funtoo, download [[https://drive.google.com/file/d/0Bznn0f9Mk3KAalRUVHJCeDROYWs/view?usp=sharing][this one]]. The SystemrescueCD web browser is borked and will falsely indicate it has been fully downloaded almost immediately. Wait until a desktop popup message appears in the top right corner.
 
@@ -290,6 +290,7 @@ Linux is a gigantic mass of C code an there isn't, afaik, much in the way of san
 
 * TODOs
 ** alpha
+*** TODO integrate wakatime
 *** TODO point swank/slime to asdf sources or move them into the appropriate location.
 *** TODO update portage build
 
@@ -336,6 +337,10 @@ the system =(ql:quickload '(fmarshal fmarshal-test))= can store most types of da
 compare with portage genkernel
 
 ** beta
+*** TODO check out and integrate with CLASP
+
+https://drmeister.wordpress.com/2015/06/15/i-gave-a-talk-on-clasp-and-my-chemistry-at-google-in-cambridge-mass-last-week/
+    
 *** TODO unify console mode and graphical UNIX
 
 The correct way to address the situation is to:

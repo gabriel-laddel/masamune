@@ -1,5 +1,24 @@
 (in-package #:mm)
 
+;;; afaik the portage tree is stored entirely in /usr/ portage and it updates when you sync it.
+
+;; http://kvz.io/blog/2007/08/01/make-iso-images-on-linux/
+
+
+;; /var/lib/portage/world/ - List of explicitly installed package atoms.
+;; /var/db/pkg - Contains for every installed package a set of files about the installation.
+
+;; Packages belonging to the world set are listed by default into the /var/lib/portage/world file.
+
+;; https://wiki.gentoo.org/wiki/Version_specifier
+;;
+;; version parser
+
+;; It is the world file, together with the profile and /etc/portage (including make.conf) settings, that defines what software is installed on the system.
+;; emerge --pretend @system << use to find all system packages
+;;
+;; rebuild metadata with egenchache
+;; 
 ;;; Building a LiveCD, DVD, USB
 ;;; ============================================================================
 ;;; https://forums.gentoo.org/viewtopic-t-57754.html
@@ -8,10 +27,17 @@
 ;;; ============================================================================
 ;;;
 ;;; Distinct phases of building Masamune
+;;; 0. Configuration
 ;;; 1. Linux kernel
 ;;; 2. Required ALGOL systems
 ;;; 3. Browser
 ;;; 4. Lisp
+;;;
+;;; Configuration
+;;; ============================================================================
+;;; /etc/make.conf
+;;; MAKEOPTS
+;;; VIDEO_CARDS
 ;;; 
 ;;; Kernel
 ;;; ============================================================================
@@ -46,9 +72,28 @@
 ;;;
 ;;; Required ALGOL
 ;;; ============================================================================
+;;; can probably be removed
+;;; -----------------------
+;;; /etc/portage/modules
+;;; /etc/portage/mirrors
+;;; /etc/portage/bashrc
+;;; /etc/portage/package.accept_keywords
+;;; /etc/portage/package.license
+;;; /etc/portage/package.mask / package.unmask
+;;; /etc/portage/package.properties
+;;;
+;;; /opt/ebuilds
+;;;
+;;; /usr/share/doc/ is where documentation is usually found (most of it is
+;;; compressed)
+;;;
+;;; /var/tmp/portage/ << portage specific build directories, use instead of unzipping everything?
+;;; 
 ;;; /usr/lib64/portage/ contains ~70k LoC (mostly python). Although I have very
 ;;; simple requirements, this is somewhat more than what I can deal with at the
 ;;; moment.
+;;;
+;;; https://wiki.gentoo.org/wiki/Directories
 ;;;
 ;;; I'm treating the packages I can install as the canonical implementation.
 ;;;
@@ -88,7 +133,6 @@
 ;;; https://www.gentoo.org/support/documentation/
 ;;; https://packages.gentoo.org/
 ;;; https://wiki.gentoo.org/wiki/Gentoolkit
-;;;
 
 ;; (with-open-file (stream #P"/usr/portage/app-accessibility/SphinxTrain/metadata.xml" :direction :input)
 ;;   (s-xml:parse-xml stream))

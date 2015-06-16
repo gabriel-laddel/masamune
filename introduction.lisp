@@ -511,7 +511,10 @@ C-c C-c")
        (mmb::open-uri "http://melisgl.github.io/mgl-pax-world/mgl-manual.html")
        (mmb::open-uri "http://www.mitchr.me/SS/mjrcalc/")
        (mmb::open-uri "https://common-lisp.net/project/gsll/")
-       (mmb::open-uri "http://www.femlisp.org/" t))
+       (mmb::open-uri "http://www.femlisp.org/" t)
+       ;; (ql:quickload '(cl-liblinear linear-algebra lla))
+       ;; matlisp
+       )
 
 ;;; Masamune Specific Abstractions
 ;;; ====================================
