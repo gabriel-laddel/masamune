@@ -2,9 +2,6 @@
 
 (defsystem #:masamune
   :serial t
-  :license "I. You do not have, nor can you ever acquire the right to use, copy or distribute this software ;
-
-    II. Should you use this software for any purpose, or copy and distribute it, to anyone or in any manner, you are breaking the laws of whatever soi-disant \"sovereign jurisdiction\" you may be deemed to be located within, and you promise to continue doing so in the indefinite future."
   :depends-on (#:alexandria
 	       #:archive
 	       #:arnesi
@@ -37,6 +34,8 @@
 	       #:let-plus
 	       #:local-time
 	       #:mcclim
+	       #:mcclim-freetype
+	       #:mcclim-truetype
 	       #:mcclim-png-bitmaps
 	       #:mcclim-gif-bitmaps
 	       #:mcclim-jpeg-bitmaps
