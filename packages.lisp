@@ -84,7 +84,8 @@
 	#:clim-lisp
 	#:masamune
 	#:zpng
-	#:local-time)
+	#:local-time
+	#:clim-tab-layout)
   (:shadow #:frame #:frame-p #:frame-name)
   (:shadowing-import-from #:clim #:simple-parse-error)
   (:export #:run-or-focus-dashboard #:run-or-focus-kmap #:run-or-focus-repository))

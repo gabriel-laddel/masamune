@@ -151,9 +151,23 @@
     ((url 'url :gesture :select))
   (mmb::open-uri url t))
 
-(defun draw-url (url x y &optional (stream mm::*hack*))
-  (multiple-value-bind (old-x old-y) (stream-cursor-position stream)
-    (setf (stream-cursor-position stream) (values x y))
-    (with-output-as-presentation (stream url 'url)
-      (format stream url))
-    (setf (stream-cursor-position stream) (values old-x old-y))))
+(defun draw-url (display-string url x y &optional (stream *standard-output*))
+  (with-output-as-presentation (stream url 'url)
+    (draw-text* stream display-string x y)))
+
+(defmethod deactivate-gadget ((gadget RADIO-BOX-PANE))
+  (dolist (c (slot-value gadget 'climi::children))
+    (climi::deactivate-gadget c))
+  (climi::repaint-sheet gadget +everywhere+))
+
+(defmethod activate-gadget ((gadget RADIO-BOX-PANE))
+  (dolist (c (slot-value gadget 'climi::children))
+    (climi::activate-gadget c))
+  (climi::repaint-sheet gadget +everywhere+))
+
+(defmethod activate-gadget :after ((gadget toggle-button-pane))
+  (climi::repaint-sheet gadget +everywhere+))
+
+(defmethod deactivate-gadget :after ((gadget toggle-button-pane))
+  (climi::repaint-sheet gadget +everywhere+))
+
