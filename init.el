@@ -402,7 +402,7 @@
   (if (buffer-around? "*slime-repl sbcl*")
       (with-current-buffer "*slime-repl sbcl*"
 	(save-excursion (end-of-buffer)
-			(insert "(progn (setf cl-user::*swank-connection-hack* *standard-output*)
+			(insert "(progn (defparameter cl-user::*swank-connection-hack* *standard-output*)
        (handler-bind
 	((error #'(lambda (c) (declare (ignore c)) (invoke-restart (find-restart 'cl::continue)))))
 	(ql:quickload '(glop cl-opengl)))

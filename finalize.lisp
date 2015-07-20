@@ -20,8 +20,24 @@
 
 (in-package #:mm)
 
+(defun borders ()
+  (bt:make-thread
+   (lambda () 
+     (climi::run-frame-top-level 
+      (climi::make-application-frame 'clim-demo::bordered-output))) 
+   :name "borders"))
+
 (defun listener ()
-  (bt:make-thread (lambda () (CLIM-LISTENER:RUN-LISTENER)) :name "listener"))
+  (let* ((maybe-window (stumpwm::window-by-name "Listener")))
+    (if maybe-window
+	(stumpwm::select-window (stumpwm::window-name maybe-window)) 
+	(bt:make-thread (lambda () (CLIM-LISTENER:RUN-LISTENER)) :name "listener"))))
+
+(defun climacs ()
+  (let* ((maybe-window (stumpwm::window-by-name "climacs")))
+    (if maybe-window
+	(stumpwm::select-window (stumpwm::window-name maybe-window)) 
+	(bt:make-thread (lambda () (climacs:climacs)) :name "climacs"))))
 
 (populate-agenda-items)
 (mm::start-conkeror)
@@ -164,10 +180,8 @@
 
 (sleep 10)
 
-(mmb::start-ps-repl)
+;; (handler-bind
+;;     ((error #'(lambda (c) (declare (ignore c)) (invoke-restart (find-restart 'ASDF/LISP-ACTION:TRY-RECOMPILING)))))
+;;   (ql:quickload 'masamune))
 
-;; (loop while (not (with-open-file (stream "~/.masamune/browser-output"
-;; 					 :direction :input)
-;; 		   (string= "REPL Listening at: 127.0.0.1: 4258" (read-line stream :eof-error-p nil))))
-;;       do (sleep 1)
-;;       finally )
+(mmb::start-ps-repl)

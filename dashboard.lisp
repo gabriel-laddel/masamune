@@ -2,8 +2,6 @@
 ;;; ============================================================================
 ;;; TODO
 ;;; - take and review notes at the end of day/week/month/years
-;;; - visual bugs are due to the sutmpwm mode line being present (or not). this
-;;;   can be fixed by toggling the modeline on startup
 
 (in-package #:mm)
 
@@ -256,7 +254,7 @@
       (coerce (slot-value (sheet-region pane) 'clim-internals::coordinates) 'list)
     (let* ((center-x (/ (- x2 x1) 2))
 	   (center-y (/ (- y2 y1) 2))
-	   (y-spacing 20))
+	   (y-spacing 30))
       (labels ((draw-habit-text (h y) (draw-text* pane (mm::name h) center-x (* y-spacing y) 
 						  :ink (if (eq *focused-habit* h) +blue+ +black+)
 						  :align-x :center
@@ -265,16 +263,19 @@
 	(if mm::*habits*
 	    (loop with font-spacing-multiplier = 5
 		  for habit in mm::*habits*
-		  for y = 1 then (1+ y)
+		  for y = 2 then (1+ y)
 		  for habit-finished = (not (mm::occurs-now? habit))
 		  for strikethrough-y = (* y-spacing y)
 		  for x  = (- center-x (* font-spacing-multiplier (length (mm:name habit))))
 		  for x1 = (+ center-x (* font-spacing-multiplier (length (mm:name habit))))
 		  do (with-output-as-presentation (pane habit 'habit)
-		       (if habit-finished
-			   (progn (draw-habit-text habit y)
-				  (draw-line* pane x strikethrough-y x1 strikethrough-y :line-thickness 3)) 
-			   (draw-habit-text habit y))))
+		       (aif (mm::display-function habit)			   
+			    (funcall it x y pane (eq *focused-habit* habit))			    
+			    (draw-habit-text habit y))
+		       (when habit-finished
+			 (if (mm::display-function habit)
+			     (draw-line* pane (+ x 20) (- strikethrough-y 8) (- x1 20) (- strikethrough-y 8) :line-thickness 3)
+			     (draw-line* pane x strikethrough-y x1 strikethrough-y :line-thickness 3)))))
 	    (draw-text* pane "No Habits Installed" center-x center-y
 			:align-x :center :align-y :center))))))
 
@@ -349,7 +350,10 @@
   (stumpwm::fullscreen-emacs)
   (aif (stumpwm::window-by-name "dashboard")
        (stumpwm::select-window (stumpwm::window-name it))
-       (bt:make-thread (lambda () (run-dashboard)) :name "dashboard")))
+       (progn (bt:make-thread (lambda () (run-dashboard)) :name "dashboard")
+	      ;; TODO 2015-06-29T23:29:27+00:00 Gabriel Laddel
+	      ;; https://github.com/robert-strandh/McCLIM/issues/8
+	      (bt:make-thread (lambda () (sleep .8) (redisplay-frame-panes *dashboard*))))))
  
 (defun habit-by-name (name)
   "case insensitive"

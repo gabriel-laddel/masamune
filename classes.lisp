@@ -33,7 +33,7 @@
 ;;; habits
 ;;; ============================================================================
 
-(c habit () (name description occurrence initialization-function visualization-function))
+(c habit () (name description occurrence initialization-function visualization-function display-function))
 
 (defmethod print-object ((habit habit) stream)
   (with-slots (name description) habit

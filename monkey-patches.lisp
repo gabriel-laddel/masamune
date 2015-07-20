@@ -134,8 +134,18 @@
 ;;   ""
 ;;   (select-browser))
 
+(defcommand run-listener () ()
+  ""
+  (mm::listener))
+
+(defcommand run-climacs () ()
+  ""
+  (mm::climacs))
+
 (define-key *top-map* (kbd "F1") "rotate-keyboard-layout")
 (define-key *top-map* (kbd "F2") "invert-screen")
+(define-key *top-map* (kbd "F7") "run-listener")
+(define-key *top-map* (kbd "F9") "run-climacs")
 (define-key *top-map* (kbd "XF86AudioMute") "toggle-mute")
 (define-key *top-map* (kbd "XF86AudioLowerVolume") "decrease-volume")
 (define-key *top-map* (kbd "XF86AudioRaiseVolume") "increase-volume")
@@ -263,6 +273,10 @@
 
 (defun select-browser ()
   (select-window (window-name (browser-window))))
+
+(defun window-by-name (window-name)
+  (find-if (lambda (w) (search (string-downcase window-name) 
+			  (string-downcase (window-name w)))) (all-windows)))
 
 (defun emacs-window ()
   (car (remove-if-not (lambda (w) (search "emacs" (window-name w))) (all-windows))))

@@ -274,7 +274,7 @@ Configuration CONFIG should be created by
 		    (maybe-buffer (aif (and maybe-buffer (get-buffer maybe-buffer))
 				      it maybe-buffer))
 		    (maybe-file (car buffer-description)))	       
-	       (cond ((and maybe-buffer (stringp maybe-file) (pdf-filename? maybe-file))
+	       (cond ((and maybe-buffer maybe-file (stringp maybe-file) (pdf-filename? maybe-file))
 		      (aif (buffer-with-filename maybe-file)
 			  (progn (switch-to-buffer it)
 				 (goto-char (revive:get-window-start buffer-description)) ;to prevent high-bit missing
@@ -285,19 +285,20 @@ Configuration CONFIG should be created by
 			       (add-hook 'doc-view-mode-hook #'restore-doc-page)
 			       (find-file maybe-file))))
 		     
-		     ((and maybe-buffer (buffer-with-filename maybe-file)) 
+		     ((and maybe-file maybe-buffer (buffer-with-filename maybe-file)) 
 		      (switch-to-buffer maybe-buffer)
 		      (goto-char (revive:get-window-start buffer-description)) ;to prevent high-bit missing
 		      (set-window-start nil (point))
 		      (goto-char (revive:get-point buffer-description)))
 		     
-		     ((and (stringp maybe-file)
+		     ((and maybe-file 
+			   (stringp maybe-file)
 			   (not (file-directory-p maybe-file))
 			   (revive:find-file maybe-file)) 
 		      (let* ((window-start (nth 3 buffer-description))
 			     (buffer-description-point (nth 2 buffer-description)))
 			(set-window-start nil window-start)
-			(if (and (stringp maybe-file) (pdf-filename? maybe-file)) 
+			(if (and maybe-file (stringp maybe-file) (pdf-filename? maybe-file)) 
 			    (message "handle pdf in second `cond' clause")
 			  (goto-char buffer-description-point))))
 		     (t (message "ERROR: `restore-window-configuration' we should not have hit this cond clause")))

@@ -272,13 +272,12 @@
 
 (defparameter sleep-time 0.001
   "use to speed or slow the animation, set to `nil' to stop")
-
+(defparameter scale-multiplier 400)
 (defun cos-animation ()
   (let* ((range (loop for k from 0 to (* 2 pi) by 0.1 collect k)) ; length of 62
 	 (idx 0)
 	 (record (updating-output (*standard-output*)
 		   (loop for x from (nth idx range) to (+ (nth idx range) (* 2 pi)) by 0.01
-			 with scale-multiplier = 100
 			 with y-offset = 150
 			 for x-offset = (- 10 (* scale-multiplier (nth idx range)))
 			 for y-value = (+ y-offset (* scale-multiplier (cos x)))

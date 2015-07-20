@@ -543,20 +543,23 @@ NOTE: it sometimes happens that a port # occurs twice in the output. why?"
   `(let* ((swank::*emacs-connection* (car swank::*connections*)))
      ,@body))
 
+(defun cycle (fn)
+  (loop repeat 20 collect (funcall fn)))
+
 (defmacro eval-in-emacs (sexp)
   `(mm::with-live-swank-connection
        (ignore-errors
 	(swank::eval-in-emacs ,sexp t))))
 
-(defun format-message-for-stumpwm (string)
+(defun format-message-for-stumpwm (string &optional (line-break-length 80))
   (loop with message = (coerce string 'list)
 	while message
-	collect (if (or (> 80 (length message)) (equal #\space (nth 80 message)))
-		    (let* ((o (take 80 message))) 
-		      (setf message (drop 80 message))
+	collect (if (or (> line-break-length (length message)) (equal #\space (nth line-break-length message)))
+		    (let* ((o (take line-break-length message))) 
+		      (setf message (drop line-break-length message))
 		      o)
-		    (let* ((to-drop (position #\space (reverse (take 80 message))))
-			   (to-collect (subseq message 0 (- 80 to-drop))))
+		    (let* ((to-drop (position #\space (reverse (take line-break-length message))))
+			   (to-collect (subseq message 0 (- line-break-length to-drop))))
 		      (setf message (drop (length to-collect) message))
 		      to-collect)) into out
 	finally (return (coerce (flatten (let* ((clean-out (remove-if #'null (mapcar (lambda (l) (if (equal #\space (car l)) (rest l) l)) out))))
@@ -907,3 +910,20 @@ will correctly strip the trailing . from a pathname"
   (mm::start-conkeror)
   (sleep 3)
   (mmb::start-ps-repl))
+
+(defun package-variables (&optional (package *package*) negative-regex)
+  "NEGATIVE-REGEX filters out matching symbol names"
+  (let* ((out))
+    (do-symbols (v package)
+      (when (boundp v)
+	(unless (and negative-regex (scan negative-regex (symbol-name v)))
+	  (push v out))))
+    out))
+
+(defun package-functions (&optional (package *package*) negative-regex)
+  (let* ((out))
+    (do-symbols (v package)
+      (when (fboundp v)
+	(unless (and negative-regex (scan negative-regex (symbol-name v)))
+	  (push v out))))
+    out))

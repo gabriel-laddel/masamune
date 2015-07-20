@@ -8,6 +8,9 @@
 	       #:anaphora
 	       #:asdf
 	       #:bordeaux-threads
+	       #:cl-opengl
+	       #:clim-examples
+	       #:opengl-text
 	       #:cl-date-time-parser
 	       #:trivial-timers
 	       #:cl-arrows

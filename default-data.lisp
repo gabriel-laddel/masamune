@@ -1,7 +1,10 @@
 (in-package #:mm)
 
-(defun message (string) 
-  (stumpwm::message-no-timeout (format-message-for-stumpwm string)))
+(defun message (string &optional (line-break-length 80))
+  ;; stumpwm messages are sort of like format control strings in that they have
+  ;; "magic" characters, some of which refer to how the message should be colored.
+  ;; Afaik, the only character to be concerned with is #\^
+  (stumpwm::message-no-timeout (format-message-for-stumpwm string line-break-length)))
 
 (defun start-image-recognition ()
   "needs to be converted to CL"
@@ -24,11 +27,14 @@
   (sleep 2)
   (stumpwm::hsplit)
   (stumpwm::select-emacs)
+  (mmb::open-uri "http://malisper.me/2015/07/07/debugging-lisp-part-1-recompilation/")
+  ;; TODO 2015-07-08T11:34:28+00:00 Gabriel Laddel
+  ;; walkthrough on debugging CL should include trace, breakpoints, restarts.
   (with-live-swank-connection
       (ignore-errors
        (swank::eval-in-emacs '(progn 
 			       (find-file "~/quicklisp/local-projects/masamune/introduction.lisp")
-			       (search-forward "Common Lisp")
+			       (search-forward "Common Lisp") 
 			       (delete-other-windows) nil) t))))
 
 (defun start-non-von-neumann-research-module ()

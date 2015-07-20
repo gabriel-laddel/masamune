@@ -47,6 +47,9 @@
     :stumpwm nil)
   "the :browser's buffer order is significant - `car' is the focused buffer")
 
+(defun list-state-records ()
+  (mapcar (lambda (p) (llast (split "/" (namestring p)))) (ls storage-dir)))
+ 
 (defun record-state (&optional (name (get-universal-time)))
   (assert (or (keywordp name) (numberp name)))
   (write-to-file (merge-pathnames storage-dir (format nil "~A" name)) mm::state :supersede))
