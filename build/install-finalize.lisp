@@ -53,6 +53,15 @@
 				*startup-message* "Please wait for Masamune to start - this might take a minute")
 			      '(run-or-raise "emacs --debug-init" (quote (:class "Emacs")))))))
 
+(defun move-conkeror-startup-files ()
+  (loop for p in (cons #P"/root/quicklisp/local-projects/masamune/browser/default-conkerorrc.js"
+		       (remove-if-not
+			(lambda (p) (let* ((name (namestring p))
+				      (len (length name)))
+				 (string= "html" (subseq name (- len 4)))))
+			(cl-fad:list-directory #P"~/quicklisp/local-projects/masamune/browser/help/")))
+	do (cl-fad:copy-file p (merge-pathnames #P"~/algol/conkeror/help/" (filename p)) :overwrite t)))
+
 (defun move-sbcl-sources ()
   "XXX /usr/lib64/sbcl/ contains the sbcl.core file and some contrib modules by
 default that are essential to SBCL - don't overwrite them"
@@ -86,6 +95,7 @@ default that are essential to SBCL - don't overwrite them"
 (move-sbcl-sources)
 (move-maxima-sources)
 (write-dotfiles)
+(move-conkeror-startup-files)
 (lg "wrote dotfiles")
 
 (cerror "my mouse and keyboard work as demonstrated by pressing this restart"
@@ -96,6 +106,8 @@ See http://www.funtoo.org/X_Window_System for more information. If you could
 report this as a bug on http://github.com/gabriel-laddel/masamune and include
 as much information about the box in question you're comfortable sharing
 it would be greatly appreciated.")
+
+(rp "touch ~/.masamune/browser-output")
 
 (STUMPWM:KILL-WINDOW
  (car (remove-if-not (lambda (w) (search "emacs" (stumpwm::window-name w))) 
