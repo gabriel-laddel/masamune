@@ -6,6 +6,8 @@
 
 (ql:quickload '(cl-fad alexandria cl-ppcre))
 
+(use-package 'cl-ppcre)
+
 (defun cat (&rest objs)
   (apply #'concatenate 'string
 	 (mapcar (lambda (o) (if (stringp o) o (write-to-string o))) objs)))
@@ -19,6 +21,14 @@
 
 (defun interpose (o l)
   (loop for i in l append (list i o)))
+
+(defun llast (l)
+  (etypecase l
+    (string (subseq l (1- (length))))
+    (list (car (last l)))))
+
+(defmethod filename ((pathname pathname))
+  (llast (split "/" (namestring pathname))))
 
 (defun lg (message)  (format t (format nil "~%~a" message)))
 (defun k (j)  (rp (format nil "emerge ~a" j) *standard-output*))
@@ -47,28 +57,27 @@
   "XXX /usr/lib64/sbcl/ contains the sbcl.core file and some contrib modules by
 default that are essential to SBCL - don't overwrite them"
   (let* ((sbcl-sources (find-if (lambda (p) (let* ((namestring (namestring p)))
-					 (and (scan "sbcl" namestring)
-					      (not (scan "binary" namestring))))) 
+					      (and (scan "sbcl" namestring)
+						   (not (scan "binary" namestring))))) 
 				(cl-fad:list-directory "/usr/portage/distfiles")))
 	 (temp-pathname (merge-pathnames #P"/tmp/" (filename sbcl-sources))))
     (labels ((sbcl-temp-dir () (find-if (lambda (p) (and (scan "sbcl" (namestring p))
-						    (not (scan ".tar.bz2" (namestring p)))))
+							 (not (scan ".tar.bz2" (namestring p)))))
 					(cl-fad:list-directory "/tmp/")))
 	     (contrib-dir? (pathname) (string= "contrib" (car (last (cl-ppcre:split "/" (namestring pathname)))))))
       (unless (probe-file temp-pathname)
 	(cl-fad:copy-file sbcl-sources temp-pathname))
-      (unless (probe-file (sbcl-temp-dir))
+      (unless (and (sbcl-temp-dir) (probe-file (sbcl-temp-dir)))
 	(rp (format nil "cd /tmp/ && bunzip2 -f -c * | tar xvf ~A" temp-pathname)))
-      (loop for i in (remove-if 'contrib-dir? (cl-fad:list-directory (sbcl-temp-dir)))
+      (loop for i in (remove-if #'contrib-dir? (cl-fad:list-directory (sbcl-temp-dir)))
 	    do (rp (format nil "mv ~A /usr/lib64/sbcl/" i)))
-      (loop for i in (cl-fad:list-directory (find-if 'contrib-dir? (cl-fad:list-directory (sbcl-temp-dir))))
-	    do (rp (format nil "mv ~A /usr/lib64/sbcl/contrib/" ))))))
+      (loop for i in (cl-fad:list-directory (find-if #'contrib-dir? (cl-fad:list-directory (sbcl-temp-dir))))
+	    do (rp (format nil "mv ~A /usr/lib64/sbcl/contrib/" i))))))
 
 (defun move-maxima-sources ()
-  (let* ((maxima-sources-pathname (find-if (lambda (p) (and (null (pathname-type p))
-						       (search "maxima" (namestring p))
-						       (not (char= #\i (aref (filename p) 0)))))
-					   (ls "/usr/portage/distfiles/")))
+  (let* ((maxima-sources-pathname (find-if (lambda (p) (and (search "maxima" (namestring p))
+							    (not (search "imath" (namestring p)))))
+					   (cl-fad:list-directory "/usr/portage/distfiles/")))
 	 (maxima-outpath "/var/tmp/portage/sci-mathematics/maxima-5.18.1/work/"))
     (unless (probe-file maxima-outpath)
       (rp "mkdir -p ~A" maxima-outpath))
@@ -88,7 +97,7 @@ report this as a bug on http://github.com/gabriel-laddel/masamune and include
 as much information about the box in question you're comfortable sharing
 it would be greatly appreciated.")
 
-(stumpwm::delete-window 
- (car (remove-if-not (lambda (w) (search "emacs" (window-name w))) 
+(STUMPWM:KILL-WINDOW
+ (car (remove-if-not (lambda (w) (search "emacs" (stumpwm::window-name w))) 
 		     (stumpwm::all-windows))))
 (stumpwm::emacs)
