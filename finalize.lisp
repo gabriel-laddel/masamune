@@ -53,7 +53,6 @@
 (setq mm::*system-information* nil)
 
 (load (qlpp "/masamune/systems/communications.lisp"))
-(load (qlpp "/masamune/systems/observations.lisp"))
 
 (progn (setf mm::*habits* nil mmg::*focused-habit* nil)
        (captains-log-install)
