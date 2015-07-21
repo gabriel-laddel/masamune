@@ -99,4 +99,4 @@
 	#:mm
 	#:usocket
 	#:parse-js)
-  (:shadowing-import-from #:usocket #:*version*))
+  (:shadowing-import-from #:parenscript #:*version*))
